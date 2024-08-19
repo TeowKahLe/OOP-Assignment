@@ -5,6 +5,7 @@ public class fastFoodInventory {
     public static void main(String[] args) {
     	Line line = new Line();
     	Scanner scanner = new Scanner(System.in);
+		Person test1 = new Person("F01","LIn","012412312"," ","");
     	int error = 0;
     	
     	//header
@@ -22,10 +23,13 @@ public class fastFoodInventory {
     			//go to selected method
     			switch(opt){
     				case 1:
-    					System.out.println("1111");//sign up
+    					//sign up
+						test1.setContactNo("012-12345678");
+						System.out.println(test1.toString());
     					break;
-    				case 2:	
-    					System.out.println("2222");//login
+    				case 2:
+						//login	
+						System.out.println(test1.toString());
     					break;
     				default:
     					System.out.println("Invalid action selection");
