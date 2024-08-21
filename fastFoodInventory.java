@@ -5,8 +5,9 @@ public class fastFoodInventory {
     public static void main(String[] args) {
     	Line line = new Line();
     	Scanner scanner = new Scanner(System.in);
-		Person test1 = new Person("F01","LIn","012412312"," ","");
-    	int error = 0;
+		Person test1 = new Person("F01","LIn","012-4123121"," ","");
+    	Staff test2 = new Staff();
+		int error = 0;
     	
     	//header
     	System.out.println("Welcome to Fast Food Inventory System");
@@ -24,8 +25,7 @@ public class fastFoodInventory {
     			switch(opt){
     				case 1:
     					//sign up
-						test1.setContactNo("012-12345678");
-						System.out.println(test1.toString());
+						test2.SignUp();
     					break;
     				case 2:
 						//login	
