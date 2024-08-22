@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 public class Person {
     private String id,name,contactNo,email,address;
     
-    Pattern namePattern = Pattern.compile("[a-zA-Z]+");
+    Pattern namePattern = Pattern.compile("[a-zA-Z\s]+");
     //'+' mean it check all char ensure it is alphabet.NOT'+' jst check first char
     //to check the name is all alphabet. 
 
@@ -29,48 +29,75 @@ public class Person {
         return this.id;
     }
 
+    //NAME---------------------------------------------------------------------------------------------
     public String getName(){
         return this.name;
     }
 
-    public void setName(String name){
+    public boolean checkFormatName(String name){
         Matcher nameMatcher = namePattern.matcher(name);
         if (nameMatcher.matches()){ //compare name variable with namePattern if(same pattern) 
-            this.name = name;
+            return true;
         }else{
             System.out.println("Name just allow ALPHABET only.");
+            return false;
         }
-        
+    }
+
+    public void setName(String name){
+        boolean matchFormat = checkFormatName(name);
+        if (matchFormat == true){ 
+            this.name = name;
+        }
     }
     
+    //CONTACT NO------------------------------------------------------------------------------
     public String getContactNo(){
         return this.contactNo;
     }
 
-    public void setContactNo(String contactNo){
+    public boolean checkFormatContact(String contactNo){
         Matcher contactNoMatcher = contactNoPattern.matcher(contactNo);
-        if(contactNoMatcher.matches()){ 
-            this.contactNo = contactNo; //true statement
+        if (contactNoMatcher.matches()){
+            return true;
         }else{
             System.out.println("Please follow the FORMAT of contact number EXAMPLE:(012-3456789)");
+            return false;
+        }
+    }
+
+    public void setContactNo(String contactNo){
+        boolean matchFormat = checkFormatContact(contactNo);
+        if(matchFormat == true){ 
+            this.contactNo = contactNo;
         }
 
     }
 
+    //EMAIL---------------------------------------------------------------------------------------------------
     public String getEmail(){
         return this.email;
     }
 
-    public void setEmail(String email){
+    public boolean checkFormatEmail(String email){
         Matcher emailMatcher = emailPattern.matcher(email);
         if(emailMatcher.matches()){ 
-            this.email = email;
+            return true;
         }else{
             System.out.println("Please follow the FORMAT of email EXAMPLE(abc@gmail.com)");
+            return false;
+        }
+    }
+
+    public void setEmail(String email){
+        boolean matchFormat = checkFormatEmail(email);
+        if(matchFormat == true){ 
+            this.email = email;
         }
 
     }
 
+    //ADDRESS--------------------------------------------------------------------------------------
     public String getAddress(){
         return this.address;
     }
