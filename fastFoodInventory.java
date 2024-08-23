@@ -1,8 +1,7 @@
 import java.util.Scanner;
  
 public class fastFoodInventory {
-   
-    public static void main(String[] args) {
+    public static void main(String arg[]) {
     	Line line = new Line();
     	Scanner scanner = new Scanner(System.in);
 		int error = 0;
@@ -29,7 +28,7 @@ public class fastFoodInventory {
 						test2.storeData();
     					break;
     				case 2:
-						//login	
+						login();
     					break;
     				default:
     					System.out.println("Invalid action selection");
@@ -45,8 +44,44 @@ public class fastFoodInventory {
     			scanner.nextLine(); //clear input buffer allow go into try block
     		}	
 	  }
-    
     	scanner.close();
+
 	}
 
+	public static void login(){
+		// perform login then enter item management method if successful.
+		itemManagement();
+	}
+
+	public static void itemManagement(){
+		Item item1 = new Item();
+		int option = 0;
+		System.out.println("Please choose one option");
+		System.out.println("=========================");
+		System.out.println("1. Add item");
+		System.out.println("2. Modify item");
+		System.out.println("3. Delete item");
+		System.out.println("4. Display item");
+		System.out.println("5. Return to menu");
+		//will do validate
+		switch (option) {
+			case 1:
+				//Add item and will do it 2day
+				break;
+			case 2:
+				//Modify item
+				break;
+			case 3:
+				//Delete item
+				break;
+			case 4:
+				//Display item
+				break;
+			case 5:
+				//Back to menu
+				break;
+			default:
+				System.out.println("Invalid option");
+		}
+	}
 }

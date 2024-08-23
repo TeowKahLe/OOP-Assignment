@@ -1,3 +1,8 @@
+import java.util.Scanner;
+//import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Item {
 	private String itemId;
 	private String itemName;
@@ -10,12 +15,22 @@ public class Item {
 	private int minStockQty;
 	private int maxStockQty;
 	
+    //No-arg constructor
 	public Item(){
 		
 	}
 	
     public Item(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice, int stockQty, int stockValue, int minStockQty, int maxStockQty) {
-    	
+    	this.itemId = itemId;
+        this.itemName = itemName;
+        this.itemCategory = itemCategory;
+        this.itemDesc = itemDesc;
+        this.unitCost = unitCost;
+        this.unitPrice = unitPrice;
+        this.stockQty = stockQty;
+        this.stockValue = stockValue;
+        this.minStockQty = minStockQty;
+        this.maxStockQty = maxStockQty;
     }
     
     //Getter

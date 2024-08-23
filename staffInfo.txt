@@ -1,2 +1,3 @@
 null	Lincoln	012-1234567	1@gmail.com	MyHOME	intern	123
 null	Lincoln Number two	012-1234567	2@gmail.com	notMyHome	intern	1234
+null	Kang Jian Ting	016-4113420	lolkang69@gmail.com	-	-	lolkang99
