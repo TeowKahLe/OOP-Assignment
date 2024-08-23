@@ -23,11 +23,12 @@ public class Order{
         this.staffId = staffId;
     }
 
-        public String getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
     public void setOrderId(String orderId) {
+        System.out.println("Test");
         this.orderId = orderId;
     }
 
