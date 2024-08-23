@@ -22,10 +22,8 @@ public class fastFoodInventory {
     			switch(opt){
     				case 1:
     					//sign up
-						Staff test1 = new Staff();
-						test1.storeData();
-						Staff test2 = new Staff();
-						test2.storeData();
+						Staff newUser = new Staff();
+						newUser.storeData();
     					break;
     				case 2:
 						login();

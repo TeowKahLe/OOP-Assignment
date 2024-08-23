@@ -1,5 +1,8 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.io.IOException;
 
 public class Person {
     private String id,name,contactNo,email,address;
@@ -25,8 +28,12 @@ public class Person {
             this.address = address;
     }
 
-    public String getId(){ //ID unable to set bcz ID is auto generated
+    public String getId(){ 
         return this.id;
+    }
+
+    public void setId(char firstCharId,String fileName){
+        this.id = firstCharId + String.format("%03d",generateId(fileName)+1);
     }
 
     //NAME---------------------------------------------------------------------------------------------
@@ -106,7 +113,14 @@ public class Person {
         this.address = address;
     }
 
-    public String toString(){
-        return id + name + contactNo + email + address;
+    public long generateId(String fileName){
+        String FilePath = fileName; //location of the file
+        try {
+            long row = Files.lines(Paths.get(FilePath)).count(); //count the text file got how many row
+            return row;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0L; // return default long value
+        }
     }
 }

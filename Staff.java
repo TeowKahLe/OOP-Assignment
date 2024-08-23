@@ -1,5 +1,4 @@
 import java.util.Scanner;
-//import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -91,6 +90,9 @@ public class Staff extends Person{
         tempPassword = scanner.nextLine();
         
         setPassword(tempPassword);
+
+
+        setId('S',"staffInfo.txt");
     }
 
     public void storeData(){
