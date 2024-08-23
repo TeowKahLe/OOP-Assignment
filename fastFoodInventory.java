@@ -5,9 +5,8 @@ public class fastFoodInventory {
     public static void main(String[] args) {
     	Line line = new Line();
     	Scanner scanner = new Scanner(System.in);
-		Person test1 = new Person("F01","LIn","012412312"," ","");
-    	int error = 0;
-    	
+		int error = 0;
+
     	//header
     	System.out.println("Welcome to Fast Food Inventory System");
     	line.printLine("Welcome to Fast Food Inventory System".length());
@@ -24,12 +23,13 @@ public class fastFoodInventory {
     			switch(opt){
     				case 1:
     					//sign up
-						test1.setContactNo("012-12345678");
-						System.out.println(test1.toString());
+						Staff test1 = new Staff();
+						test1.storeData();
+						Staff test2 = new Staff();
+						test2.storeData();
     					break;
     				case 2:
 						//login	
-						System.out.println(test1.toString());
     					break;
     				default:
     					System.out.println("Invalid action selection");
