@@ -121,7 +121,8 @@ public class FastFoodInventory {
 		System.out.println("1. Add item");
 		System.out.println("2. Modify item");
 		System.out.println("3. Delete item");
-		System.out.println("4. Display item");
+		System.out.println("4. Search item");
+		System.out.println("5. Display all item");
 		System.out.println("5. Return to menu");
 		System.out.println("6. Exit");
 
@@ -142,13 +143,15 @@ public class FastFoodInventory {
 						//delete
     					break;
 					case 4:
-						//display
+						//search
     					break;
 					case 5:
+						//Display all
+					case 6:
 						error = false;
 						menu();
 						break;
-					case 6:
+					case 7:
 						System.exit(0);
 						break;
     				default:
