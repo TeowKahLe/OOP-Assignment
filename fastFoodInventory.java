@@ -1,7 +1,8 @@
 import java.util.Scanner;
- 
+
 public class fastFoodInventory {
     public static void main(String arg[]) {
+		clearScreen();
     	Line line = new Line();
     	Scanner scanner = new Scanner(System.in);
 		int error = 0;
@@ -21,15 +22,15 @@ public class fastFoodInventory {
     			//go to selected method
     			switch(opt){
     				case 1:
-    					//sign up
 						Staff newUser = new Staff();
 						newUser.storeData();
+						signup();
     					break;
     				case 2:
 						login();
     					break;
     				default:
-    					System.out.println("Invalid action selection");
+    					System.out.println("Invalid action selected");
     					break;	
     			}
     			
@@ -46,40 +47,113 @@ public class fastFoodInventory {
 
 	}
 
+	public static void signup(){
+		//
+	}
+
 	public static void login(){
-		// perform login then enter item management method if successful.
-		itemManagement();
+		menu();
+	}
+
+	public static void menu(){
+		clearScreen();
+		Line line = new Line();
+    	Scanner scanner = new Scanner(System.in);
+		boolean error = true;
+		
+		System.out.print("Fast Food Ordering System");
+		line.printLine("Fast Food Ordering System".length());
+		System.out.println("Please select your action");
+		System.out.println("1. Item Management");
+		System.out.println("2. Order Management");
+		System.out.println("3. Transaction Management");
+   	 	System.out.println("4. Personal Information Management");
+   		System.out.println("5. Return to Main Menu");
+
+		while(error){
+			try{
+				System.out.print("Selected action: ");
+    			int opt = scanner.nextInt();
+				switch(opt){
+    				case 1:
+						itemManagement();
+    					break;
+    				case 2:
+						//orderManagement()
+    					break;
+					case 3:
+						//transactionManagement()
+    					break;
+					case 4:
+						//personInfoManagement()
+    					break;
+					case 5:
+						error = false;
+						main(new String[]{});
+						break;
+    				default:
+    					System.out.println("Invalid action selected");
+    					break;	
+    			}
+			}catch (Exception e){
+    			System.out.println("Incorrect input(Please entry NUMBER only)");
+    			scanner.nextLine();
+    		}	
+		}
+		
 	}
 
 	public static void itemManagement(){
-		Item item1 = new Item();
-		int option = 0;
+		clearScreen();
+		Line line = new Line();
+    	Scanner scanner = new Scanner(System.in);
+		boolean error = true;
+
 		System.out.println("Please choose one option");
-		System.out.println("=========================");
+		line.printEqualLine("Please choose one option".length());
 		System.out.println("1. Add item");
 		System.out.println("2. Modify item");
 		System.out.println("3. Delete item");
 		System.out.println("4. Display item");
 		System.out.println("5. Return to menu");
-		//will do validate
-		switch (option) {
-			case 1:
-				//Add item and will do it 2day
-				break;
-			case 2:
-				//Modify item
-				break;
-			case 3:
-				//Delete item
-				break;
-			case 4:
-				//Display item
-				break;
-			case 5:
-				//Back to menu
-				break;
-			default:
-				System.out.println("Invalid option");
+
+		while(error){
+			try{
+				System.out.print("Selected action: ");
+    			int opt = scanner.nextInt();
+				switch(opt){
+    				case 1:
+						Item item = new Item("", "", "", "", 0, 0, 0, 0, 0);
+						item.addItem();
+    					break;
+    				case 2:
+						//modify
+    					break;
+					case 3:
+						//delete
+    					break;
+					case 4:
+						//display
+    					break;
+					case 5:
+						error = false;
+						menu();
+						break;
+    				default:
+    					System.out.println("Invalid action selected");
+    					break;	
+    			}
+			}catch (Exception e){
+    			System.out.println("Incorrect input(Please entry NUMBER only)");
+    			scanner.nextLine();
+    		}	
 		}
 	}
+
+	public static void clearScreen() {
+   		System.out.print("\033[H\033[2J");
+  	 	System.out.flush();
+	}
 }
+
+
