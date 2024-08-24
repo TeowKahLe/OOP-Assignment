@@ -26,6 +26,7 @@ public class fastFoodInventory {
 						newUser.storeData();
     					break;
     				case 2:
+						menu();
     					break;
 					case 3:
 						System.exit(0);
@@ -97,7 +98,7 @@ public class fastFoodInventory {
     			scanner.nextLine();
     		}	
 		}
-		
+		scanner.close();
 	}
 
 	public static void itemManagement(){
@@ -153,6 +154,7 @@ public class fastFoodInventory {
     			scanner.nextLine();
     		}	
 		}
+		scanner.close();
 	}
 
 	public static void orderManagement(){
@@ -210,6 +212,7 @@ public class fastFoodInventory {
     			scanner.nextLine();
     		}	
 		}
+		scanner.close();
 	}
 
 	public static void stockOutOrder(){
@@ -260,6 +263,7 @@ public class fastFoodInventory {
     			scanner.nextLine();
     		}	
 		}
+		scanner.close();
 	}
 
 	public static void clearScreen() {

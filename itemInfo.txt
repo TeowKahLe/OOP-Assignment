@@ -1,1 +1,2 @@
 VG001|Tomato|Vegetable|Delicious and yummy|2.0|4.0|50|200.0|20|100
+ME1234|Chicken|Meat|Delicious and Yummy|2.0|4.0|72|288.0|10|100
