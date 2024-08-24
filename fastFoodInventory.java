@@ -123,8 +123,9 @@ public class fastFoodInventory {
     			int opt = scanner.nextInt();
 				switch(opt){
     				case 1:
-						Item item = new Item("", "", "", "", 0, 0, 0, 0, 0);
+						Item item = new Item();
 						item.addItem();
+						itemManagement();
     					break;
     				case 2:
 						//modify

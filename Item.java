@@ -1,10 +1,8 @@
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Item {
-    private static ArrayList<Item> items = new ArrayList<>();
 	private String itemId;
 	private String itemName;
 	private String itemCategory;
@@ -20,7 +18,7 @@ public class Item {
 	public Item(){
 	}
 	
-    public Item(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice, int stockQty, int minStockQty, int maxStockQty) {
+    public Item(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice, int stockQty, double stockValue, int minStockQty, int maxStockQty) {
     	this.itemId = itemId;
         this.itemName = itemName;
         this.itemCategory = itemCategory;
@@ -28,7 +26,7 @@ public class Item {
         this.unitCost = unitCost;
         this.unitPrice = unitPrice;
         this.stockQty = stockQty;
-        this.stockValue = unitCost * stockQty;
+        this.stockValue = stockValue;
         this.minStockQty = minStockQty;
         this.maxStockQty = maxStockQty;
     }
@@ -103,7 +101,7 @@ public class Item {
     	this.stockQty = stockQty;
     }
     
-    public void setStockValue(int stockValue){
+    public void setStockValue(double stockValue){
     	this.stockValue = stockValue;
     }
     
@@ -120,35 +118,44 @@ public class Item {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter Item ID: ");
-        String itemId = scanner.nextLine();
+        String inputItemId = scanner.nextLine();
 
         System.out.print("Enter Item Name: ");
-        String itemName = scanner.nextLine();
+        String inputItemName = scanner.nextLine();
 
         System.out.print("Enter Item Category: ");
-        String itemCategory = scanner.nextLine();
+        String inputItemCategory = scanner.nextLine();
 
         System.out.print("Enter Item Description: ");
-        String itemDesc = scanner.nextLine();
+        String inputItemDesc = scanner.nextLine();
 
         System.out.print("Enter Unit Cost: ");
-        double unitCost = scanner.nextDouble();
+        double inputUnitCost = scanner.nextDouble();
 
         System.out.print("Enter Unit Price: ");
-        double unitPrice = scanner.nextDouble();
+        double inputUnitPrice = scanner.nextDouble();
 
         System.out.print("Enter Stock Quantity: ");
-        int stockQty = scanner.nextInt();
+        int inputStockQty = scanner.nextInt();
 
         System.out.print("Enter Minimum Stock Quantity: ");
-        int minStockQty = scanner.nextInt();
+        int inputMinStockQty = scanner.nextInt();
 
         System.out.print("Enter Maximum Stock Quantity: ");
-        int maxStockQty = scanner.nextInt();
+        int inputMaxStockQty = scanner.nextInt();
 
-        Item newItem = new Item(itemId, itemName, itemCategory, itemDesc, unitCost, unitPrice, stockQty, minStockQty, maxStockQty);
-        items.add(newItem);
-        storeItemToFile(newItem);
+        Item newItem = new Item();
+        newItem.setItemId(inputItemId);
+        newItem.setItemName(inputItemName);
+        newItem.setItemCategory(inputItemCategory);
+        newItem.setItemDesc(inputItemDesc);
+        newItem.setUnitCost(inputUnitCost);
+        newItem.setUnitPrice(inputUnitPrice);
+        newItem.setStockQty(inputStockQty);
+        newItem.setStockValue(inputStockQty * inputUnitPrice);
+        newItem.setMinStockQty(inputMinStockQty);
+        newItem.setMaxStockQty(inputMaxStockQty); 
+        newItem.storeItemToFile();
     }
 
     public void deleteItem(String itemId){
@@ -159,22 +166,27 @@ public class Item {
 
     }
 
-    public String displayItem(){
-        return "Item ID: " + itemId + ", Name: " + itemName + ", Category: " + itemCategory +
-               ", Description: " + itemDesc + ", Unit Cost: " + unitCost + ", Unit Price: " + unitPrice +
-               ", Stock Quantity: " + stockQty + ", Stock Value: " + stockValue +
-               ", Min Stock Quantity: " + minStockQty + ", Max Stock Quantity: " + maxStockQty;
+    public String displayItem(String itemId){
+        return "";
     }
 
     //Store Item To File---------------------------------------------------------------------------------
-    public void storeItemToFile(Item item) {
+    public void storeItemToFile() {
     try (FileWriter itemWriter = new FileWriter("itemInfo.txt", true)) {
-        itemWriter.write(item.toString() + "\n");
-    } catch (IOException e) {
+        itemWriter.write(getItemId() + "," +
+                         getItemName() + "," +
+                         getItemCategory() + "," +
+                         getItemDesc() + "," +
+                         getUnitCost() + "," +
+                         getUnitPrice() + "," +
+                         getStockQty() + "," +
+                         getStockValue() + "," +
+                         getMinStockQty() + "," +
+                         getMaxStockQty() + "\n");
+    }catch (IOException e) {
         System.out.println("Cannot store into the itemInfo.txt.");
-        e.printStackTrace(); // Print the stack trace for debugging
+            e.printStackTrace(); // Print the stack trace for debugging
+        }
+        System.out.println("Item added successfully!");
     }
-
-    System.out.println("Item added successfully!");
-}
 }
