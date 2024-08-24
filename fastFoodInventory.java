@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class FastFoodInventory {
+public class fastFoodInventory {
     public static void main(String arg[]) {
 		clearScreen();
     	Line line = new Line();
@@ -24,10 +24,8 @@ public class FastFoodInventory {
     				case 1:
 						Staff newUser = new Staff();
 						newUser.storeData();
-						signup();
     					break;
     				case 2:
-						login();
     					break;
 					case 3:
 						System.exit(0);
@@ -48,14 +46,6 @@ public class FastFoodInventory {
 	  }
     	scanner.close();
 
-	}
-
-	public static void signup(){
-		//
-	}
-
-	public static void login(){
-		menu();
 	}
 
 	public static void menu(){
