@@ -173,19 +173,19 @@ public class Item {
     //Store Item To File---------------------------------------------------------------------------------
     public void storeItemToFile() {
     try (FileWriter itemWriter = new FileWriter("itemInfo.txt", true)) {
-        itemWriter.write(getItemId() + "," +
-                         getItemName() + "," +
-                         getItemCategory() + "," +
-                         getItemDesc() + "," +
-                         getUnitCost() + "," +
-                         getUnitPrice() + "," +
-                         getStockQty() + "," +
-                         getStockValue() + "," +
-                         getMinStockQty() + "," +
+        itemWriter.write(getItemId() + "|" +
+                         getItemName() + "|" +
+                         getItemCategory() + "|" +
+                         getItemDesc() + "|" +
+                         getUnitCost() + "|" +
+                         getUnitPrice() + "|" +
+                         getStockQty() + "|" +
+                         getStockValue() + "|" +
+                         getMinStockQty() + "|" +
                          getMaxStockQty() + "\n");
     }catch (IOException e) {
         System.out.println("Cannot store into the itemInfo.txt.");
-            e.printStackTrace(); // Print the stack trace for debugging
+            e.printStackTrace();
         }
         System.out.println("Item added successfully!");
     }

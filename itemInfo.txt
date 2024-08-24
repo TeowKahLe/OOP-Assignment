@@ -1,1 +1,1 @@
-V001,Tomato,Vegetables,Delicious,2.0,4.0,50,200.0,20,100
+VG001|Tomato|Vegetable|Delicious and yummy|2.0|4.0|50|200.0|20|100
