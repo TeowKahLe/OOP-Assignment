@@ -178,37 +178,39 @@ public class Item {
 
     }
 
-    public void searchItem(String itemId){
+    public boolean searchItem(String itemId) {
         Scanner scanner = null;
         Line line = new Line();
-        int checkItemId = 0;
-        try{
+        boolean itemFound = false;
+        try {
             scanner = new Scanner(new File("itemInfo.txt"));
-            while(scanner.hasNextLine()){
+            while (scanner.hasNextLine()) {
                 String[] itemFields = scanner.nextLine().split("\\|");
-                if(itemFields[0].equals(itemId)){
-                    System.out.printf( "%-7s | %-15s | %-15s | %-15s\n", "Item ID", "Item Name", "Category", "Description");
+                if (itemFields[0].equals(itemId)) {
+                    System.out.printf("%-7s | %-15s | %-15s | %-15s\n", "Item ID", "Item Name", "Category", "Description");
                     System.out.printf("%-7s | %-15s | %-15s | %-15s\n", itemFields[0], itemFields[1], itemFields[2], itemFields[3]);
                     line.printLine(93);
                     System.out.printf("%-9s | %-10s | %-9s | %-10s | %-11s | %-13s | %-13s\n", "Unit Cost", "Unit Price", "Stock Qty", "Stock Cost", "Stock Value", "Min Stock Qty", "Max Stock Qty");
-                    double itemField4 = Double.parseDouble(itemFields[4]); //convert string to double
+                    double itemField4 = Double.parseDouble(itemFields[4]);
                     double itemField5 = Double.parseDouble(itemFields[5]);
                     double itemField7 = Double.parseDouble(itemFields[7]);
                     double itemField8 = Double.parseDouble(itemFields[8]);
                     System.out.printf("RM%-7.2f | RM%-8.2f | %-9s | RM%-8.2f | RM%-9.2f | %-13s | %-13s\n\n", itemField4, itemField5, itemFields[6], itemField7, itemField8, itemFields[9], itemFields[10]);
-                    checkItemId++;
+                    itemFound = true;
+                    break;  // Exit loop once item is found
                 }
             }
-        }catch (FileNotFoundException e) {
-            System.out.println("Cannot locate item.txt");
+        } catch (FileNotFoundException e) {
+        System.out.println("Cannot locate itemInfo.txt");
         } finally {
             if (scanner != null) {
                 scanner.close();
             }
         }
-        if(checkItemId == 0){
-            System.out.println("Item does not exists");
+        if (!itemFound) {
+            System.out.println("Item ID: " + itemId + " does not exist.");
         }
+        return itemFound;  // Return true if found, false if not
     }
 
     public void displayAllItem(){
