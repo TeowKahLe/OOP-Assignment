@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class fastFoodInventory {
@@ -239,6 +241,7 @@ public class fastFoodInventory {
     			int opt = scanner.nextInt();
 				switch(opt){
 					case 0:
+						customerInputOrder();
 						//For customer to add order
     					break;
     				case 1:
@@ -264,6 +267,35 @@ public class fastFoodInventory {
     		}	
 		}
 		scanner.close();
+	}
+
+	public static void customerInputOrder(){
+		clearScreen();
+		Line line = new Line();
+		Scanner scanner = null;
+		int num = 0;
+		try {
+            scanner = new Scanner(new File("itemInfo.txt"));
+
+            while (scanner.hasNextLine()) {
+                String[] itemFields = scanner.nextLine().split("\\|");
+				num++;
+				line.printLine(50);
+				System.out.println("[Item " + num + "]");
+                System.out.println("Food Name   : " + itemFields[1]);
+				System.out.println("Category    : " + itemFields[2]);
+                System.out.println("Description : " + itemFields[3]);
+                System.out.println("Unit Price  : " + itemFields[5]);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot locate item.txt");
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
+
+		
 	}
 
 	public static void clearScreen() {

@@ -1,6 +1,6 @@
 import java.util.Date;
 
-public class StockOutOrder{
+public class StockOutOrder extends Order{
     private String customerId;
     private String customerName;
     private String customerAddress;
@@ -49,5 +49,15 @@ public class StockOutOrder{
 
     public void setDateDispatched(Date dateDispatched) {
         this.dateDispatched = dateDispatched;
+    }
+
+    private String generateOrderId(String orderType) {
+        if (orderType.equalsIgnoreCase("customer")) {
+            return String.format("SO%03d", customerOrderCounter++);
+        } else if (orderType.equalsIgnoreCase("staff")) {
+            return String.format("SI%03d", staffOrderCounter++);
+        } else {
+            throw new IllegalArgumentException("Invalid order type");
+        }
     }
 }
