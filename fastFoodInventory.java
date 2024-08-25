@@ -116,8 +116,8 @@ public class fastFoodInventory {
 		System.out.println("3. Delete item");
 		System.out.println("4. Search item");
 		System.out.println("5. Display all item");
-		System.out.println("5. Return to menu");
-		System.out.println("6. Exit");
+		System.out.println("6. Return to menu");
+		System.out.println("7. Exit");
 
 		while(error){
 			try{
@@ -125,21 +125,47 @@ public class fastFoodInventory {
     			int opt = scanner.nextInt();
 				switch(opt){
     				case 1:
-						Item item = new Item();
-						item.addItem();
+						clearScreen();
+						Item addItem = new Item();
+						addItem.addItem();
 						itemManagement();
     					break;
     				case 2:
+						clearScreen();
 						//modify
     					break;
 					case 3:
+						clearScreen();
 						//delete
     					break;
 					case 4:
-						//search
+						searchItem();
+						try {
+							System.out.println("Search again or back to itemManagement or Exit?(1 = Search, 2 = itemManagement, 3 = Exit)");
+							opt = scanner.nextInt();
+							switch(opt){
+								case 1: 
+									searchItem();
+									break;
+								case 2:
+									itemManagement();
+									break;
+								case 3:
+									System.exit(0);
+									break;
+								default:
+									System.out.println("Invalid option");
+							}
+						} catch (Exception e) {
+							System.out.println("Incorrect input(Please enter NUMBER only)");
+    			            scanner.nextLine();
+						}
     					break;
 					case 5:
-						//Display all
+						clearScreen();
+						Item displayItem = new Item();
+						displayItem.displayAllItem();
+						break;
 					case 6:
 						error = false;
 						menu();
@@ -156,6 +182,20 @@ public class fastFoodInventory {
     			scanner.nextLine();
     		}	
 		}
+		scanner.close();
+	}
+
+	public static void searchItem() {
+		clearScreen();
+		Scanner scanner = new Scanner(System.in);
+		Line line = new Line();
+		scanner.nextLine();
+	  	System.out.println("Search Item");
+		line.printLine("Search Item".length());
+		Item searchItem = new Item();
+		System.out.print("Enter Item ID: ");
+		String itemId = scanner.nextLine();
+		searchItem.searchItem(itemId);
 		scanner.close();
 	}
 

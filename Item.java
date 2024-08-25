@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -10,6 +12,7 @@ public class Item {
 	private double unitCost;
 	private double unitPrice;
 	private int stockQty;
+    private double stockCost;
 	private double stockValue;
 	private int minStockQty;
 	private int maxStockQty;
@@ -31,7 +34,7 @@ public class Item {
         this.maxStockQty = maxStockQty;
     }
     
-    //Getter
+    //Getter----------------------------------------------
     public String getItemId(){
     	return itemId;
     }
@@ -59,6 +62,10 @@ public class Item {
     public int getStockQty(){
     	return stockQty;
     }
+
+    public double getStockCost(){
+        return stockCost;
+    }
     
     public double getStockValue(){
     	return stockValue;
@@ -72,7 +79,7 @@ public class Item {
     	return maxStockQty;
     }
     
-    //Setter
+    //Setter--------------------------------------------------------------
     public void setItemId(String itemId){
     	this.itemId = itemId;
     }
@@ -99,6 +106,10 @@ public class Item {
     
     public void setStockQty(int stockQty){
     	this.stockQty = stockQty;
+    }
+
+    public void setStockCost(double stockCost){
+        this.stockCost = stockCost;
     }
     
     public void setStockValue(double stockValue){
@@ -152,6 +163,7 @@ public class Item {
         newItem.setUnitCost(inputUnitCost);
         newItem.setUnitPrice(inputUnitPrice);
         newItem.setStockQty(inputStockQty);
+        newItem.setStockCost(inputStockQty * inputUnitCost);
         newItem.setStockValue(inputStockQty * inputUnitPrice);
         newItem.setMinStockQty(inputMinStockQty);
         newItem.setMaxStockQty(inputMaxStockQty); 
@@ -166,8 +178,67 @@ public class Item {
 
     }
 
-    public String displayItem(String itemId){
-        return "";
+    public void searchItem(String itemId){
+        Scanner scanner = null;
+        Line line = new Line();
+        int checkItemId = 0;
+        try{
+            scanner = new Scanner(new File("itemInfo.txt"));
+            while(scanner.hasNextLine()){
+                String[] itemFields = scanner.nextLine().split("\\|");
+                if(itemFields[0].equals(itemId)){
+                    System.out.printf( "%-7s | %-15s | %-15s | %-15s\n", "Item ID", "Item Name", "Category", "Description");
+                    System.out.printf("%-7s | %-15s | %-15s | %-15s\n", itemFields[0], itemFields[1], itemFields[2], itemFields[3]);
+                    line.printLine(93);
+                    System.out.printf("%-9s | %-10s | %-9s | %-10s | %-11s | %-13s | %-13s\n", "Unit Cost", "Unit Price", "Stock Qty", "Stock Cost", "Stock Value", "Min Stock Qty", "Max Stock Qty");
+                    double itemField4 = Double.parseDouble(itemFields[4]); //convert string to double
+                    double itemField5 = Double.parseDouble(itemFields[5]);
+                    double itemField7 = Double.parseDouble(itemFields[7]);
+                    double itemField8 = Double.parseDouble(itemFields[8]);
+                    System.out.printf("RM%-7.2f | RM%-8.2f | %-9s | RM%-8.2f | RM%-9.2f | %-13s | %-13s\n\n", itemField4, itemField5, itemFields[6], itemField7, itemField8, itemFields[9], itemFields[10]);
+                    checkItemId++;
+                }
+            }
+        }catch (FileNotFoundException e) {
+            System.out.println("Cannot locate item.txt");
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
+        if(checkItemId == 0){
+            System.out.println("Item does not exists");
+        }
+    }
+
+    public void displayAllItem(){
+        Scanner scanner = null;
+        Line line = new Line();
+        int num = 0;
+        try {
+            scanner = new Scanner(new File("itemInfo.txt"));
+            while(scanner.hasNextLine()){ //hasNextLine: if scan dao \n, will quit the looping 
+                    String[] itemFields = scanner.nextLine().split("\\|");
+                    num++;
+                    System.out.println("Item " + num);
+                    line.printEqualLine(6);
+                    System.out.printf( "%-7s | %-15s | %-15s | %-15s\n", "Item ID", "Item Name", "Category", "Description");
+                    System.out.printf("%-7s | %-15s | %-15s | %-15s\n", itemFields[0], itemFields[1], itemFields[2], itemFields[3]);
+                    line.printLine(93);
+                    System.out.printf("%-9s | %-10s | %-9s | %-10s | %-11s | %-13s | %-13s\n", "Unit Cost", "Unit Price", "Stock Qty", "Stock Cost", "Stock Value", "Min Stock Qty", "Max Stock Qty");
+                    double itemField4 = Double.parseDouble(itemFields[4]); //convert string to double
+                    double itemField5 = Double.parseDouble(itemFields[5]);
+                    double itemField7 = Double.parseDouble(itemFields[7]);
+                    double itemField8 = Double.parseDouble(itemFields[8]);
+                    System.out.printf("RM%-7.2f | RM%-8.2f | %-9s | RM%-8.2f | RM%-9.2f | %-13s | %-13s\n\n", itemField4, itemField5, itemFields[6], itemField7, itemField8, itemFields[9], itemFields[10]);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot locate item.txt");
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
     }
 
     //Store Item To File---------------------------------------------------------------------------------
@@ -180,6 +251,7 @@ public class Item {
                          getUnitCost() + "|" +
                          getUnitPrice() + "|" +
                          getStockQty() + "|" +
+                         getStockCost() + "|" +
                          getStockValue() + "|" +
                          getMinStockQty() + "|" +
                          getMaxStockQty() + "\n");
