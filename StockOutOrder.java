@@ -50,14 +50,5 @@ public class StockOutOrder extends Order{
     public void setDateDispatched(Date dateDispatched) {
         this.dateDispatched = dateDispatched;
     }
-
-    private String generateOrderId(String orderType) {
-        if (orderType.equalsIgnoreCase("customer")) {
-            return String.format("SO%03d", customerOrderCounter++);
-        } else if (orderType.equalsIgnoreCase("staff")) {
-            return String.format("SI%03d", staffOrderCounter++);
-        } else {
-            throw new IllegalArgumentException("Invalid order type");
-        }
-    }
+    
 }

@@ -189,7 +189,6 @@ public class fastFoodInventory {
 		clearScreen();
 		Scanner scanner = new Scanner(System.in);
 		Line line = new Line();
-		scanner.nextLine();
 	  	System.out.println("Search Item");
 		line.printLine("Search Item".length());
 		Item searchItem = new Item();
