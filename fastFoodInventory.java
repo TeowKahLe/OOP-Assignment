@@ -22,7 +22,7 @@ public class fastFoodInventory {
     			int opt = scanner.nextInt();
     	
     			//go to selected method
-    			switch(opt){
+    			switch(opt){//hi
     				case 1:
 						Staff newUser = new Staff();
 						newUser.storeData();
