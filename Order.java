@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Scanner;
 
 public class Order{
     private String orderId;
@@ -11,7 +12,7 @@ public class Order{
     private String orderType;
     private String staffId;
 
-    //Constructors--------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------Constructors
     public Order(){
     }
 
@@ -29,7 +30,7 @@ public class Order{
         this.staffId = staffId;
     }
 
-    //Getters-------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------Getters
     public String getOrderId() {
         return orderId;
     }
@@ -66,7 +67,7 @@ public class Order{
         return staffId;
     }
 
-    //Setters-------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------Setters
     public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
@@ -103,7 +104,69 @@ public class Order{
         this.staffId = staffId;
     }
 
-    
+    public void generateOrderId(String prefix){
+
+    }
+
+    //-----------------------------------------------------------------------------------Order Management
+    public static void orderManagement(){
+		Line line = new Line();
+    	Scanner scanner = new Scanner(System.in);
+		boolean error = true;
+
+		line.printEqualLine("ORDER MANAGEMENT".length());
+		System.out.println("ORDER MANAGEMENT");
+		line.printEqualLine("ORDER MANAGEMENT".length());
+		System.out.println("Please select your action");
+		System.out.println("1. Display All Order");
+		System.out.println("2. Search Order");
+		System.out.println("3. Track Delivery");
+		System.out.println("4. Stock In Order");
+   	 	System.out.println("5. Stock Out Order");
+   		System.out.println("6. Return to Menu");
+		System.out.println("7. Exit");
+
+		while(error){
+			try{
+				System.out.print("Selected action: ");
+    			int opt = scanner.nextInt();
+				switch(opt){
+    				case 1:
+						//Display all order
+						orderManagement();
+    					break;
+    				case 2:
+						//Search Order
+    					break;
+					case 3:
+						//Track Delivery
+    					break;
+					case 4:
+						//Stock In Order
+    					break;
+					case 5:
+						//stockOutOrder();
+    					break;
+					case 6:
+						error = false;
+						//menu();
+						break;
+					case 7:
+						System.exit(0);
+						break;
+    				default:
+    					System.out.println("Invalid action selected");
+    					break;	
+    			}
+			}catch (Exception e){
+    			System.out.println("Incorrect input(Please enter NUMBER only)");
+    			scanner.nextLine();
+    		}	
+		}
+		scanner.close();
+	}
 }
+
+
 
 
