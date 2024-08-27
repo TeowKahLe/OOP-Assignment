@@ -123,42 +123,159 @@ public class Item {
     public void setMaxStockQty(int maxStockQty){
     	this.maxStockQty = maxStockQty;
     }
+
+    //Generate item ID-----------------------------------------------------------------------------
+public String generateItemId(String category) {
+    int num = 1;
+    String categoryPrefix = "";
+
+    switch(category) {
+        case "Meat":
+            categoryPrefix = "MT";
+            break;
+        case "Seafood":
+            categoryPrefix = "SD";
+            break;
+        case "Vegetable":
+            categoryPrefix = "VG";
+            break;
+        case "Dairy":
+            categoryPrefix = "DY";
+            break;
+        case "Condiments":
+            categoryPrefix = "CS";
+            break;
+        case "Beverages":
+            categoryPrefix = "BS";
+            break;
+        case "Grains":
+            categoryPrefix = "GS";
+            break;
+        case "Packaging":
+            categoryPrefix = "PG";
+            break;
+        case "Bread":
+            categoryPrefix = "BD";
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid category: " + category);
+    }
+
+    File file = new File("itemInfo.txt");
+
+    try (Scanner scanner = new Scanner(file)) {
+        while (scanner.hasNextLine()) {
+            String[] itemFields = scanner.nextLine().split("\\|");
+            String countPrefix = itemFields[0].substring(0, 2);
+            if (countPrefix.equals(categoryPrefix)) {
+                num++;
+            }
+        }
+    } catch (FileNotFoundException e) {
+        System.out.println("Cannot locate itemInfo.txt");
+    }
+
+    return categoryPrefix + String.format("%03d", num);
+}
+
+
     
     //Add Item-------------------------------------------------------------------------------------
     public void addItem() {
         Scanner scanner = new Scanner(System.in);
+        Line line = new Line();
+        System.out.println("Add Item");
+        line.printLine(45);
+        String[] category = {"Meat", "Seafood", "Vegetable", "Dairy", "Condiments", "Beverages", "Grains", "Packaging", "Bread"};
+        System.out.printf("| [1]%-10s [2]%-10s [3]%-10s |\n", category[0], category[1], category[2]);
+        System.out.printf("| [4]%-10s [5]%-10s [6]%-10s |\n", category[3], category[4], category[5]);
+        System.out.printf("| [7]%-10s [8]%-10s [9]%-10s |\n", category[6], category[7], category[8]);
+        line.printLine(45);
+        String inputItemCategory = "";
+        boolean error = true;
+        while(error){
+        try {
+        System.out.print("Enter Item Category: ");
+        int option = scanner.nextInt();
+            switch (option) {
+                case 1:
+                    error = false;
+                    inputItemCategory = category[0];
+                    break;
+                case 2:
+                    error = false;
+                    inputItemCategory = category[1];
+                    break;
+                case 3:
+                    error = false;
+                    inputItemCategory = category[2];
+                    break;
+                case 4:
+                    error = false;
+                    inputItemCategory = category[3];
+                    break;
+                case 5:
+                    error = false;
+                    inputItemCategory = category[4];
+                    break;
+                case 6:
+                    error = false;
+                    inputItemCategory = category[5];
+                    break;
+                case 7:
+                    error = false;
+                    inputItemCategory = category[6];
+                    break;
+                case 8:
+                    error = false;
+                    inputItemCategory = category[7];
+                    break;
+                case 9:
+                    error = false;
+                    inputItemCategory = category[8];
+                    break;
+                default:
+                    System.out.println("Invalid option");
+            }
+        } catch (Exception e) {
+            System.out.println("Incorrect input(Please entry number only)");
+            scanner.nextLine();
+        }
+      }
 
-        System.out.print("Enter Item ID: ");
-        String inputItemId = scanner.nextLine();
-
+        scanner.nextLine();
         System.out.print("Enter Item Name: ");
         String inputItemName = scanner.nextLine();
-
-        System.out.print("Enter Item Category: ");
-        String inputItemCategory = scanner.nextLine();
 
         System.out.print("Enter Item Description: ");
         String inputItemDesc = scanner.nextLine();
 
         System.out.print("Enter Unit Cost: ");
         double inputUnitCost = scanner.nextDouble();
+        scanner.nextLine();
 
         System.out.print("Enter Unit Price: ");
         double inputUnitPrice = scanner.nextDouble();
+        scanner.nextLine();
 
         System.out.print("Enter Stock Quantity: ");
         int inputStockQty = scanner.nextInt();
+        scanner.nextLine();
 
         System.out.print("Enter Minimum Stock Quantity: ");
         int inputMinStockQty = scanner.nextInt();
+        scanner.nextLine();
+
 
         System.out.print("Enter Maximum Stock Quantity: ");
         int inputMaxStockQty = scanner.nextInt();
+        scanner.nextLine();
 
         Item newItem = new Item();
-        newItem.setItemId(inputItemId);
-        newItem.setItemName(inputItemName);
+        String itemID = generateItemId(inputItemCategory);
+        newItem.setItemId(itemID);
         newItem.setItemCategory(inputItemCategory);
+        newItem.setItemName(inputItemName);
         newItem.setItemDesc(inputItemDesc);
         newItem.setUnitCost(inputUnitCost);
         newItem.setUnitPrice(inputUnitPrice);
@@ -168,6 +285,7 @@ public class Item {
         newItem.setMinStockQty(inputMinStockQty);
         newItem.setMaxStockQty(inputMaxStockQty); 
         newItem.storeItemToFile();
+        scanner.close();
     }
 
     public void deleteItem(String itemId){

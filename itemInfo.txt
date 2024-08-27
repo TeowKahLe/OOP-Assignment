@@ -1,4 +1,1 @@
-VG1234|Brocolli|Vegetable|Bad taste|1.90|2.00|100|190.00|200.00|5|10
-MT2345|Chicken|Meat|Too raw|10.0|11.0|100|1000.0|1100.0|1|101
-VT3456|Lettuce|Vegetable|Not fresh|4.0|4.2|5|20.0|21.0|1|100
-MT4567|Pork Chop|Meat|Too raw|5.0|5.2|100|500.0|520.0|10|1000
+

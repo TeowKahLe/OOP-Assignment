@@ -129,7 +129,26 @@ public class fastFoodInventory {
 						clearScreen();
 						Item addItem = new Item();
 						addItem.addItem();
-						itemManagement();
+						try {
+							System.out.println("Add again or back to itemManagement or Exit?(1 = Add, 2 = itemManagement, 3 = Exit)");
+							opt = scanner.nextInt();
+							switch(opt){
+								case 1: 
+									addItem.addItem();
+									break;
+								case 2:
+									itemManagement();
+									break;
+								case 3:
+									System.exit(0);
+									break;
+								default:
+									System.out.println("Invalid option");
+							}
+						} catch (Exception e) {
+							System.out.println("Incorrect input(Please enter NUMBER only)");
+    			            scanner.nextLine();
+						}
     					break;
     				case 2:
 						clearScreen();
