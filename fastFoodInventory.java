@@ -22,7 +22,7 @@ public class fastFoodInventory {
     			int opt = scanner.nextInt();
     	
     			//go to selected method
-    			switch(opt){
+    			switch(opt){//hi
     				case 1:
 						Staff newUser = new Staff();
 						newUser.storeData();
@@ -123,6 +123,7 @@ public class fastFoodInventory {
 			try{
 				System.out.print("Selected action: ");
     			int opt = scanner.nextInt();
+				scanner.nextLine(); // Consume the newline character
 				switch(opt){
     				case 1:
 						clearScreen();
@@ -158,28 +159,27 @@ public class fastFoodInventory {
 						//delete
     					break;
 					case 4:
-						searchItem();
-						try {
-							System.out.println("Search again or back to itemManagement or Exit?(1 = Search, 2 = itemManagement, 3 = Exit)");
-							opt = scanner.nextInt();
-							switch(opt){
-								case 1: 
-									searchItem();
-									break;
-								case 2:
-									itemManagement();
-									break;
-								case 3:
-									System.exit(0);
-									break;
-								default:
-									System.out.println("Invalid option");
-							}
-						} catch (Exception e) {
-							System.out.println("Incorrect input(Please enter NUMBER only)");
-    			            scanner.nextLine();
-						}
-    					break;
+						clearScreen();
+                    	searchItem();
+                    	System.out.println("Search again or back to itemManagement or Exit?(1 = Search, 2 = itemManagement, 3 = Exit)");
+                    	int searchOpt = scanner.nextInt();
+						scanner.nextLine(); // Consume the newline character
+
+                    	switch (searchOpt) {
+                        	case 1:
+                            	searchItem();
+                            	break;
+                        	case 2:
+                            	// Return to item management
+                            	break;
+                        	case 3:
+                            	System.exit(0);
+                            	break;
+                        	default:
+                            	System.out.println("Invalid option");
+                            	break;
+                    	}
+                    	break;
 					case 5:
 						clearScreen();
 						Item displayItem = new Item();
@@ -203,19 +203,31 @@ public class fastFoodInventory {
 		}
 		scanner.close();
 	}
-
+	
 	public static void searchItem() {
-		clearScreen();
-		Scanner scanner = new Scanner(System.in);
-		Line line = new Line();
-	  	System.out.println("Search Item");
-		line.printLine("Search Item".length());
-		Item searchItem = new Item();
-		System.out.print("Enter Item ID: ");
-		String itemId = scanner.nextLine();
-		searchItem.searchItem(itemId);
-		scanner.close();
+    	Scanner scanner = new Scanner(System.in);
+    	Line line = new Line();
+    	boolean found;
+    	Item item = new Item(); 
+
+    	do { 
+        	System.out.println("Search Item");
+        	line.printLine("Search Item".length());
+        	System.out.print("Enter Item ID: ");
+        	String itemId = scanner.nextLine();
+        
+        	found = item.searchItem(itemId);  // This should return true if item is found
+        
+        	if (found) {
+            	System.out.println("Item found");
+        	} else {
+            	System.out.println("Item not found, try again.");
+        	}
+    	} while (!found);  // Loop until item is found
+    
+    	scanner.close();
 	}
+
 
 	public static void orderManagement(){
 		clearScreen();
