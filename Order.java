@@ -110,6 +110,7 @@ public class Order{
 
     //-----------------------------------------------------------------------------------Order Management
     public static void orderManagement(){
+        clearScreen();
 		Line line = new Line();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
@@ -129,11 +130,12 @@ public class Order{
 		while(error){
 			try{
 				System.out.print("Selected action: ");
-    			int opt = scanner.nextInt();
-				switch(opt){
+    			int option = scanner.nextInt();
+                scanner.nextLine();
+				switch(option){
     				case 1:
 						//Display all order
-						orderManagement();
+						Order.orderManagement();
     					break;
     				case 2:
 						//Search Order
@@ -145,7 +147,7 @@ public class Order{
 						//Stock In Order
     					break;
 					case 5:
-						//stockOutOrder();
+						StockOutOrder.stockOutOrderMenu();
     					break;
 					case 6:
 						error = false;
@@ -163,7 +165,12 @@ public class Order{
     			scanner.nextLine();
     		}	
 		}
-		scanner.close();
+	}
+
+    //-----------------------------------------------------------------------------------Cls
+    public static void clearScreen() {
+   		System.out.print("\033[H\033[2J");
+  	 	System.out.flush();
 	}
 }
 

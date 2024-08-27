@@ -66,33 +66,33 @@ public class StockOutOrder extends Order{
 		line.printEqualLine("STOCK OUT ORDER".length());
 		//Display all stock out order only
 		System.out.println("Please select your action");
-		System.out.println("0. Add Order (Assume customer wants to add order)");
 		System.out.println("1. Accept Order");
 		System.out.println("2. Cancel Order");
-		System.out.println("3. Return to Order Management");
-		System.out.println("4. Exit");
+        System.out.println("3. Add Order (For Customer)");
+		System.out.println("4. Return to Order Management");
+		System.out.println("5. Exit");
 
 		
 		while(error){
 			try{
 				System.out.print("Selected action: ");
-    			int opt = scanner.nextInt();
-				switch(opt){
-					case 0:
-						customerInputOrder();
-						//For customer to add order
-    					break;
-    				case 1:
+    			int option = scanner.nextInt();
+                scanner.nextLine();
+				switch(option){
+					case 1:
 						//Accept order
     					break;
     				case 2:
-						//Cancel Order
+						//Reject order
     					break;
-					case 3:
+    				case 3:
+						StockOutOrder.customerInputOrder();
+    					break;
+					case 4:
 						error = false;
 						orderManagement();
 						break;
-					case 4:
+					case 5:
 						System.exit(0);
 						break;
     				default:
@@ -107,11 +107,11 @@ public class StockOutOrder extends Order{
 		scanner.close();
 	}
 
-    //-----------------------------------------------------------------------------------Customer Input Order Method
+    //-----------------------------------------------------------------------------------Customer Input Order(Dummy cuz not part of Inventory System)
     public static void customerInputOrder(){
         clearScreen();
 		Line line = new Line();
-		Scanner scanner = null;
+		Scanner scanner = new Scanner(System.in);
 		int num = 0;
         System.out.print("+");
         line.printLineNoNewLine(78);
@@ -132,25 +132,28 @@ public class StockOutOrder extends Order{
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot locate item.txt");
-        } finally {
-            if (scanner != null) {
-                scanner.close();
-            }
         }
         System.out.print("+");
         line.printLineNoNewLine(78);
         System.out.println("+\n");
 		
-        scanner.nextLine();
         System.out.print("How many item you want to place order?\n--> ");
         int noItem = scanner.nextInt();
-
-        for(int i = 0; i < noItem ; i++){
+        scanner.nextLine();
+        System.out.print("\nPlease enter Item number and quantity\n");
+        line.printLine("Please enter Item number and quantity".length());
+        
+        int qty = 0;
+        for(int i = 1; i <= noItem ; i++){
+            System.out.print("Item " + noItem + " : ");
+            qty = scanner.nextInt();
+            scanner.nextLine();
 
         }
-        
+        scanner.close();
 	}
 
+    //-----------------------------------------------------------------------------------Cls
     public static void clearScreen() {
    		System.out.print("\033[H\033[2J");
   	 	System.out.flush();

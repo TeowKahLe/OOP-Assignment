@@ -17,7 +17,7 @@ public class Item {
 	private int minStockQty;
 	private int maxStockQty;
 	
-    //No-arg constructor
+    //-----------------------------------------------------------------------------------Constructors
 	public Item(){
 	}
 	
@@ -34,7 +34,7 @@ public class Item {
         this.maxStockQty = maxStockQty;
     }
     
-    //Getter----------------------------------------------
+    //-----------------------------------------------------------------------------------Getters
     public String getItemId(){
     	return itemId;
     }
@@ -79,7 +79,7 @@ public class Item {
     	return maxStockQty;
     }
     
-    //Setter--------------------------------------------------------------
+    //-----------------------------------------------------------------------------------Setters
     public void setItemId(String itemId){
     	this.itemId = itemId;
     }
@@ -123,9 +123,112 @@ public class Item {
     public void setMaxStockQty(int maxStockQty){
     	this.maxStockQty = maxStockQty;
     }
+    
+    //-----------------------------------------------------------------------------------Item Management
+    public static void itemManagement(){
+		clearScreen();
+		Line line = new Line();
+    	Scanner scanner = new Scanner(System.in);
+		boolean error = true;
 
-    //Generate item ID-----------------------------------------------------------------------------
-public String generateItemId(String category) {
+		System.out.println("Please choose one option");
+		line.printEqualLine("Please choose one option".length());
+		System.out.println("1. Add item");
+		System.out.println("2. Modify item");
+		System.out.println("3. Delete item");
+		System.out.println("4. Search item");
+		System.out.println("5. Display all item");
+		System.out.println("6. Return to menu");
+		System.out.println("7. Exit");
+
+		while(error){
+			try{
+				System.out.print("Selected action: ");
+    			int opt = scanner.nextInt();
+				scanner.nextLine();
+				switch(opt){
+    				case 1:
+						Item addItem = new Item();
+                        boolean loop = true;
+                        while (loop) {
+                        addItem.addItem();
+                        System.out.println("1.Add more item\n2.Back to Item Management\n3.Exit");
+                        try {
+                            System.out.print("--> ");
+                            opt = scanner.nextInt();
+                            scanner.nextLine();
+                            switch(opt) {
+                                case 1: 
+                                    continue;
+                                case 2:
+                                    Item.itemManagement();
+                                    loop = false;
+                                    break;
+                                case 3:
+                                    System.exit(0);
+                                default:
+                                    System.out.println("Invalid option");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Incorrect input (Please enter NUMBER only)");
+                            scanner.nextLine(); // Clear the buffer to avoid infinite loop
+                        }
+                    }
+                    break;
+    				case 2:
+						clearScreen();
+						//modify
+    					break;
+					case 3:
+						clearScreen();
+						//delete
+    					break;
+					case 4:
+						clearScreen();
+                    	//searchItem();
+                    	System.out.println("Search again or back to itemManagement or Exit?(1 = Search, 2 = itemManagement, 3 = Exit)");
+                    	int searchOpt = scanner.nextInt();
+						scanner.nextLine(); // Consume the newline character
+
+                    	switch (searchOpt) {
+                        	case 1:
+                            	//searchItem();
+                            	break;
+                        	case 2:
+                            	// Return to item management
+                            	break;
+                        	case 3:
+                            	System.exit(0);
+                            	break;
+                        	default:
+                            	System.out.println("Invalid option");
+                            	break;
+                    	}
+                    	break;
+					case 5:
+						Item.displayAllItem();
+						break;
+					case 6:
+						error = false;
+						fastFoodInventory.menu();
+						break;
+					case 7:
+						System.exit(0);
+						break;
+    				default:
+    					System.out.println("Invalid action selected");
+    					break;	
+    			}
+			}catch (Exception e){
+    			System.out.println("Incorrect input(Please enter NUMBER only)");
+    			scanner.nextLine();
+    		}	
+		}
+		scanner.close();
+	}
+
+    //-----------------------------------------------------------------------------------Generate item ID
+    public String generateItemId(String category) {
     int num = 1;
     String categoryPrefix = "";
 
@@ -158,7 +261,7 @@ public String generateItemId(String category) {
             categoryPrefix = "BD";
             break;
         default:
-            throw new IllegalArgumentException("Invalid category: " + category);
+            System.out.println("Invalid category: " + category);
     }
 
     File file = new File("itemInfo.txt");
@@ -166,9 +269,11 @@ public String generateItemId(String category) {
     try (Scanner scanner = new Scanner(file)) {
         while (scanner.hasNextLine()) {
             String[] itemFields = scanner.nextLine().split("\\|");
-            String countPrefix = itemFields[0].substring(0, 2);
-            if (countPrefix.equals(categoryPrefix)) {
-                num++;
+            if (itemFields.length > 0){
+                String countPrefix = itemFields[0].substring(0, 2);
+                if (countPrefix.equals(categoryPrefix)) {
+                    num++;
+                }
             }
         }
     } catch (FileNotFoundException e) {
@@ -180,8 +285,9 @@ public String generateItemId(String category) {
 
 
     
-    //Add Item-------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------Add Item
     public void addItem() {
+        clearScreen();
         Scanner scanner = new Scanner(System.in);
         Line line = new Line();
         System.out.println("Add Item");
@@ -195,55 +301,48 @@ public String generateItemId(String category) {
         boolean error = true;
         while(error){
         try {
-        System.out.print("Enter Item Category: ");
-        int option = scanner.nextInt();
+            System.out.print("Enter Item Category: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
             switch (option) {
                 case 1:
-                    error = false;
                     inputItemCategory = category[0];
                     break;
                 case 2:
-                    error = false;
                     inputItemCategory = category[1];
                     break;
                 case 3:
-                    error = false;
                     inputItemCategory = category[2];
                     break;
                 case 4:
-                    error = false;
                     inputItemCategory = category[3];
                     break;
                 case 5:
-                    error = false;
                     inputItemCategory = category[4];
                     break;
                 case 6:
-                    error = false;
                     inputItemCategory = category[5];
                     break;
                 case 7:
-                    error = false;
                     inputItemCategory = category[6];
                     break;
                 case 8:
-                    error = false;
                     inputItemCategory = category[7];
                     break;
                 case 9:
-                    error = false;
                     inputItemCategory = category[8];
                     break;
                 default:
                     System.out.println("Invalid option");
+                    continue;
             }
+            error = false;
         } catch (Exception e) {
             System.out.println("Incorrect input(Please entry number only)");
-            scanner.nextLine();
+            scanner.nextLine(); //Clear buffer and prevent infinity loop
         }
       }
 
-        scanner.nextLine();
         System.out.print("Enter Item Name: ");
         String inputItemName = scanner.nextLine();
 
@@ -272,8 +371,7 @@ public String generateItemId(String category) {
         scanner.nextLine();
 
         Item newItem = new Item();
-        String itemID = generateItemId(inputItemCategory);
-        newItem.setItemId(itemID);
+        newItem.setItemId(generateItemId(inputItemCategory));
         newItem.setItemCategory(inputItemCategory);
         newItem.setItemName(inputItemName);
         newItem.setItemDesc(inputItemDesc);
@@ -285,7 +383,6 @@ public String generateItemId(String category) {
         newItem.setMinStockQty(inputMinStockQty);
         newItem.setMaxStockQty(inputMaxStockQty); 
         newItem.storeItemToFile();
-        scanner.close();
     }
 
     public void deleteItem(String itemId){
@@ -296,6 +393,7 @@ public String generateItemId(String category) {
 
     }
 
+    //-----------------------------------------------------------------------------------Search Item (VeryVeryVery BIGGGG Problem later fix)
     public boolean searchItem(String itemId) {
         Scanner scanner = null;
         Line line = new Line();
@@ -331,7 +429,33 @@ public String generateItemId(String category) {
         return itemFound;  // Return true if found, false if not
     }
 
-    public void displayAllItem(){
+    public static void searchItem() {
+    	Scanner scanner = new Scanner(System.in);
+    	Line line = new Line();
+    	boolean found;
+    	Item item = new Item(); 
+
+    	do { 
+        	System.out.println("Search Item");
+        	line.printLine("Search Item".length());
+        	System.out.print("Enter Item ID: ");
+        	String itemId = scanner.nextLine();
+        
+        	found = item.searchItem(itemId);  // This should return true if item is found
+        
+        	if (found) {
+            	System.out.println("Item found");
+        	} else {
+            	System.out.println("Item not found, try again.");
+        	}
+    	} while (!found);  // Loop until item is found
+    
+    	scanner.close();
+	}
+
+    //-----------------------------------------------------------------------------------Display All Item
+    public static void displayAllItem(){
+        clearScreen();
         Scanner scanner = null;
         Line line = new Line();
         int num = 0;
@@ -361,7 +485,7 @@ public String generateItemId(String category) {
         }
     }
 
-    //Store Item To File---------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------Store Item To File
     public void storeItemToFile() {
     try (FileWriter itemWriter = new FileWriter("itemInfo.txt", true)) {
         itemWriter.write(getItemId() + "|" +
@@ -381,4 +505,10 @@ public String generateItemId(String category) {
         }
         System.out.println("Item added successfully!");
     }
+
+    //-----------------------------------------------------------------------------------Cls
+    public static void clearScreen() {
+   		System.out.print("\033[H\033[2J");
+  	 	System.out.flush();
+	}
 }
