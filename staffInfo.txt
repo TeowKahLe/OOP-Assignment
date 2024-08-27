@@ -1,3 +1,2 @@
-S001	Lincoln	012-1234567	lin@gmail.com	Jalan pisang	jalan pisang	123
-S002	L	012-1234567	1@gmail.com	1	1	1
-S003	LINCOLN	012-1234567	lincoln@gmail.com	jalan	intern	1
+S001	Lincoln Lo	012-1234567	lo@gmail.com	jalan pisang	intern	abc123
+S002	Lincoln	012-1234567	lo@gmail.com	jalan pisang	intern	abc123

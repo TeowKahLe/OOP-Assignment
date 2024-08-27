@@ -16,6 +16,8 @@ public class Person {
 
     Pattern emailPattern = Pattern.compile(".+@.+\\.com"); //. mean any characaters
 
+    Pattern idPattern = Pattern.compile("S(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})");
+
     public Person(){
         
     }
@@ -113,6 +115,7 @@ public class Person {
         this.address = address;
     }
 
+    //ID-----------------------------------------------------------------------------------------------
     public long generateId(String fileName){
         String FilePath = fileName; //location of the file
         try {
@@ -121,6 +124,16 @@ public class Person {
         } catch (IOException e) {
             e.printStackTrace();
             return 0L; // return default long value
+        }
+    }
+
+    public boolean checkFormatID(String id){
+        Matcher idMatcher = idPattern.matcher(id);
+        if(idMatcher.matches()){ 
+            return true;
+        }else{
+            System.out.println("Please follow the FORMAT of ID EXAMPLE(SXXX))");
+            return false;
         }
     }
 }

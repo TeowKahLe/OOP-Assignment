@@ -24,10 +24,12 @@ public class fastFoodInventory {
     			switch(option){
     				case 1:
 						Staff newUser = new Staff();
+						newUser.signUp();
 						newUser.storeData();
     					break;
     				case 2:
-						menu();
+						Staff userLogin = new Staff();
+						userLogin.login();
     					break;
 					case 3:
 						System.exit(0);
