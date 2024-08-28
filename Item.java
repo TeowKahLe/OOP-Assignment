@@ -11,27 +11,18 @@ public class Item {
 	private String itemDesc;
 	private double unitCost;
 	private double unitPrice;
-	private int stockQty;
-    private double stockCost;
-	private double stockValue;
-	private int minStockQty;
-	private int maxStockQty;
 	
     //-----------------------------------------------------------------------------------Constructors
 	public Item(){
 	}
 	
-    public Item(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice, int stockQty, double stockValue, int minStockQty, int maxStockQty) {
+    public Item(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice) {
     	this.itemId = itemId;
         this.itemName = itemName;
         this.itemCategory = itemCategory;
         this.itemDesc = itemDesc;
         this.unitCost = unitCost;
         this.unitPrice = unitPrice;
-        this.stockQty = stockQty;
-        this.stockValue = stockValue;
-        this.minStockQty = minStockQty;
-        this.maxStockQty = maxStockQty;
     }
     
     //-----------------------------------------------------------------------------------Getters
@@ -59,26 +50,6 @@ public class Item {
     	return unitPrice;
     }
     
-    public int getStockQty(){
-    	return stockQty;
-    }
-
-    public double getStockCost(){
-        return stockCost;
-    }
-    
-    public double getStockValue(){
-    	return stockValue;
-    }
-    
-    public int getMinStockQty(){
-    	return minStockQty;
-    }
-    
-    public int getMaxStockQty(){
-    	return maxStockQty;
-    }
-    
     //-----------------------------------------------------------------------------------Setters
     public void setItemId(String itemId){
     	this.itemId = itemId;
@@ -102,26 +73,6 @@ public class Item {
     
     public void setUnitPrice(double unitPrice){
     	this.unitPrice = unitPrice;
-    }
-    
-    public void setStockQty(int stockQty){
-    	this.stockQty = stockQty;
-    }
-
-    public void setStockCost(double stockCost){
-        this.stockCost = stockCost;
-    }
-    
-    public void setStockValue(double stockValue){
-    	this.stockValue = stockValue;
-    }
-    
-    public void setMinStockQty(int minStockQty){
-    	this.minStockQty = minStockQty;
-    }
-    
-    public void setMaxStockQty(int maxStockQty){
-    	this.maxStockQty = maxStockQty;
     }
     
     //-----------------------------------------------------------------------------------Item Management
