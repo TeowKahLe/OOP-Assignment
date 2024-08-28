@@ -37,49 +37,13 @@ public class Staff extends Person{
     }
 
     public void signUp(){
-        String tempName="",tempContactNo="",tempEmail="",tempAddress,tempJobRole,tempPassword;
-        boolean matchFormat = false;
+        String tempJobRole,tempPassword;
 
         //sign up page header
         System.out.println("\nSign Up");
         line.printLine("Sign Up".length());
         
-        //enter and validate NAME
-        while(matchFormat == false){
-            System.out.print(String.format("%-34s","Enter your NAME") + " >> ");
-            tempName = scanner.nextLine();
-            matchFormat = super.checkFormatName(tempName);
-        }
-
-        super.setName(tempName);
-
-        matchFormat = false; //reset matchFormat
-
-        //enter and validate CONTACT NO
-        while(matchFormat == false){
-            System.out.print(String.format("%-35s","\nEnter your CONTACT NUMBER") + " >> ");
-            tempContactNo = scanner.nextLine();
-            matchFormat = super.checkFormatContact(tempContactNo);
-        }
-
-        matchFormat = false; //reset matchFormat
-
-        super.setContactNo(tempContactNo);
-
-        //enter and validate EMAIL
-        while(matchFormat == false){
-            System.out.print(String.format("%-35s","\nEnter your EMAIL address") + " >> ");
-            tempEmail = scanner.nextLine();
-            matchFormat = super.checkFormatEmail(tempEmail);
-        }
-
-        super.setEmail(tempEmail);
-
-        //enter ADDRESS
-        System.out.print(String.format("%-35s","\nEnter your HOME address") + " >> ");
-        tempAddress = scanner.nextLine();
-
-        super.setAddress(tempAddress);
+        super.enterNewUserInfo();
 
         //enter JOB ROLE
         System.out.print(String.format("%-35s","\nEnter your JOB position") + " >> ");
@@ -107,7 +71,7 @@ public class Staff extends Person{
         line.printLine(25);
     }
 
-    public void storeData(){
+    public void storeStaffData(){
         //create or open file
         /*try {
             File staffInfoFile = new File("staffInfo.txt");
@@ -146,18 +110,20 @@ public class Staff extends Person{
         
         do{
             boolean matchFormat = false;
+            String upperTempID = "";
             
             while(matchFormat == false){
                 System.out.print(String.format("%-34s","Enter Staff ID(Enter X QUIT):") + " >> ");
                 tempID = scanner.nextLine();
-                if(tempID.equals("X")){
+                upperTempID = tempID.toUpperCase();
+                if(upperTempID.equals("X")){
                     System.out.println("HALO");
                     break;
                 }
                 matchFormat = super.checkFormatID(tempID);
             }
 
-            if(tempID.equals("X")){
+            if(upperTempID.equals("X")){
                 String[] emptyArr ={};
                 fastFoodInventory.main(emptyArr);
             }

@@ -1,3 +1,4 @@
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.nio.file.Paths;
@@ -6,6 +7,7 @@ import java.io.IOException;
 
 public class Person {
     private String id,name,contactNo,email,address;
+    Scanner scanner = new Scanner(System.in);
     
     Pattern namePattern = Pattern.compile("[a-zA-Z\s]+");
     //'+' mean it check all char ensure it is alphabet.NOT'+' jst check first char
@@ -127,6 +129,49 @@ public class Person {
         }
     }
 
+    //ENTER NEW USER INFO----------------------------------------------------------------------------------------
+    public void enterNewUserInfo(){
+        boolean matchFormat = false;
+        String tempName="",tempContactNo="",tempEmail="",tempAddress;
+        //enter and validate NAME
+        while(matchFormat == false){
+            System.out.print(String.format("%-34s","Enter NAME") + " >> ");
+            tempName = scanner.nextLine();
+            matchFormat = checkFormatName(tempName);
+        }
+
+        setName(tempName);
+
+        matchFormat = false; //reset matchFormat
+
+        //enter and validate CONTACT NO
+        while(matchFormat == false){
+            System.out.print(String.format("%-35s","\nEnter CONTACT NUMBER") + " >> ");
+            tempContactNo = scanner.nextLine();
+            matchFormat = checkFormatContact(tempContactNo);
+        }
+
+        matchFormat = false; //reset matchFormat
+
+        setContactNo(tempContactNo);
+
+        //enter and validate EMAIL
+        while(matchFormat == false){
+            System.out.print(String.format("%-35s","\nEnter EMAIL address") + " >> ");
+            tempEmail = scanner.nextLine();
+            matchFormat = checkFormatEmail(tempEmail);
+        }
+
+        setEmail(tempEmail);
+
+        //enter ADDRESS
+        System.out.print(String.format("%-35s","\nEnter HOME address") + " >> ");
+        tempAddress = scanner.nextLine();
+        
+        setAddress(tempAddress);
+    }
+
+    //Validate----------------------------------------------------------------------------------------------
     public boolean checkFormatID(String id){
         Matcher idMatcher = idPattern.matcher(id);
         if(idMatcher.matches()){ 
