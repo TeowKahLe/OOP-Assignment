@@ -1,2 +1,3 @@
 S001	Lincoln Lo	012-1234567	lo@gmail.com	jalan pisang	intern	abc123
 S002	Lincoln	012-1234567	lo@gmail.com	jalan pisang	intern	abc123
+S003	Jian Ting	016-9305833	1@gmail.com	d	Cleaner	A

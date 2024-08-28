@@ -28,8 +28,9 @@ public class fastFoodInventory {
 						newUser.storeData();
     					break;
     				case 2:
-						Staff userLogin = new Staff();
-						userLogin.login();
+						//Staff userLogin = new Staff();
+						//userLogin.login();
+						menu();
     					break;
 					case 3:
 						System.exit(0);
