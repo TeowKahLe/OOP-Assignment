@@ -25,13 +25,15 @@ public class fastFoodInventory {
     				case 1:
 						Staff newUser = new Staff();
 						newUser.signUp();
-						newUser.storeData();
+						newUser.storeStaffData();
     					break;
     				case 2:
 						//Staff userLogin = new Staff();
 						//userLogin.login();
-						menu();
-    					break;
+    					Supplier test = new Supplier();
+						test.addSupplier();
+
+						break;
 					case 3:
 						System.exit(0);
     					break;
