@@ -47,6 +47,7 @@ public class fastFoodInventory {
     			scanner.nextLine(); //clear input buffer allow go into try block and prevent infinitely loop
     		}	
 	  }
+	  scanner.close();
 	}
 
 	public static void menu(){
@@ -99,6 +100,7 @@ public class fastFoodInventory {
     			scanner.nextLine();
     		}	
 		}
+		scanner.close();
 	}
 
 	public static void clearScreen() {

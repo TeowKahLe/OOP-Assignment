@@ -331,6 +331,7 @@ public class Item {
 
     // Store the details to itemInfo.txt
     newItem.storeItemToFile(); // Call the method on the Item instance
+    scanner.close();
 }
 
 

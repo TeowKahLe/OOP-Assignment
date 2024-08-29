@@ -169,6 +169,7 @@ public class Order{
     			scanner.nextLine();
     		}	
 		}
+        scanner.close();
 	}
     //-----------------------------------------------------------------------------------read item from file then update ItemList
     public void readItemFromFile(String filePath) {

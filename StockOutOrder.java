@@ -125,6 +125,7 @@ public class StockOutOrder extends Order{
         // Check if itemList is null or empty
         if (itemList == null || itemList.isEmpty()) {
             System.out.println("No items available to display.");
+            scanner.close();
             return;
         }
 
@@ -146,6 +147,8 @@ public class StockOutOrder extends Order{
         line.printLineNoNewLine(78);
         System.out.println("+\n");
 		
+
+        // Customer input
         System.out.print("How many item you want to place order?\n--> ");
         int noItem = scanner.nextInt();
         scanner.nextLine();
@@ -164,11 +167,10 @@ public class StockOutOrder extends Order{
             }
 
             Item selectedItem = itemList.get(inputItemNo);
-            System.out.println(" - " + selectedItem.getItemName() + "\n");
-            System.out.print("Quantity: ");
+            System.out.print("Quantity : ");
             int qty = scanner.nextInt();
             scanner.nextLine();
-            System.out.println("You have ordered " + qty + " of " + selectedItem.getItemName() + "\n");
+            System.out.println("You have ordered " + qty + " " + selectedItem.getItemName() + "\n");
         }
         scanner.close();
 	}
