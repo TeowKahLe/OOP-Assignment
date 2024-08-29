@@ -1,6 +1,5 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class StockOutOrder extends Order{
@@ -11,6 +10,7 @@ public class StockOutOrder extends Order{
 
     //-----------------------------------------------------------------------------------Constructors
     public StockOutOrder() {
+        super();
     }
 
     public StockOutOrder(String customerId, String customerName, String customerAddress, Date dateDispatched) {
@@ -36,6 +36,8 @@ public class StockOutOrder extends Order{
     public Date getDateDispatched() {
         return dateDispatched;
     }
+
+   
 
     //-----------------------------------------------------------------------------------Setters
     public void setCustomerId(String customerId) {
@@ -86,7 +88,8 @@ public class StockOutOrder extends Order{
 						//Reject order
     					break;
     				case 3:
-						StockOutOrder.customerInputOrder();
+						StockOutOrder stockOutOrder = new StockOutOrder();
+                        stockOutOrder.customerInputOrder();
     					break;
 					case 4:
 						error = false;
@@ -108,11 +111,24 @@ public class StockOutOrder extends Order{
 	}
 
     //-----------------------------------------------------------------------------------Customer Input Order(Dummy cuz not part of Inventory System)
-    public static void customerInputOrder(){
+    public void customerInputOrder(){
         clearScreen();
-		Line line = new Line();
-		Scanner scanner = new Scanner(System.in);
-		int num = 0;
+        Line line = new Line();
+        Scanner scanner = new Scanner(System.in);
+        int num = 0;
+
+        // Populate itemList
+        readItemFromFile("itemInfo.txt");
+        // Retrieve itemList from Order
+        List<Item> itemList = getItemList(); 
+
+        // Check if itemList is null or empty
+        if (itemList == null || itemList.isEmpty()) {
+            System.out.println("No items available to display.");
+            return;
+        }
+
+        // Display items
         System.out.print("+");
         line.printLineNoNewLine(78);
         System.out.println("+");
@@ -120,19 +136,12 @@ public class StockOutOrder extends Order{
         System.out.print("|");
         line.printLineNoNewLine(78);
         System.out.println("|");
-		try {
-            scanner = new Scanner(new File("itemInfo.txt"));
 
-            while (scanner.hasNextLine()) {
-                String[] itemFields = scanner.nextLine().split("\\|");
-				num++;
-                double itemField5 = Double.parseDouble(itemFields[5]);
-                System.out.printf("|%-3d | %-15s | %-15s | %-15s | %-17.2f |\n", num, itemFields[1], itemFields[2], itemFields[3], itemField5);
-                
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Cannot locate item.txt");
+        for (Item item : itemList) {
+            num++;
+            System.out.printf("|%-3d | %-15s | %-15s | %-15s | %-17.2f |\n", num, item.getItemName(), item.getItemCategory(), item.getItemDesc(), item.getUnitPrice());
         }
+
         System.out.print("+");
         line.printLineNoNewLine(78);
         System.out.println("+\n");
@@ -143,12 +152,23 @@ public class StockOutOrder extends Order{
         System.out.print("\nPlease enter Item number and quantity\n");
         line.printLine("Please enter Item number and quantity".length());
         
-        int qty = 0;
-        for(int i = 1; i <= noItem ; i++){
-            System.out.print("Item " + noItem + " : ");
-            qty = scanner.nextInt();
+         for (int i = 1; i <= noItem; i++) {
+            System.out.print("Item " + i + " : ");
+            int inputItemNo = scanner.nextInt() - 1;
             scanner.nextLine();
 
+            if (inputItemNo < 0 || inputItemNo >= itemList.size()) {
+                System.out.println("Invalid item number. Please try again.");
+                i--;
+                continue;
+            }
+
+            Item selectedItem = itemList.get(inputItemNo);
+            System.out.println(" - " + selectedItem.getItemName() + "\n");
+            System.out.print("Quantity: ");
+            int qty = scanner.nextInt();
+            scanner.nextLine();
+            System.out.println("You have ordered " + qty + " of " + selectedItem.getItemName() + "\n");
         }
         scanner.close();
 	}

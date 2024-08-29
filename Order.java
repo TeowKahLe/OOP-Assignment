@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,6 +17,7 @@ public class Order{
 
     //-----------------------------------------------------------------------------------Constructors
     public Order(){
+        this.itemList = new ArrayList<>();
     }
 
     public Order(String orderId, List<Item> itemList, int itemQty, String approvalStatus, 
@@ -35,7 +39,7 @@ public class Order{
         return orderId;
     }
 
-    public List<Item> getItemList() {
+     public List<Item> getItemList() {
         return itemList;
     }
 
@@ -166,6 +170,38 @@ public class Order{
     		}	
 		}
 	}
+    //-----------------------------------------------------------------------------------read item from file then update ItemList
+    public void readItemFromFile(String filePath) {
+        List<Item> items = new ArrayList<>();
+        try (Scanner scanner = new Scanner(new File(filePath))) {
+            while (scanner.hasNextLine()) {
+                String[] itemFields = scanner.nextLine().split("\\|");
+                if (itemFields.length >= 11) {
+                    Inventory inventory = new Inventory(
+                        itemFields[0], // itemId
+                        itemFields[1], // itemName
+                        itemFields[2], // itemCategory
+                        itemFields[3], // itemDesc
+                        Double.parseDouble(itemFields[4]), // unitCost
+                        Double.parseDouble(itemFields[5]), // unitPrice
+                        Integer.parseInt(itemFields[6]), // stockQty
+                        Double.parseDouble(itemFields[7]), // stockCost
+                        Double.parseDouble(itemFields[8]), // stockValue
+                        Integer.parseInt(itemFields[9]), // minStockQty
+                        Integer.parseInt(itemFields[10]) // maxStockQty
+                    );
+
+                    // Cast Inventory to Item and add to itemList
+                    items.add((Item) inventory);
+                } else {
+                    System.out.println("Invalid data format in file.");
+                }
+            }
+            setItemList(items);
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot locate file: " + filePath);
+        }
+    }   
 
     //-----------------------------------------------------------------------------------Cls
     public static void clearScreen() {
