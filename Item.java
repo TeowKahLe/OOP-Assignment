@@ -11,11 +11,13 @@ public class Item {
 	private String itemDesc;
 	private double unitCost;
 	private double unitPrice;
+    private Inventory inventory;
 	
     //-----------------------------------------------------------------------------------Constructors
-	public Item(){
-	}
-	
+    public Item(){
+        this.inventory = new Inventory();
+    }
+
     public Item(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice) {
     	this.itemId = itemId;
         this.itemName = itemName;
@@ -23,6 +25,7 @@ public class Item {
         this.itemDesc = itemDesc;
         this.unitCost = unitCost;
         this.unitPrice = unitPrice;
+        this.inventory = new Inventory();
     }
     
     //-----------------------------------------------------------------------------------Getters
@@ -238,103 +241,76 @@ public class Item {
     
     //-----------------------------------------------------------------------------------Add Item
     public void addItem() {
-        clearScreen();
-        Scanner scanner = new Scanner(System.in);
-        Line line = new Line();
-        System.out.println("Add Item");
-        line.printLine(45);
-        String[] category = {"Meat", "Seafood", "Vegetable", "Dairy", "Condiments", "Beverages", "Grains", "Packaging", "Bread"};
-        System.out.printf("| [1]%-10s [2]%-10s [3]%-10s |\n", category[0], category[1], category[2]);
-        System.out.printf("| [4]%-10s [5]%-10s [6]%-10s |\n", category[3], category[4], category[5]);
-        System.out.printf("| [7]%-10s [8]%-10s [9]%-10s |\n", category[6], category[7], category[8]);
-        line.printLine(45);
-        String inputItemCategory = "";
-        boolean error = true;
-        while(error){
+    clearScreen();
+    Scanner scanner = new Scanner(System.in);
+    Line line = new Line();
+    System.out.println("Add Item");
+    line.printLine(45);
+    
+    // Define categories
+    String[] category = {"Meat", "Seafood", "Vegetable", "Dairy", "Condiments", "Beverages", "Grains", "Packaging", "Bread"};
+    System.out.printf("| [1]%-10s [2]%-10s [3]%-10s |\n", category[0], category[1], category[2]);
+    System.out.printf("| [4]%-10s [5]%-10s [6]%-10s |\n", category[3], category[4], category[5]);
+    System.out.printf("| [7]%-10s [8]%-10s [9]%-10s |\n", category[6], category[7], category[8]);
+    line.printLine(45);
+    
+    String inputItemCategory = "";
+    boolean error = true;
+    
+    // Handle input for category
+    while (error) {
         try {
             System.out.print("Enter Item Category: ");
             int option = scanner.nextInt();
             scanner.nextLine();
-            switch (option) {
-                case 1:
-                    inputItemCategory = category[0];
-                    break;
-                case 2:
-                    inputItemCategory = category[1];
-                    break;
-                case 3:
-                    inputItemCategory = category[2];
-                    break;
-                case 4:
-                    inputItemCategory = category[3];
-                    break;
-                case 5:
-                    inputItemCategory = category[4];
-                    break;
-                case 6:
-                    inputItemCategory = category[5];
-                    break;
-                case 7:
-                    inputItemCategory = category[6];
-                    break;
-                case 8:
-                    inputItemCategory = category[7];
-                    break;
-                case 9:
-                    inputItemCategory = category[8];
-                    break;
-                default:
-                    System.out.println("Invalid option");
-                    continue;
+            if (option >= 1 && option <= 9) {
+                inputItemCategory = category[option - 1];
+                error = false;
+            } else {
+                System.out.println("Invalid option");
             }
-            error = false;
         } catch (Exception e) {
-            System.out.println("Incorrect input(Please entry number only)");
-            scanner.nextLine(); //Clear buffer and prevent infinity loop
+            System.out.println("Incorrect input (Please enter a number only)");
+            scanner.nextLine(); // Clear buffer
         }
-      }
-
-        System.out.print("Enter Item Name: ");
-        String inputItemName = scanner.nextLine();
-
-        System.out.print("Enter Item Description: ");
-        String inputItemDesc = scanner.nextLine();
-
-        System.out.print("Enter Unit Cost: ");
-        double inputUnitCost = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.print("Enter Unit Price: ");
-        double inputUnitPrice = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.print("Enter Stock Quantity: ");
-        int inputStockQty = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.print("Enter Minimum Stock Quantity: ");
-        int inputMinStockQty = scanner.nextInt();
-        scanner.nextLine();
-
-
-        System.out.print("Enter Maximum Stock Quantity: ");
-        int inputMaxStockQty = scanner.nextInt();
-        scanner.nextLine();
-
-        Item newItem = new Item();
-        newItem.setItemId(generateItemId(inputItemCategory));
-        newItem.setItemCategory(inputItemCategory);
-        newItem.setItemName(inputItemName);
-        newItem.setItemDesc(inputItemDesc);
-        newItem.setUnitCost(inputUnitCost);
-        newItem.setUnitPrice(inputUnitPrice);
-        newItem.setStockQty(inputStockQty);
-        newItem.setStockCost(inputStockQty * inputUnitCost);
-        newItem.setStockValue(inputStockQty * inputUnitPrice);
-        newItem.setMinStockQty(inputMinStockQty);
-        newItem.setMaxStockQty(inputMaxStockQty); 
-        newItem.storeItemToFile();
     }
+    
+    // Collect remaining item details
+    System.out.print("Enter Item Name: ");
+    String inputItemName = scanner.nextLine();
+
+    System.out.print("Enter Item Description: ");
+    String inputItemDesc = scanner.nextLine();
+
+    System.out.print("Enter Unit Cost: ");
+    double inputUnitCost = scanner.nextDouble();
+    scanner.nextLine();
+
+    System.out.print("Enter Unit Price: ");
+    double inputUnitPrice = scanner.nextDouble();
+    scanner.nextLine();
+
+    // Create an Inventory instance
+    Inventory newItem = new Inventory();
+
+    // Set Item-specific fields
+    newItem.setItemId(generateItemId(inputItemCategory));
+    newItem.setItemCategory(inputItemCategory);
+    newItem.setItemName(inputItemName);
+    newItem.setItemDesc(inputItemDesc);
+    newItem.setUnitCost(inputUnitCost);
+    newItem.setUnitPrice(inputUnitPrice);
+
+    // Set Inventory-specific fields
+    newItem.setStockQty(0);
+    newItem.setStockCost(0.0);
+    newItem.setStockValue(0.0);
+    newItem.setMinStockQty(0);
+    newItem.setMaxStockQty(0);
+
+    // Store the details to itemInfo.txt
+    newItem.storeItemToFile(); // Directly call the method on newItem
+}
 
     public void deleteItem(String itemId){
 
@@ -436,25 +412,35 @@ public class Item {
         }
     }
 
-    //-----------------------------------------------------------------------------------Store Item To File
+    // Method to initialize Inventory with default values (already done in constructor)
+    public void initializeInventory() {
+        this.inventory = new Inventory(); // Initializes Inventory with default values
+    }
+
+    // Getter for Inventory object
+    public Inventory getInventory() {
+        return this.inventory;
+    }
+
+// Method to store item details to file, including Inventory-specific details
     public void storeItemToFile() {
-    try (FileWriter itemWriter = new FileWriter("itemInfo.txt", true)) {
-        itemWriter.write(getItemId() + "|" +
-                         getItemName() + "|" +
-                         getItemCategory() + "|" +
-                         getItemDesc() + "|" +
-                         getUnitCost() + "|" +
-                         getUnitPrice() + "|" +
-                         getStockQty() + "|" +
-                         getStockCost() + "|" +
-                         getStockValue() + "|" +
-                         getMinStockQty() + "|" +
-                         getMaxStockQty() + "\n");
-    }catch (IOException e) {
-        System.out.println("Cannot store into the itemInfo.txt.");
+        try (FileWriter itemWriter = new FileWriter("itemInfo.txt", true)) {
+            itemWriter.write(getItemId() + "|" +
+                             getItemName() + "|" +
+                             getItemCategory() + "|" +
+                             getItemDesc() + "|" +
+                             getUnitCost() + "|" +
+                             getUnitPrice() + "|" +
+                             inventory.getStockQty() + "|" +       // Inventory-specific field
+                             inventory.getStockCost() + "|" +      // Inventory-specific field
+                             inventory.getStockValue() + "|" +     // Inventory-specific field
+                             inventory.getMinStockQty() + "|" +    // Inventory-specific field
+                             inventory.getMaxStockQty() + "\n");   // Inventory-specific field
+            System.out.println("Item added successfully!");
+        } catch (IOException e) {
+            System.out.println("Error: Cannot store into itemInfo.txt.");
             e.printStackTrace();
         }
-        System.out.println("Item added successfully!");
     }
 
     //-----------------------------------------------------------------------------------Cls

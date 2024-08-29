@@ -1,3 +1,4 @@
+
 public class Inventory extends Item {
     private int stockQty;
     private double stockCost;
@@ -7,9 +8,24 @@ public class Inventory extends Item {
 
     //---------------------------------------------------------------------------------------------------------Constructor
     public Inventory(){
+        this.stockQty = 0;
+        this.stockCost = 0.0;
+        this.stockValue = 0.0;
+        this.minStockQty = 0;
+        this.maxStockQty = 0;
     }
     
     public Inventory(int stockQty, double stockCost, double stockValue, int minStockQty, int maxStockQty){
+        this.stockQty = stockQty;
+        this.stockCost = stockCost;
+        this.stockValue = stockValue;
+        this.minStockQty = minStockQty;
+        this.maxStockQty = maxStockQty;
+    }
+
+    public Inventory(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice,
+                     int stockQty, double stockCost, double stockValue, int minStockQty, int maxStockQty) {
+        super(itemId, itemName, itemCategory, itemDesc, unitCost, unitPrice);
         this.stockQty = stockQty;
         this.stockCost = stockCost;
         this.stockValue = stockValue;
