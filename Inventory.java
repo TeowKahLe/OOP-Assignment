@@ -23,15 +23,6 @@ public class Inventory extends Item {
         this.maxStockQty = maxStockQty;
     }
 
-    public Inventory(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice,
-                     int stockQty, double stockCost, double stockValue, int minStockQty, int maxStockQty) {
-        super(itemId, itemName, itemCategory, itemDesc, unitCost, unitPrice);
-        this.stockQty = stockQty;
-        this.stockCost = stockCost;
-        this.stockValue = stockValue;
-        this.minStockQty = minStockQty;
-        this.maxStockQty = maxStockQty;
-    }
 
     //-----------------------------------------------------------------------------------Getters
     public int getStockQty(){
