@@ -8,7 +8,6 @@ import java.io.IOException;
 
 public class Order{
     private String orderId;
-    private int itemQty;
     private String approvalStatus;
     private String orderDate;
     private String orderTime;
@@ -16,37 +15,30 @@ public class Order{
     private String orderType;
     private String staffId;
     private List<Item> itemList;
+    private int[] itemQty;
 
     //-----------------------------------------------------------------------------------Constructors
     public Order(){
         this.itemList = new ArrayList<>();
     }
 
-    public Order(String orderId, List<Item> itemList, int itemQty, String approvalStatus, 
+    public Order(String orderId, String approvalStatus, 
                  String orderDate, String orderTime, String deliveryMethod, 
-                 String orderType, String staffId){
+                 String orderType, String staffId, List<Item> itemList, int[] itemQty){
         this.orderId = orderId;
-        this.itemList = itemList;
-        this.itemQty = itemQty;
         this.approvalStatus = approvalStatus;
         this.orderDate = orderDate;
         this.orderTime = orderTime;
         this.deliveryMethod = deliveryMethod;
         this.orderType = orderType;
         this.staffId = staffId;
+        this.itemList = itemList;
+        this.itemQty = itemQty;
     }
 
     //--------------------------------------------------------------------------------------Getters
     public String getOrderId() {
         return orderId;
-    }
-
-     public List<Item> getItemList() {
-        return itemList;
-    }
-
-    public int getItemQty() {
-        return itemQty;
     }
 
     public String getApprovalStatus() {
@@ -73,17 +65,17 @@ public class Order{
         return staffId;
     }
 
+    public List<Item> getItemList() {
+        return itemList;
+    }
+
+    public int[] getItemQty() {
+        return itemQty;
+    }
+
     //-----------------------------------------------------------------------------------Setters
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public void setItemList(List<Item> itemList) {
-        this.itemList = itemList;
-    }
-
-    public void setItemQty(int itemQty) {
-        this.itemQty = itemQty;
     }
 
     public void setApprovalStatus(String approvalStatus) {
@@ -108,6 +100,14 @@ public class Order{
 
     public void setStaffId(String staffId) {
         this.staffId = staffId;
+    }
+
+    public void setItemList(List<Item> itemList) {
+        this.itemList = itemList;
+    }
+
+    public void setItemQty(int[] itemQty) {
+        this.itemQty = itemQty;
     }
 
     //-----------------------------------------------------------------------------------Order Management
@@ -209,39 +209,45 @@ public class Order{
 
     //-----------------------------------------------------------------------------------Store order to file
     public void storeOrderToFile() {
-        try (FileWriter writer = new FileWriter("orderInfo.txt", true)) {
-            // Write Order class attributes
-            writer.write(orderId + "|" + itemQty + "|" + approvalStatus + "|" +
-                         orderDate + "|" + orderTime + "|" + deliveryMethod + "|" +
-                         orderType + "|" + staffId + "\n");
+        try (FileWriter writer = new FileWriter("orderInfo.txt", true)) { // Open in append mode
 
-            // Write specific attributes of StockOutOrder or StockInOrder
-            if (orderId.startsWith("SO")) { // StockOutOrder
-                StockOutOrder stockOutOrder = (StockOutOrder) this;
-                writer.write(stockOutOrder.getCustomerId() + "|" +
-                             stockOutOrder.getCustomerName() + "|" +
-                             stockOutOrder.getCustomerAddress() + "|" +
-                             stockOutOrder.getDateDispatched() + "\n");
-            } else if (orderId.startsWith("SI")) { // StockInOrder
-                StockInOrder stockInOrder = (StockInOrder) this;
-                writer.write(stockInOrder.getSupplierId() + "|" +
-                             stockInOrder.getSupplierName() + "|" +
-                             stockInOrder.getDateReceived() + "\n");
+            // Write Order details
+            writer.write(getOrderId() + "|" +
+                         getApprovalStatus() + "|" +
+                         getOrderDate() + "|" +
+                         getOrderTime() + "|" +
+                         getDeliveryMethod() + "|" +
+                         getOrderType() + "|" +
+                         getStaffId() + "|" + "\n");
+    
+            // Write StockOutOrder or StockInOrder specific details
+            if (this instanceof StockOutOrder) {
+                StockOutOrder soOrder = (StockOutOrder) this;
+                writer.write(soOrder.getCustomerId() + "|" +
+                             soOrder.getCustomerName() + "|" +
+                             soOrder.getCustomerAddress() + "|" +
+                             soOrder.getDateDispatched() + "|" + "\n");
+            } else if (this instanceof StockInOrder) {
+                StockInOrder siOrder = (StockInOrder) this;
+                writer.write(siOrder.getSupplierId() + "|" +
+                             siOrder.getSupplierName() + "|" +
+                             siOrder.getDateReceived() + "|" + "\n");
             }
-
-            // Write item IDs and their quantities
+    
+            // Write item quantities and IDs
             boolean first = true; // Flag to handle leading separator
-            for (Item item : itemList) {
+            for (int i = 0; i < getItemList().size(); i++) {
                 if (!first) {
                     writer.write("|");
                 }
-                // Use item ID and quantity from itemList
-                writer.write(itemQty + "|" + item.getItemId());
+                Item item = getItemList().get(i);
+                writer.write(itemQty[i] + "|" + item.getItemId());
                 first = false;
             }
-            writer.write("\n");
+            writer.write("\n"); // Newline after item list
+    
         } catch (IOException e) {
-            System.out.println("An error occurred while writing to the file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

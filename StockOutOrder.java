@@ -160,7 +160,6 @@ public class StockOutOrder extends Order{
         int[] inputItemNo = new int[noItem];
         int[] inputItemQty = new int[noItem];
         List<Item> orderedItems = new ArrayList<>();
-        int totalQuantity = 0; 
 
         System.out.print("\nPlease enter Item number and quantity\n");
         line.printLine("Please enter Item number and quantity".length());
@@ -169,36 +168,30 @@ public class StockOutOrder extends Order{
             System.out.print("Item " + (i + 1) + " : ");
             inputItemNo[i] = scanner.nextInt();
             scanner.nextLine();
-
+        
             if (inputItemNo[i] <= 0 || inputItemNo[i] > itemList.size()) {
                 System.out.println("Invalid item number. Please try again.");
                 i--;
                 continue;
-            }   
-
+            }
+        
             Item selectedItem = itemList.get(inputItemNo[i] - 1); // Adjust for 0-based index
             System.out.print("Quantity : ");
             inputItemQty[i] = scanner.nextInt();
             scanner.nextLine();
-
-            totalQuantity += inputItemQty[i]; // Accumulate the total quantity
             orderedItems.add(selectedItem);
-
             System.out.println("You have ordered " + inputItemQty[i] + " " + selectedItem.getItemName() + "\n");
         }
-
+        
         // Set order details
-        String orderId = generateOrderId("SO"); // Generate order ID for Stock Out Order
-        setOrderId(orderId);
-        setItemQty(totalQuantity); // Set the total quantity ordered
-        setApprovalStatus("pending");
-
-        // Format date and time
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MMM/yyyy"));
         String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a"));
+        String orderId = generateOrderId("SO"); 
+        setOrderId(orderId);
+        setItemQty(inputItemQty); 
+        setApprovalStatus("pending");
         setOrderDate(currentDate); // Set current date as orderDate
         setOrderTime(currentTime); // Set current time as orderTime
-
         setDeliveryMethod("-");
         setOrderType("Stock Out Order");
         setStaffId("-");
