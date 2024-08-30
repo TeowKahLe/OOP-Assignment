@@ -1,12 +1,13 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.IOException;
 
 public class Order{
     private String orderId;
-    private List<Item> itemList;
     private int itemQty;
     private String approvalStatus;
     private String orderDate;
@@ -14,6 +15,7 @@ public class Order{
     private String deliveryMethod;
     private String orderType;
     private String staffId;
+    private List<Item> itemList;
 
     //-----------------------------------------------------------------------------------Constructors
     public Order(){
@@ -108,10 +110,6 @@ public class Order{
         this.staffId = staffId;
     }
 
-    public void generateOrderId(String prefix){
-
-    }
-
     //-----------------------------------------------------------------------------------Order Management
     public static void orderManagement(){
         clearScreen();
@@ -171,6 +169,82 @@ public class Order{
 		}
         scanner.close();
 	}
+
+    //-----------------------------------------------------------------------------------Generate Order Id
+    public static String generateOrderId(String orderTypePrefix) {
+        String filePath = "orderInfo.txt";
+        String latestOrderId = null;
+        int latestNumber = 0;
+
+        try (Scanner scanner = new Scanner(new File(filePath))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                // Check if the line starts with the given prefix
+                if (line.startsWith(orderTypePrefix)) {
+                    // Extract the number part from the ID
+                    String idPart = line.substring(orderTypePrefix.length(), orderTypePrefix.length() + 4);
+                    try {
+                        int number = Integer.parseInt(idPart);
+                        if (number > latestNumber) {
+                            latestNumber = number;
+                            latestOrderId = orderTypePrefix + String.format("%04d", latestNumber);
+                        }
+                    } catch (NumberFormatException e) {
+                        // Handle case where the ID part is not a valid number
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the file: " + e.getMessage());
+        }
+
+        // Generate new order ID
+        if (latestOrderId == null) {
+            return orderTypePrefix + "0001";
+        } else {
+            int newNumber = Integer.parseInt(latestOrderId.substring(orderTypePrefix.length())) + 1;
+            return String.format("%s%04d", orderTypePrefix, newNumber);
+        }
+    }
+
+    //-----------------------------------------------------------------------------------Store order to file
+    public void storeOrderToFile() {
+        try (FileWriter writer = new FileWriter("orderInfo.txt", true)) {
+            // Write Order class attributes
+            writer.write(orderId + "|" + itemQty + "|" + approvalStatus + "|" +
+                         orderDate + "|" + orderTime + "|" + deliveryMethod + "|" +
+                         orderType + "|" + staffId + "\n");
+
+            // Write specific attributes of StockOutOrder or StockInOrder
+            if (orderId.startsWith("SO")) { // StockOutOrder
+                StockOutOrder stockOutOrder = (StockOutOrder) this;
+                writer.write(stockOutOrder.getCustomerId() + "|" +
+                             stockOutOrder.getCustomerName() + "|" +
+                             stockOutOrder.getCustomerAddress() + "|" +
+                             stockOutOrder.getDateDispatched() + "\n");
+            } else if (orderId.startsWith("SI")) { // StockInOrder
+                StockInOrder stockInOrder = (StockInOrder) this;
+                writer.write(stockInOrder.getSupplierId() + "|" +
+                             stockInOrder.getSupplierName() + "|" +
+                             stockInOrder.getDateReceived() + "\n");
+            }
+
+            // Write item IDs and their quantities
+            boolean first = true; // Flag to handle leading separator
+            for (Item item : itemList) {
+                if (!first) {
+                    writer.write("|");
+                }
+                // Use item ID and quantity from itemList
+                writer.write(itemQty + "|" + item.getItemId());
+                first = false;
+            }
+            writer.write("\n");
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+
     //-----------------------------------------------------------------------------------read item from file then update ItemList
     public void readItemFromFile(String filePath) {
         List<Item> items = new ArrayList<>();
@@ -202,7 +276,9 @@ public class Order{
         } catch (FileNotFoundException e) {
             System.out.println("Cannot locate file: " + filePath);
         }
-    }   
+    }
+    
+    
 
     //-----------------------------------------------------------------------------------Cls
     public static void clearScreen() {

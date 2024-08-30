@@ -1,6 +1,10 @@
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class StockOutOrder extends Order{
     private String customerId;
@@ -149,28 +153,81 @@ public class StockOutOrder extends Order{
 		
 
         // Customer input
-        System.out.print("How many item you want to place order?\n--> ");
+        System.out.print("How many items do you want to place an order for?\n--> ");
         int noItem = scanner.nextInt();
         scanner.nextLine();
+
+        int[] inputItemNo = new int[noItem];
+        int[] inputItemQty = new int[noItem];
+        List<Item> orderedItems = new ArrayList<>();
+        int totalQuantity = 0; 
+
         System.out.print("\nPlease enter Item number and quantity\n");
         line.printLine("Please enter Item number and quantity".length());
-        
-         for (int i = 1; i <= noItem; i++) {
-            System.out.print("Item " + i + " : ");
-            int inputItemNo = scanner.nextInt() - 1;
+
+        for (int i = 0; i < noItem; i++) {
+            System.out.print("Item " + (i + 1) + " : ");
+            inputItemNo[i] = scanner.nextInt();
             scanner.nextLine();
 
-            if (inputItemNo < 0 || inputItemNo >= itemList.size()) {
+            if (inputItemNo[i] <= 0 || inputItemNo[i] > itemList.size()) {
                 System.out.println("Invalid item number. Please try again.");
                 i--;
                 continue;
-            }
+            }   
 
-            Item selectedItem = itemList.get(inputItemNo);
+            Item selectedItem = itemList.get(inputItemNo[i] - 1); // Adjust for 0-based index
             System.out.print("Quantity : ");
-            int qty = scanner.nextInt();
+            inputItemQty[i] = scanner.nextInt();
             scanner.nextLine();
-            System.out.println("You have ordered " + qty + " " + selectedItem.getItemName() + "\n");
+
+            totalQuantity += inputItemQty[i]; // Accumulate the total quantity
+            orderedItems.add(selectedItem);
+
+            System.out.println("You have ordered " + inputItemQty[i] + " " + selectedItem.getItemName() + "\n");
+        }
+
+        // Set order details
+        String orderId = generateOrderId("SO"); // Generate order ID for Stock Out Order
+        setOrderId(orderId);
+        setItemQty(totalQuantity); // Set the total quantity ordered
+        setApprovalStatus("pending");
+
+        // Format date and time
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MMM/yyyy"));
+        String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a"));
+        setOrderDate(currentDate); // Set current date as orderDate
+        setOrderTime(currentTime); // Set current time as orderTime
+
+        setDeliveryMethod("-");
+        setOrderType("Stock Out Order");
+        setStaffId("-");
+        setItemList(orderedItems);
+
+        storeOrderToFile();
+
+        int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("1.Back to Stock Out Order Menu\n2.Exit");
+            try {
+                System.out.print("--> ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch(opt) {
+                    case 1: 
+                        StockOutOrder.stockOutOrderMenu();
+                        loop = false;
+                        break;
+                    case 2:
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid option");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)");
+                scanner.nextLine(); // Clear the buffer to avoid infinite loop
+            }
         }
         scanner.close();
 	}
