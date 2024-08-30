@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class fastFoodInventory {
     public static void main(String arg[]) {
 		clearScreen();
-    	Line line = new Line();
+    	Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
 
@@ -30,9 +30,10 @@ public class fastFoodInventory {
     				case 2:
 						//Staff userLogin = new Staff();
 						//userLogin.login();
-    					//Supplier test = new Supplier();
-						//test.addSupplier();
-						menu();
+    					Supplier test = new Supplier();
+						test.deleteSupplier();
+						test.addSupplier();
+						//menu();
 						break;
 					case 3:
 						System.exit(0);
@@ -52,7 +53,7 @@ public class fastFoodInventory {
 
 	public static void menu(){
 		clearScreen();
-		Line line = new Line();
+		Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
 		

@@ -63,7 +63,7 @@ public class StockOutOrder extends Order{
     //-----------------------------------------------------------------------------------Stock Out Order Menu
     public static void stockOutOrderMenu(){
         clearScreen();
-		Line line = new Line();
+		Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
 
@@ -117,7 +117,7 @@ public class StockOutOrder extends Order{
     //-----------------------------------------------------------------------------------Customer Input Order(Dummy cuz not part of Inventory System)
     public void customerInputOrder(){
         clearScreen();
-        Line line = new Line();
+        Alignment line = new Alignment();
         Scanner scanner = new Scanner(System.in);
         int num = 0;
 

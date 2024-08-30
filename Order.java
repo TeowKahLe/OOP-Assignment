@@ -113,7 +113,7 @@ public class Order{
     //-----------------------------------------------------------------------------------Order Management
     public static void orderManagement(){
         clearScreen();
-		Line line = new Line();
+	    Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
 

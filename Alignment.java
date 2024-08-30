@@ -1,11 +1,11 @@
-public class Line {
+public class Alignment {
 	int printQty;
 	
-    Line() {
+    Alignment() {
     	this.printQty = 0;
     }
     
-    Line(int printQty) {
+    Alignment(int printQty) {
     	this.printQty = printQty;
     }
     

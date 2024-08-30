@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 public class Staff extends Person{
     Scanner scanner = new Scanner(System.in);
     private String jobRole,password;
-    Line line = new Line();
+    Alignment line = new Alignment();
 
 
     public Staff(){
@@ -86,9 +86,9 @@ public class Staff extends Person{
 
         //write content in file    
         try {
-            FileWriter writer1 = new FileWriter("staffInfo.txt",true); 
-            writer1.write(super.getId()+"\t"+super.getName()+"\t"+super.getContactNo()+"\t"+super.getEmail()+"\t"+super.getAddress()+"\t"+ jobRole +"\t"+ password+"\n");
-            writer1.close();
+            FileWriter writer = new FileWriter("staffInfo.txt",true); 
+            writer.write(super.getId()+"\t"+super.getName()+"\t"+super.getContactNo()+"\t"+super.getEmail()+"\t"+super.getAddress()+"\t"+ jobRole +"\t"+ password+"\n");
+            writer.close();
             System.out.println("The data are stored.");
         } catch (IOException e) {
             System.out.println("Text unable to store in file.");
@@ -106,6 +106,7 @@ public class Staff extends Person{
         //login page header----------------------------------------------------------
         System.out.println("Login");
         line.printLine("Login".length());
+        
 
         
         do{
@@ -167,7 +168,7 @@ public class Staff extends Person{
             }
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace(); // print error message
+            System.out.println(filePath + " unable to open"); // print error message
         }
     }while(!idFound || !pairPassword);
     }

@@ -1,0 +1,17 @@
+U001	Lo	012-1234567	lo@gmail.com	jalan pisang
+Item[0]: MT001	Beef	Meat	Good	10.0	1.0
+Item[1]: SD001	Prawn	Seafood	Tasty	10.0	12.0
+U002	Lin	012-1234567	lo@gmail.com	jalan pisang
+Item[1]: MT001	Beef	Meat	Good	10.0	1.0
+Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0
+U003	Lincoln	012-1234567	lo@gmail.com	jalan pisang
+Item[1]: MT001	Beef	Meat	Good	10.0	1.0
+Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0
+U004	Lincoln	012-1234567	lo@gmail.com	jalan pisang
+Item[1]: SD001	Prawn	Seafood	Tasty	10.0	12.0
+Item[2]: MT001	Beef	Meat	Good	10.0	1.0
+U007	Lincoln	012-1234567	lo@gmail.com	jalan hijau
+Item[1]: MT001	Beef	Meat	Good	10.0	1.0
+U008	Lincoln	012-1234567	lo@gmail.com	g
+Item[1]: MT001	Beef	Meat	Good	10.0	1.0
+Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0

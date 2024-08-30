@@ -36,8 +36,14 @@ public class Person {
         return this.id;
     }
 
+    //staff
     public void setId(char firstCharId,String fileName){
-        this.id = firstCharId + String.format("%03d",generateId(fileName)+1);
+        this.id = firstCharId + String.format("%03d",generateIdNum(fileName)+1);
+    }
+
+    //supplier
+    public void setId(char firstCharId,String fileName,int deletedSupplierIdQty){
+        this.id = firstCharId + String.format("%03d",generateIdNum(fileName)+1+deletedSupplierIdQty);
     }
 
     //NAME---------------------------------------------------------------------------------------------
@@ -117,15 +123,14 @@ public class Person {
         this.address = address;
     }
 
-    //ID-----------------------------------------------------------------------------------------------
-    public long generateId(String fileName){
-        String FilePath = fileName; //location of the file
-        try {
-            long row = Files.lines(Paths.get(FilePath)).count(); //count the text file got how many row
+    //ID Num-----------------------------------------------------------------------------------------------
+    public long generateIdNum(String fileName){
+                            //location of the file
+        try {   
+            long row = Files.lines(Paths.get(fileName)).count(); //count the text file got how many row
             return row;
         } catch (IOException e) {
-            e.printStackTrace();
-            return 0L; // return default long value
+            return 0L; // return default long value; L indicate num in long type
         }
     }
 

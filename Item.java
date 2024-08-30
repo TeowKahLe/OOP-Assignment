@@ -88,7 +88,7 @@ public class Item {
     //-----------------------------------------------------------------------------------Item Management
     public static void itemManagement(){
 		clearScreen();
-		Line line = new Line();
+		Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
 
@@ -250,7 +250,7 @@ public class Item {
     public void addItem() {
     clearScreen();
     Scanner scanner = new Scanner(System.in);
-    Line line = new Line();
+    Alignment line = new Alignment();
     System.out.println("Add Item");
     line.printLine(45);
 
@@ -346,7 +346,7 @@ public class Item {
     //-----------------------------------------------------------------------------------Search Item (VeryVeryVery BIGGGG Problem later fix)
     public boolean searchItem(String itemId) {
         Scanner scanner = null;
-        Line line = new Line();
+        Alignment line = new Alignment();
         boolean itemFound = false;
         try {
             scanner = new Scanner(new File("itemInfo.txt"));
@@ -381,7 +381,7 @@ public class Item {
 
     public static void searchItem() {
     	Scanner scanner = new Scanner(System.in);
-    	Line line = new Line();
+    	Alignment line = new Alignment();
     	boolean found;
     	Item item = new Item(); 
 
@@ -407,7 +407,7 @@ public class Item {
     public static void displayAllItem(){
         clearScreen();
         Scanner scanner = null;
-        Line line = new Line();
+        Alignment line = new Alignment();
         int num = 0;
         try {
             scanner = new Scanner(new File("itemInfo.txt"));
@@ -460,6 +460,10 @@ public class Item {
     }
 }
 
+
+    public String toString(){
+        return itemId + "\t" + itemName + "\t" + itemCategory + "\t" + itemDesc + "\t" + unitCost + "\t" + unitPrice + "\n";
+    }
     //-----------------------------------------------------------------------------------Cls
     public static void clearScreen() {
    		System.out.print("\033[H\033[2J");
