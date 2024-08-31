@@ -67,6 +67,18 @@ public class Person {
             this.name = name;
         }
     }
+
+    public String enterName(){
+        boolean matchFormat = false;
+        String tempName="";
+
+        while(matchFormat == false){
+            System.out.print(String.format("%-34s","Enter NAME") + " >> ");
+            tempName = scanner.nextLine();
+            matchFormat = checkFormatName(tempName);
+        }
+        return tempName;
+    }
     
     //CONTACT NO------------------------------------------------------------------------------
     public String getContactNo(){
@@ -88,9 +100,19 @@ public class Person {
         if(matchFormat == true){ 
             this.contactNo = contactNo;
         }
-
     }
 
+    public String enterContactNo(){
+        boolean matchFormat = false;
+        String tempContactNo="";
+
+        while(matchFormat == false){
+            System.out.print(String.format("%-35s","\nEnter CONTACT NUMBER") + " >> ");
+            tempContactNo = scanner.nextLine();
+            matchFormat = checkFormatContact(tempContactNo);
+        }
+        return tempContactNo;
+    }
     //EMAIL---------------------------------------------------------------------------------------------------
     public String getEmail(){
         return this.email;
@@ -111,7 +133,18 @@ public class Person {
         if(matchFormat == true){ 
             this.email = email;
         }
+    }
 
+    public String enterEmail(){
+        boolean matchFormat = false;
+        String tempEmail="";
+
+        while(matchFormat == false){
+            System.out.print(String.format("%-35s","\nEnter EMAIL address") + " >> ");
+            tempEmail = scanner.nextLine();
+            matchFormat = checkFormatEmail(tempEmail);
+        }
+        return tempEmail;
     }
 
     //ADDRESS--------------------------------------------------------------------------------------
@@ -121,6 +154,14 @@ public class Person {
 
     public void setAddress(String address){
         this.address = address;
+    }
+
+    public String enterAddress(){
+        String tempAddress;
+
+        System.out.print(String.format("%-35s","\nEnter HOME address") + " >> ");
+        tempAddress = scanner.nextLine();
+        return tempAddress; 
     }
 
     //ID Num-----------------------------------------------------------------------------------------------
@@ -136,44 +177,19 @@ public class Person {
 
     //ENTER NEW USER INFO----------------------------------------------------------------------------------------
     public void enterNewUserInfo(){
-        boolean matchFormat = false;
-        String tempName="",tempContactNo="",tempEmail="",tempAddress;
         //enter and validate NAME
-        while(matchFormat == false){
-            System.out.print(String.format("%-34s","Enter NAME") + " >> ");
-            tempName = scanner.nextLine();
-            matchFormat = checkFormatName(tempName);
-        }
-
-        setName(tempName);
-
-        matchFormat = false; //reset matchFormat
+       
+        //enter and validate NAME
+        setName(enterName());
 
         //enter and validate CONTACT NO
-        while(matchFormat == false){
-            System.out.print(String.format("%-35s","\nEnter CONTACT NUMBER") + " >> ");
-            tempContactNo = scanner.nextLine();
-            matchFormat = checkFormatContact(tempContactNo);
-        }
-
-        matchFormat = false; //reset matchFormat
-
-        setContactNo(tempContactNo);
+        setContactNo(enterContactNo());
 
         //enter and validate EMAIL
-        while(matchFormat == false){
-            System.out.print(String.format("%-35s","\nEnter EMAIL address") + " >> ");
-            tempEmail = scanner.nextLine();
-            matchFormat = checkFormatEmail(tempEmail);
-        }
+        setEmail(enterEmail());
 
-        setEmail(tempEmail);
-
-        //enter ADDRESS
-        System.out.print(String.format("%-35s","\nEnter HOME address") + " >> ");
-        tempAddress = scanner.nextLine();
-        
-        setAddress(tempAddress);
+        //enter ADDRESS       
+        setAddress(enterAddress());
     }
 
     //Validate----------------------------------------------------------------------------------------------

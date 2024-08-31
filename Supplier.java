@@ -14,7 +14,7 @@ public class Supplier extends Person {
     private String category;
     private LocalDateTime[] schedule = new LocalDateTime[5];
     private Date contractExpiryDate;
-    private static String[] deletedSupplierID = new String[999];
+    private static String[] deletedSupplierID = new String[100];
 
     Alignment line = new Alignment();
 
@@ -63,7 +63,7 @@ public class Supplier extends Person {
         return contractExpiryDate;
     }
 
-    //manage delete supplier ID------------------------------------------------------------------------------------------------------------------------
+    //manage delete supplier ID -----------------------------------------------------------------------------------------------------------------
     // if the supplier is over the number limit eg 999 it will reuse the deleted ID
     public static void retrieveDeleteIDToArray(){
         try (Scanner scanner = new Scanner(new File("deletedSupplierID.txt"))){
@@ -73,7 +73,7 @@ public class Supplier extends Person {
                 i++;
             }
         } catch (IOException e) {
-            System.err.println("deletedSupplierID.txt unable to open");
+            System.out.println("deletedSupplierID.txt unable to open");
         }
     }
 
@@ -88,6 +88,8 @@ public class Supplier extends Person {
         for(String element:deletedSupplierID){
             if(element!=null){
                 contentElement++;
+            }else{
+                break;
             }
         }
         return contentElement;
@@ -112,24 +114,27 @@ public class Supplier extends Person {
 
     //Add supplier---------------------------------------------------------------------------------------------
     public void addSupplier(){
-        boolean positiveInt = false;
+        boolean positiveIntLower5 = false;
         int noSupplyItem = 0;
 
         System.out.println("ADD SUPPLIER");
         line.printLine("ADD SUPPLIER".length());
         super.enterNewUserInfo();
 
-        while(positiveInt == false){
+        while(positiveIntLower5 == false){
             try {
                 System.out.print("Enter the number of items supply >> ");
                 noSupplyItem = scanner.nextInt();
                 scanner.nextLine();
-                if(noSupplyItem >= 1){
-                    positiveInt = true;
+                if(noSupplyItem >= 1 && noSupplyItem <= 5){
+                    positiveIntLower5 = true;
+                }else if(noSupplyItem > 5){
+                    System.out.println("Each supplier allow handle max 5 items.");
                 }else{
                     System.out.println("Only allow positive integers.");    
                 }   
             } catch (Exception e) {
+                scanner.nextLine();
                 System.out.println("Only allow positive integers.");
             }
         }
@@ -152,7 +157,7 @@ public class Supplier extends Person {
         line.printLine("DELETE SUPPLIER".length());
 
         while(found == false){
-            System.out.print("Enter the Supplier ID that need to MODIFY: ");
+            System.out.print("Enter the Supplier ID that need to DELETE: ");
             String tempID = scanner.nextLine();
 
             try(Scanner scanner = new Scanner(new File(supplierFilePath))) {
@@ -169,7 +174,7 @@ public class Supplier extends Person {
                     }
                 }
             }
-            
+
                 if(!found){
                     System.out.println("ID does not found.");
                 }
@@ -227,10 +232,211 @@ public class Supplier extends Person {
         
     }
 
+    //Modify supplier detail-----------------------------------------------------------------------------------------------
+
     public void modifySupplier(){
+        String supplierFilePath = "supplierInfo.txt";
+        boolean found = false;
+        boolean isOpt = false;
+
+        //modify NAME, PHONE NO,EMAIL,ADDRESS,ITEM LIST
+
+        String[] supplierInfo = new String[100];
+        String[][] supplyItemInfo = new String[100][5];
+
+        System.out.println("MODIFY SUPPLIER DETAIL");
+        line.printLine("MODIFY SUPPLIER DETAIL".length());
         
+        // select modify what detail
+        System.out.println("1.Name\n2.Phone number\n3.Email\n4.Address\n5.Supply Item List");
+
+        int opt = 0;
+        while(!isOpt){
+            try {
+                System.out.print("Enter option: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+
+                if(opt >=1 && opt <=5){
+                    isOpt = true;
+                }else{
+                    System.out.println("Only allow positive integers between(1-5)");
+                }
+
+            } catch (Exception e) {
+                scanner.nextLine(); // due to opt that line error direct go catch so nextInt need clearInputBuffer
+                System.out.println("Only allow positive integers between(1-5)");
+            }
+            
+        }
+        
+        while(!found){    
+            System.out.print("Enter the Supplier ID that need to MODIFY: ");
+            String tempID = scanner.nextLine();
+    
+            try (Scanner scanner = new Scanner(new File(supplierFilePath))){
+                while(scanner.hasNextLine()){
+                    String lineContent = scanner.nextLine();
+                    if(lineContent != null){
+                        String[] tokenContents = lineContent.split("\\t");
+                        if(tempID.equals(tokenContents[0])){
+                            found = true;
+                            extractIntoArr(supplierInfo,supplyItemInfo,supplierFilePath);
+
+                            
+                            String detailModify = "";
+                            switch(opt){
+                                case 1:
+                                    detailModify = "name";
+                                    replaceNewData(supplierInfo, supplyItemInfo, tempID, opt,enterName());//supplierInfoArr,SupplyItemArr,check which want modify,change what, what value
+                                    break;
+                                case 2:
+                                    detailModify = "phone number";
+                                    replaceNewData(supplierInfo, supplyItemInfo, tempID, opt,enterContactNo());
+                                    break;
+                                case 3:
+                                    detailModify = "email";
+                                    replaceNewData(supplierInfo, supplyItemInfo, tempID, opt,enterEmail());
+                                    break;
+                                case 4:
+                                    detailModify = "address";
+                                    replaceNewData(supplierInfo, supplyItemInfo, tempID, opt,enterAddress());
+                                    break;
+                                case 5:
+                                    detailModify = "Item List";
+                                    enterReplaceItemList(supplierInfo,supplyItemInfo,tempID);
+                                    break;
+                                default:
+                                    System.out.println("Invalid option");
+                                    break;
+                            }
+                                modifyFile(supplierInfo,supplyItemInfo,supplierFilePath);//update file with modify value
+                                System.out.println(detailModify + " has been updated.");
+                        }
+                    }
+                }
+
+                if(!found){
+                    System.out.println("ID does not found.");
+                }
+
+            } catch (IOException e) {
+                System.out.println(supplierFilePath + " unable to open");
+            }
+        }
+
     }
 
+    public void replaceNewData(String[] supplierInfo,String[][] supplyItemInfo,String tempID,int opt,String newName){
+
+        for(int index = 0; index < supplierInfo.length;index++){
+            String[] tokenSupplierInfo = supplierInfo[index].split("\\t");
+            if(tempID.equals(tokenSupplierInfo[0])){
+                tokenSupplierInfo[opt] = newName;
+
+                supplierInfo[index] = ""; // make lineContent empty first so it can store the updated data without duplicate info
+                for(int tokenNum = 0 ;tokenNum < tokenSupplierInfo.length;tokenNum++){
+                    //put all the data with a update data into a lineContent
+                    if(tokenNum == tokenSupplierInfo.length-1){
+                        supplierInfo[index] += tokenSupplierInfo[tokenNum];    
+                    }else{
+                        supplierInfo[index] += tokenSupplierInfo[tokenNum] + "\t";
+                    }
+                }
+                    
+
+                break;     
+            }
+        }
+    }
+
+    public void enterReplaceItemList(String[] supplierInfo,String[][] supplyItemInfo,String tempID){
+        boolean positiveIntLower5 = false;
+        int noSupplyItem = 0;
+
+        while(positiveIntLower5 == false){
+            try {
+                System.out.print("Enter the number of items supply >> ");
+                noSupplyItem = scanner.nextInt();
+                scanner.nextLine();
+                if(noSupplyItem >= 1 && noSupplyItem <= 5){
+                    positiveIntLower5 = true;
+                }else if(noSupplyItem > 5){
+                    System.out.println("Each supplier allow handle max 5 items.");
+                }else{
+                    System.out.println("Only allow positive integers.");    
+                }   
+            } catch (Exception e) {
+                scanner.nextLine();
+                System.out.println("Only allow positive integers.");
+            }
+        }
+
+        //find the index need modify first
+        int indexNeedModify = 0;
+        for(int index = 0; index < supplierInfo.length;index++){
+            String[] tokenSupplierInfo = supplierInfo[index].split("\\t");
+            if(tempID.equals(tokenSupplierInfo[0])){
+                indexNeedModify = index;
+                break;
+            }
+        }    
+
+        for(int item = 0; item < supplyItemInfo[indexNeedModify].length;item++){
+            if(supplyItemInfo[indexNeedModify][item] != null){
+                supplyItemInfo[indexNeedModify][item] = null; //clear all item list that need to modify EG if (orginal got 2 then modify to 1) if not clear, it just replace first, second still old value NOT null
+            }
+        }
+        
+        for(int item = 0;item < noSupplyItem;item++){
+            enterSupplyItem(supplyItemInfo,indexNeedModify,item);
+        }
+    }
+
+    public void modifyFile(String[] supplierInfo,String[][] supplyItemInfo,String filePath){
+        try (FileWriter writer = new FileWriter(filePath)){
+            for(int index =0; index < supplierInfo.length;index++){
+                if(supplierInfo[index] != null){
+                    writer.write(supplierInfo[index] + "\n");
+
+                    for(int item = 0; item<supplyItemInfo[index].length;item++){
+                        if(supplyItemInfo[index][item] != null){
+                            writer.write(supplyItemInfo[index][item] + "\n");
+                        }else{
+                            break;
+                        }
+                    }
+                }else{
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(filePath + "unable to open");
+        }
+
+    }
+
+    public void extractIntoArr(String[] supplierInfo,String[][] supplyItemInfo,String filePath){
+        try (Scanner scanner = new Scanner(new File(filePath))){
+            int index = 0, item = 0;
+            while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+
+                if(lineContent.startsWith("U")){
+                    item = 0; // execute this section mean NEW supplier so the itemArr will start from 0
+                    index++;
+                    supplierInfo[index-1] = lineContent; 
+                }else if(lineContent.startsWith("Item")){
+                    supplyItemInfo[index-1][item] = lineContent;
+                    item++;
+                }else{
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(filePath + " unable to open");
+        }
+    }
     //Enter supply item ---------------------------------------------------------------------------------------------------
     public void enterSupplyItem(){
         String []tokenContents;
@@ -260,6 +466,49 @@ public class Supplier extends Person {
                            Item itemSupply = new Item(tokenContents[0],tokenContents[1],tokenContents[2],tokenContents[3],Double.parseDouble(tokenContents[4]),Double.parseDouble(tokenContents[5])); 
 
                            supplyItem.add(itemSupply);
+                           found = true;
+                           break;
+                        }
+                    }
+                }
+                if(!found){
+                    System.out.println("Item does not founded");
+                }
+            } catch (Exception e) {
+                 System.out.println(itemFilePath + " unable to open");
+            }
+        }
+
+          // Find the Item ID from text file then retrieve all data in Item List
+    }
+
+    public void enterSupplyItem(String[][] supplyItemInfo,int indexNeedModify,int item){
+        String[] tokenContents;
+        boolean found = false;
+
+        String itemFilePath = "itemInfo.txt";
+        //String supplierFilePath = "supplierInfo.txt";
+
+        String tempItemName;
+
+        while(found == false){
+            System.out.print("Enter Item Name: ");
+            tempItemName = scanner.nextLine();
+
+            try (Scanner scanner = new Scanner(new File(itemFilePath))){
+                while(scanner.hasNextLine()){ // read the content line by line until EOF
+                    String lineContent = scanner.nextLine();
+
+                    if(lineContent != null){ 
+                        tokenContents = lineContent.split("\\|");
+
+                       String upperTempItemName = tempItemName.toUpperCase();
+                        String upperStoredItemName = tokenContents[1].toUpperCase();
+
+                        if(upperTempItemName.equals(upperStoredItemName)){
+                           //0 - itemID , 1 - itemName , 2 - itemCategory , 3 - itemDesc , 4 - UnitCost , 5 - UnitPrice
+                           supplyItemInfo[indexNeedModify][item] = "";
+                           supplyItemInfo[indexNeedModify][item] = "Item[" + (item+1) + "]: " + tokenContents[0] + "\t" + tokenContents[1] + "\t" + tokenContents[2] + "\t" + tokenContents[3] + "\t" + tokenContents[4] + "\t" + tokenContents[5];
                            found = true;
                            break;
                         }

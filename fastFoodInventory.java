@@ -31,8 +31,7 @@ public class fastFoodInventory {
 						//Staff userLogin = new Staff();
 						//userLogin.login();
     					Supplier test = new Supplier();
-						test.deleteSupplier();
-						test.addSupplier();
+						test.modifySupplier();
 						//menu();
 						break;
 					case 3:
