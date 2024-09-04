@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.io.IOException;
+import java.util.Date;
 
 public class Order{
     private String orderId;
     private String approvalStatus;
-    private String orderDate;
-    private String orderTime;
+    private Date orderDate;
+    private Date orderTime;
     private String deliveryMethod;
     private String orderType;
     private String staffId;
@@ -20,11 +21,12 @@ public class Order{
     //-----------------------------------------------------------------------------------Constructors
     public Order(){
         this.itemList = new ArrayList<>();
+        this.itemQty = new int[0];
     }
 
-    public Order(String orderId, String approvalStatus, 
-                 String orderDate, String orderTime, String deliveryMethod, 
-                 String orderType, String staffId, List<Item> itemList, int[] itemQty){
+    public Order(String orderId, String approvalStatus, Date orderDate, Date orderTime, 
+                 String deliveryMethod, String orderType, String staffId, 
+                 List<Item> itemList, int[] itemQty) {
         this.orderId = orderId;
         this.approvalStatus = approvalStatus;
         this.orderDate = orderDate;
@@ -45,11 +47,11 @@ public class Order{
         return approvalStatus;
     }
 
-    public String getOrderDate() {
+    public Date getOrderDate() {
         return orderDate;
     }
 
-    public String getOrderTime() {
+    public Date getOrderTime() {
         return orderTime;
     }
 
@@ -82,12 +84,12 @@ public class Order{
         this.approvalStatus = approvalStatus;
     }
 
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+    public void setOrderDate() {
+        this.orderDate = new Date();
     }
 
-    public void setOrderTime(String orderTime) {
-        this.orderTime = orderTime;
+    public void setOrderTime() {
+        this.orderTime = new Date();
     }
 
     public void setDeliveryMethod(String deliveryMethod) {
@@ -136,8 +138,8 @@ public class Order{
                 scanner.nextLine();
 				switch(option){
     				case 1:
-						//Display all order
-						Order.orderManagement();
+						displayAllOrder();
+						//Order.orderManagement();
     					break;
     				case 2:
 						//Search Order
@@ -284,8 +286,81 @@ public class Order{
         }
     }
     
+    //-----------------------------------------------------------------------------------Display All Order
+    public static void displayAllOrder() {
+        File file = new File("orderInfo.txt");
+        boolean hasOrders = false; // Flag to check if any orders are found
     
-
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-10s |\n",
+                          "No.", "Order ID", "Approval", "Date", "Time", "Delivery", "Type");
+        System.out.println("|------------------------------------------------------------------------------|");
+    
+        try (Scanner scanner = new Scanner(file)) {
+            int orderNo = 1;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                // Parse the order details
+                String[] details = line.split("\\|");
+    
+                if (details.length < 7) {
+                    System.out.println("Invalid line format.");
+                    continue;
+                }
+    
+                // Display order details
+                System.out.printf("|%-3d | %-15s | %-15s | %-15s | %-15s | %-15s | %-10s |\n",
+                                  orderNo++,
+                                  details[0], // Order ID
+                                  details[1], // Approval Status
+                                  details[2], // Order Date
+                                  details[3], // Order Time
+                                  details[4], // Delivery Method
+                                  details[5]  // Order Type
+                );
+                System.out.println("|------------------------------------------------------------------------------|");
+    
+                // Read the next line for specific order details
+                if (scanner.hasNextLine()) {
+                    line = scanner.nextLine();
+                    String[] specifics = line.split("\\|");
+    
+                    if (details[5].equals("Stock Out Order")) {
+                        if (specifics.length < 4) {
+                            System.out.println("Invalid stock out order details.");
+                            continue;
+                        }
+                        System.out.println("Stock Out Order Details:");
+                        System.out.printf("Customer ID: %s\n", specifics[0]);
+                        System.out.printf("Customer Name: %s\n", specifics[1]);
+                        System.out.printf("Customer Address: %s\n", specifics[2]);
+                        System.out.printf("Date Dispatched: %s\n", specifics[3]);
+                    } else if (details[5].equals("Stock In Order")) {
+                        if (specifics.length < 3) {
+                            System.out.println("Invalid stock in order details.");
+                            continue;
+                        }
+                        System.out.println("Stock In Order Details:");
+                        System.out.printf("Supplier ID: %s\n", specifics[0]);
+                        System.out.printf("Supplier Name: %s\n", specifics[1]);
+                        System.out.printf("Date Received: %s\n", specifics[2]);
+                    }
+                }
+                System.out.println(); // Empty line between orders
+                hasOrders = true; // At least one order has been found
+            }  
+    
+            if (!hasOrders) {
+                System.out.println("No Order Record...");
+            }
+            
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File not found.");
+            e.printStackTrace();
+        }
+    }
+    
+    
     //-----------------------------------------------------------------------------------Cls
     public static void clearScreen() {
    		System.out.print("\033[H\033[2J");

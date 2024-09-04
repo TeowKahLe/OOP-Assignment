@@ -1,10 +1,8 @@
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class StockOutOrder extends Order{
     private String customerId;
@@ -17,11 +15,20 @@ public class StockOutOrder extends Order{
         super();
     }
 
-    public StockOutOrder(String customerId, String customerName, String customerAddress, Date dateDispatched) {
+    public StockOutOrder(String customerId, String customerName, String customerAddress) {
         this.customerId = customerId;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
-        this.dateDispatched = dateDispatched;
+    }
+
+    public StockOutOrder(String orderId, String approvalStatus, Date orderDate, Date orderTime, 
+                         String deliveryMethod, String orderType, String staffId, 
+                         List<Item> itemList, int[] itemQty, 
+                         String customerId, String customerName, String customerAddress) {
+        super(orderId, approvalStatus, orderDate, orderTime, deliveryMethod, orderType, staffId, itemList, itemQty);
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.customerAddress = customerAddress;
     }
 
     //-----------------------------------------------------------------------------------Getters
@@ -184,20 +191,48 @@ public class StockOutOrder extends Order{
         }
         
         // Set order details
-        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MMM/yyyy"));
-        String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a"));
-        String orderId = generateOrderId("SO"); 
+        String orderId = generateOrderId("SO");
         setOrderId(orderId);
-        setItemQty(inputItemQty); 
-        setApprovalStatus("pending");
-        setOrderDate(currentDate); // Set current date as orderDate
-        setOrderTime(currentTime); // Set current time as orderTime
+        setItemQty(inputItemQty);
+        setApprovalStatus("Pending");
+        setOrderDate(); // Set current date
+        setOrderTime(); // Set current time
         setDeliveryMethod("-");
         setOrderType("Stock Out Order");
         setStaffId("-");
         setItemList(orderedItems);
 
-        storeOrderToFile();
+    // Customer list
+        String[][] custList = {
+            {"C0001", "Emily Brown", "101 Pine Rd"},
+            {"C0002", "Lily Green", "456 Elm St"},
+            {"C0003", "Michael Johnson", "456 Elm St"},
+            {"C0004", "David Lee", "124 Main St"},
+            {"C0005", "James Lee", "12 Mount Fo"}
+        };
+
+        // Randomly select a customer
+        Random random = new Random();
+        int customerIndex = random.nextInt(custList.length); // Random index from 0 to custList.length - 1
+
+        // Create and set StockOutOrder
+        StockOutOrder stockOutOrder = new StockOutOrder(
+            orderId,
+            "Pending",
+            getOrderDate(),
+            getOrderTime(),
+            "-",
+            "Stock Out Order",
+            "-",
+            orderedItems,
+            inputItemQty,
+            custList[customerIndex][0],
+            custList[customerIndex][1],
+            custList[customerIndex][2]
+        );
+        
+        // Store order to file
+        stockOutOrder.storeOrderToFile();
 
         int opt = 0;
         boolean loop = true;

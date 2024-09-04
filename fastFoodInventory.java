@@ -30,9 +30,9 @@ public class fastFoodInventory {
     				case 2:
 						//Staff userLogin = new Staff();
 						//userLogin.login();
-    					Supplier test = new Supplier();
-						test.modifySupplier();
-						//menu();
+    					//Supplier test = new Supplier();
+						//test.modifySupplier();
+						menu();
 						break;
 					case 3:
 						System.exit(0);
