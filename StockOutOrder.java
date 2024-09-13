@@ -4,7 +4,8 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class StockOutOrder extends Order{
+public class StockOutOrder{
+    private Order order;
     private String customerId;
     private String customerName;
     private String customerAddress;
@@ -12,20 +13,14 @@ public class StockOutOrder extends Order{
 
     //-----------------------------------------------------------------------------------Constructors
     public StockOutOrder() {
-        super();
     }
 
-    public StockOutOrder(String customerId, String customerName, String customerAddress) {
-        this.customerId = customerId;
-        this.customerName = customerName;
-        this.customerAddress = customerAddress;
+    public StockOutOrder(Order order) {
+        this.order = order;
     }
 
-    public StockOutOrder(String orderId, String approvalStatus, Date orderDate, Date orderTime, 
-                         String deliveryMethod, String orderType, String staffId, 
-                         List<Item> itemList, int[] itemQty, 
-                         String customerId, String customerName, String customerAddress) {
-        super(orderId, approvalStatus, orderDate, orderTime, deliveryMethod, orderType, staffId, itemList, itemQty);
+    public StockOutOrder(Order order, String customerId, String customerName, String customerAddress) {
+        this.order = order;
         this.customerId = customerId;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
@@ -69,7 +64,7 @@ public class StockOutOrder extends Order{
     
     //-----------------------------------------------------------------------------------Stock Out Order Menu
     public static void stockOutOrderMenu(){
-        clearScreen();
+        Alignment.clearScreen();
 		Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
@@ -103,8 +98,9 @@ public class StockOutOrder extends Order{
                         stockOutOrder.customerInputOrder();
     					break;
 					case 4:
+                        scanner.close();
 						error = false;
-						orderManagement();
+						Order.orderManagement();
 						break;
 					case 5:
 						System.exit(0);
@@ -123,15 +119,13 @@ public class StockOutOrder extends Order{
 
     //-----------------------------------------------------------------------------------Customer Input Order(Dummy cuz not part of Inventory System)
     public void customerInputOrder(){
-        clearScreen();
+        Alignment.clearScreen();
         Alignment line = new Alignment();
         Scanner scanner = new Scanner(System.in);
         int num = 0;
 
-        // Populate itemList
-        readItemFromFile("itemInfo.txt");
         // Retrieve itemList from Order
-        List<Item> itemList = getItemList(); 
+        List<Item> itemList = Order.readItemFromFile("itemInfo.txt");
 
         // Check if itemList is null or empty
         if (itemList == null || itemList.isEmpty()) {
@@ -161,48 +155,48 @@ public class StockOutOrder extends Order{
 
         // Customer input
         System.out.print("How many items do you want to place an order for?\n--> ");
-        int noItem = scanner.nextInt();
+        int noOfItemToOrder = scanner.nextInt();
         scanner.nextLine();
 
-        int[] inputItemNo = new int[noItem];
-        int[] inputItemQty = new int[noItem];
+        int[] inputItemNo = new int[noOfItemToOrder];
+        int[] inputItemQty = new int[noOfItemToOrder];
         List<Item> orderedItems = new ArrayList<>();
 
         System.out.print("\nPlease enter Item number and quantity\n");
-        line.printLine("Please enter Item number and quantity".length());
+        System.out.println("-------------------------------------");
 
-        for (int i = 0; i < noItem; i++) {
+        for (int i = 0; i < noOfItemToOrder; i++) {
             System.out.print("Item " + (i + 1) + " : ");
-            inputItemNo[i] = scanner.nextInt();
+            int itemNumber = scanner.nextInt();
             scanner.nextLine();
-        
-            if (inputItemNo[i] <= 0 || inputItemNo[i] > itemList.size()) {
-                System.out.println("Invalid item number. Please try again.");
-                i--;
-                continue;
-            }
-        
-            Item selectedItem = itemList.get(inputItemNo[i] - 1); // Adjust for 0-based index
-            System.out.print("Quantity : ");
-            inputItemQty[i] = scanner.nextInt();
-            scanner.nextLine();
-            orderedItems.add(selectedItem);
-            System.out.println("You have ordered " + inputItemQty[i] + " " + selectedItem.getItemName() + "\n");
-        }
-        
-        // Set order details
-        String orderId = generateOrderId("SO");
-        setOrderId(orderId);
-        setItemQty(inputItemQty);
-        setApprovalStatus("Pending");
-        setOrderDate(); // Set current date
-        setOrderTime(); // Set current time
-        setDeliveryMethod("-");
-        setOrderType("Stock Out Order");
-        setStaffId("-");
-        setItemList(orderedItems);
 
-    // Customer list
+            Item selectedItem = itemList.get(itemNumber - 1); // Adjust for 0-based index
+
+            System.out.print("Quantity : ");
+            int quantity = scanner.nextInt();
+            scanner.nextLine(); 
+
+            // Store the valid item and quantity
+            inputItemNo[i] = itemNumber;
+            inputItemQty[i] = quantity;
+            orderedItems.add(selectedItem);
+            System.out.println("You have ordered " + quantity + " " + selectedItem.getItemName() + "\n");
+        }
+
+        // Set order details
+        String orderId = Order.generateOrderId("SO");
+        order.setOrderId(orderId);
+        order.setApprovalStatus("Pending");
+        order.setOrderDate(); // Set current date
+        order.setOrderTime(); // Set current time
+        order.setDeliveryMethod("-");
+        order.setOrderType("Stock Out Order");
+        order.setStaffId("-");
+        order.setItemList(orderedItems);
+        order.setItemQty(inputItemQty);
+        
+
+        // Customer list
         String[][] custList = {
             {"C0001", "Emily Brown", "101 Pine Rd"},
             {"C0002", "Lily Green", "456 Elm St"},
@@ -217,22 +211,14 @@ public class StockOutOrder extends Order{
 
         // Create and set StockOutOrder
         StockOutOrder stockOutOrder = new StockOutOrder(
-            orderId,
-            "Pending",
-            getOrderDate(),
-            getOrderTime(),
-            "-",
-            "Stock Out Order",
-            "-",
-            orderedItems,
-            inputItemQty,
+            order,
             custList[customerIndex][0],
             custList[customerIndex][1],
             custList[customerIndex][2]
         );
         
         // Store order to file
-        stockOutOrder.storeOrderToFile();
+        Order.storeOrderToFile(order, null, stockOutOrder);
 
         int opt = 0;
         boolean loop = true;
@@ -254,15 +240,9 @@ public class StockOutOrder extends Order{
                 }
             } catch (Exception e) {
                 System.out.println("Incorrect input (Please enter NUMBER only)");
-                scanner.nextLine(); // Clear the buffer to avoid infinite loop
+                scanner.nextLine();
             }
         }
         scanner.close();
-	}
-
-    //-----------------------------------------------------------------------------------Cls
-    public static void clearScreen() {
-   		System.out.print("\033[H\033[2J");
-  	 	System.out.flush();
 	}
 }

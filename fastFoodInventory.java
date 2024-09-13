@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class fastFoodInventory {
     public static void main(String arg[]) {
-		clearScreen();
+		Alignment.clearScreen();
     	Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
@@ -35,8 +35,9 @@ public class fastFoodInventory {
 						//menu();
 						//Order test = new Order();
 						//test.storeItemtoArr();
-						StockInOrder test1 = new StockInOrder();
-						test1.addPurchase();
+						//StockInOrder test1 = new StockInOrder();
+						//test1.addPurchase();2
+						Order.orderManagement();;
 						break;
 					case 3:
 						System.exit(0);
@@ -55,7 +56,7 @@ public class fastFoodInventory {
 	}
 
 	public static void menu(){
-		clearScreen();
+		Alignment.clearScreen();
 		Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
@@ -105,11 +106,6 @@ public class fastFoodInventory {
     		}	
 		}
 		scanner.close();
-	}
-
-	public static void clearScreen() {
-   		System.out.print("\033[H\033[2J");
-  	 	System.out.flush();
 	}
 }
 

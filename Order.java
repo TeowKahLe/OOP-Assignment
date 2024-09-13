@@ -114,7 +114,7 @@ public class Order{
 
     //-----------------------------------------------------------------------------------Order Management
     public static void orderManagement(){
-        clearScreen();
+        Alignment.clearScreen();
 	    Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
@@ -152,6 +152,7 @@ public class Order{
     					break;
 					case 5:
 						StockOutOrder.stockOutOrderMenu();
+                        Order.orderManagement();
     					break;
 					case 6:
 						error = false;
@@ -192,7 +193,7 @@ public class Order{
                             latestOrderId = orderTypePrefix + String.format("%04d", latestNumber);
                         }
                     } catch (NumberFormatException e) {
-                        // Handle case where the ID part is not a valid number
+                        System.out.print("ID number not valid");
                     }
                 }
             }
@@ -210,34 +211,39 @@ public class Order{
     }
 
     //-----------------------------------------------------------------------------------Store order to file
-    public void storeOrderToFile() {
+    public static void storeOrderToFile(Order order, StockInOrder stockInOrder, StockOutOrder stockOutOrder) {
         try (FileWriter writer = new FileWriter("orderInfo.txt", true)) { // Open in append mode
-
+    
             // Write Order details
-            writer.write(getOrderId() + "|" +
-                         getApprovalStatus() + "|" +
-                         getOrderDate() + "|" +
-                         getOrderTime() + "|" +
-                         getDeliveryMethod() + "|" +
-                         getOrderType() + "|" +
-                         getStaffId() + "|" + "\n");
+            writer.write(order.getOrderId() + "|" +
+                         order.getApprovalStatus() + "|" +
+                         order.getOrderDate() + "|" +
+                         order.getOrderTime() + "|" +
+                         order.getDeliveryMethod() + "|" +
+                         order.getOrderType() + "|" +
+                         order.getStaffId() + "|" + "\n");
     
             // Write StockOutOrder or StockInOrder specific details
-            if (this instanceof StockOutOrder) {
-                StockOutOrder soOrder = (StockOutOrder) this;
-                writer.write(soOrder.getCustomerId() + "|" +
-                             soOrder.getCustomerName() + "|" +
-                             soOrder.getCustomerAddress() + "|" +
-                             soOrder.getDateDispatched() + "|" + "\n");
+            if (order.getOrderType() == "Stock OutOrder") {
+
+               // Write StockInOrder specific details
+
+            } else if (order.getOrderType() == "Stock OutOrder") {
+                writer.write(stockOutOrder.getCustomerId() + "|" +
+                stockOutOrder.getCustomerName() + "|" +
+                stockOutOrder.getCustomerAddress() + "|" +
+                stockOutOrder.getDateDispatched() + "|" + "\n");
             }
     
             // Write item quantities and IDs
             boolean first = true; // Flag to handle leading separator
-            for (int i = 0; i < getItemList().size(); i++) {
+            List<Item> items = order.getItemList();
+            int[] itemQty = order.getItemQty();
+            for (int i = 0; i < items.size(); i++) {
                 if (!first) {
                     writer.write("|");
                 }
-                Item item = getItemList().get(i);
+                Item item = items.get(i);
                 writer.write(itemQty[i] + "|" + item.getItemId());
                 first = false;
             }
@@ -249,7 +255,7 @@ public class Order{
     }
 
     //-----------------------------------------------------------------------------------read item from file then update ItemList
-    public void readItemFromFile(String filePath) {
+    public static List<Item> readItemFromFile(String filePath) {
         List<Item> items = new ArrayList<>();
         try (Scanner scanner = new Scanner(new File(filePath))) {
             while (scanner.hasNextLine()) {
@@ -268,17 +274,17 @@ public class Order{
                         Integer.parseInt(itemFields[9]), // minStockQty
                         Integer.parseInt(itemFields[10]) // maxStockQty
                     );
-
+    
                     // Cast Inventory to Item and add to itemList
                     items.add((Item) inventory);
                 } else {
                     System.out.println("Invalid data format in file.");
                 }
             }
-            setItemList(items);
         } catch (FileNotFoundException e) {
             System.out.println("Cannot locate file: " + filePath);
         }
+        return items; // Return the itemList
     }
     
     //-----------------------------------------------------------------------------------Display All Order
@@ -373,13 +379,6 @@ public class Order{
             System.out.println(itemFilePath + " unable to open");
         }
     }
-
-
-    //-----------------------------------------------------------------------------------Cls
-    public static void clearScreen() {
-   		System.out.print("\033[H\033[2J");
-  	 	System.out.flush();
-	}
 }
 
 
