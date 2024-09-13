@@ -89,7 +89,7 @@ public void StockInOrderMenu(){
 
 //Add purchase order
 public void addPurchase(){    
-    Order.clearScreen();
+    Alignment.clearScreen();
     String selectedItemName = "";
     String selectedItemID = "";
     int qty = 0;

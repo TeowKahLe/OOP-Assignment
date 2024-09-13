@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class StockOutOrder{
-    private Order order;
     private String customerId;
     private String customerName;
     private String customerAddress;
@@ -15,12 +14,7 @@ public class StockOutOrder{
     public StockOutOrder() {
     }
 
-    public StockOutOrder(Order order) {
-        this.order = order;
-    }
-
-    public StockOutOrder(Order order, String customerId, String customerName, String customerAddress) {
-        this.order = order;
+    public StockOutOrder(String customerId, String customerName, String customerAddress) {
         this.customerId = customerId;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
@@ -98,7 +92,6 @@ public class StockOutOrder{
                         stockOutOrder.customerInputOrder();
     					break;
 					case 4:
-                        scanner.close();
 						error = false;
 						Order.orderManagement();
 						break;
@@ -182,8 +175,10 @@ public class StockOutOrder{
             orderedItems.add(selectedItem);
             System.out.println("You have ordered " + quantity + " " + selectedItem.getItemName() + "\n");
         }
+        
 
         // Set order details
+        Order order = new Order();
         String orderId = Order.generateOrderId("SO");
         order.setOrderId(orderId);
         order.setApprovalStatus("Pending");
@@ -194,7 +189,6 @@ public class StockOutOrder{
         order.setStaffId("-");
         order.setItemList(orderedItems);
         order.setItemQty(inputItemQty);
-        
 
         // Customer list
         String[][] custList = {
@@ -208,13 +202,10 @@ public class StockOutOrder{
         // Randomly select a customer
         Random random = new Random();
         int customerIndex = random.nextInt(custList.length); // Random index from 0 to custList.length - 1
-
-        // Create and set StockOutOrder
         StockOutOrder stockOutOrder = new StockOutOrder(
-            order,
-            custList[customerIndex][0],
-            custList[customerIndex][1],
-            custList[customerIndex][2]
+            custList[customerIndex][0],//customer id
+            custList[customerIndex][1],//customer name
+            custList[customerIndex][2]//customer address
         );
         
         // Store order to file
@@ -245,4 +236,7 @@ public class StockOutOrder{
         }
         scanner.close();
 	}
+
+    //-----------------------------------------------------------------------------------Display Stock In Order
+    
 }

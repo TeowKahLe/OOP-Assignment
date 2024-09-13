@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.io.IOException;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class Order{
     private String orderId;
@@ -53,6 +54,16 @@ public class Order{
 
     public Date getOrderTime() {
         return orderTime;
+    }
+
+    public String getFormattedOrderDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+        return dateFormat.format(orderDate);  
+    }
+
+    public String getFormattedOrderTime() {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+        return timeFormat.format(orderTime); 
     }
 
     public String getDeliveryMethod() {
@@ -217,18 +228,18 @@ public class Order{
             // Write Order details
             writer.write(order.getOrderId() + "|" +
                          order.getApprovalStatus() + "|" +
-                         order.getOrderDate() + "|" +
-                         order.getOrderTime() + "|" +
+                         order.getFormattedOrderDate() + "|" +
+                         order.getFormattedOrderTime() + "|" +
                          order.getDeliveryMethod() + "|" +
                          order.getOrderType() + "|" +
                          order.getStaffId() + "|" + "\n");
     
             // Write StockOutOrder or StockInOrder specific details
-            if (order.getOrderType() == "Stock OutOrder") {
+            if (order.getOrderType() == "Stock In Order") {
 
                // Write StockInOrder specific details
 
-            } else if (order.getOrderType() == "Stock OutOrder") {
+            } else if (order.getOrderType() == "Stock Out Order") {
                 writer.write(stockOutOrder.getCustomerId() + "|" +
                 stockOutOrder.getCustomerName() + "|" +
                 stockOutOrder.getCustomerAddress() + "|" +
@@ -289,76 +300,21 @@ public class Order{
     
     //-----------------------------------------------------------------------------------Display All Order
     public static void displayAllOrder() {
+        Alignment.clearScreen();
+        Alignment alignLine = new Alignment();
         File file = new File("orderInfo.txt");
         boolean hasOrders = false; // Flag to check if any orders are found
     
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-10s |\n",
+        System.out.print("+");
+        alignLine.printLineNoNewLine(112);
+        System.out.println("+");
+        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n",
                           "No.", "Order ID", "Approval", "Date", "Time", "Delivery", "Type");
-        System.out.println("|------------------------------------------------------------------------------|");
+        System.out.print("+");
+        alignLine.printLineNoNewLine(112);
+        System.out.println("+");
     
-        try (Scanner scanner = new Scanner(file)) {
-            int orderNo = 1;
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                // Parse the order details
-                String[] details = line.split("\\|");
-    
-                if (details.length < 7) {
-                    System.out.println("Invalid line format.");
-                    continue;
-                }
-    
-                // Display order details
-                System.out.printf("|%-3d | %-15s | %-15s | %-15s | %-15s | %-15s | %-10s |\n",
-                                  orderNo++,
-                                  details[0], // Order ID
-                                  details[1], // Approval Status
-                                  details[2], // Order Date
-                                  details[3], // Order Time
-                                  details[4], // Delivery Method
-                                  details[5]  // Order Type
-                );
-                System.out.println("|------------------------------------------------------------------------------|");
-    
-                // Read the next line for specific order details
-                if (scanner.hasNextLine()) {
-                    line = scanner.nextLine();
-                    String[] specifics = line.split("\\|");
-    
-                    if (details[5].equals("Stock Out Order")) {
-                        if (specifics.length < 4) {
-                            System.out.println("Invalid stock out order details.");
-                            continue;
-                        }
-                        System.out.println("Stock Out Order Details:");
-                        System.out.printf("Customer ID: %s\n", specifics[0]);
-                        System.out.printf("Customer Name: %s\n", specifics[1]);
-                        System.out.printf("Customer Address: %s\n", specifics[2]);
-                        System.out.printf("Date Dispatched: %s\n", specifics[3]);
-                    } else if (details[5].equals("Stock In Order")) {
-                        if (specifics.length < 3) {
-                            System.out.println("Invalid stock in order details.");
-                            continue;
-                        }
-                        System.out.println("Stock In Order Details:");
-                        System.out.printf("Supplier ID: %s\n", specifics[0]);
-                        System.out.printf("Supplier Name: %s\n", specifics[1]);
-                        System.out.printf("Date Received: %s\n", specifics[2]);
-                    }
-                }
-                System.out.println(); // Empty line between orders
-                hasOrders = true; // At least one order has been found
-            }  
-    
-            if (!hasOrders) {
-                System.out.println("No Order Record...");
-            }
-            
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: File not found.");
-            e.printStackTrace();
-        }
+        
     }
 
     public void storeItemtoArr(){
