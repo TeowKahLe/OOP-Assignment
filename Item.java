@@ -460,10 +460,13 @@ public class Item {
     }
 }
 
-
     public String toString(){
-        return itemId + "\t" + itemName + "\t" + itemCategory + "\t" + itemDesc + "\t" + unitCost + "\t" + unitPrice + "\n";
+        return itemId + "\t" + itemName + "\t" +  itemCategory + "\t" + itemDesc + "\t" + unitCost + "\t" + unitPrice + "\n";
     }
+
+/*    public String toString(){
+        return itemId + "\t" + String.format("%-20s",itemName) + "\t" + String.format("%-10s", itemCategory) + "\t" + String.format("%-20s", itemDesc) + "\tRM" + String.format("%5.2f", unitCost) + "\t\tRM" + String.format("%5.2f", unitPrice) + "\n";
+    } */
     //-----------------------------------------------------------------------------------Cls
     public static void clearScreen() {
    		System.out.print("\033[H\033[2J");

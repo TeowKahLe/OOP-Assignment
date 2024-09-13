@@ -22,6 +22,11 @@ public class Supplier extends Person {
 
     }
 
+    Supplier(String id,String name,String phoneNo,String email,String address,List<Item> supplyItem){
+        super(id,name,phoneNo,email,address);
+        this.supplyItem = supplyItem;
+    }
+
     Supplier(List<Item> supplyItem,String category,LocalDateTime[] schedule,Date contractExpiryDate){
         this.supplyItem =supplyItem;
         this.category = category;
@@ -282,8 +287,7 @@ public class Supplier extends Person {
                         if(tempID.equals(tokenContents[0])){
                             found = true;
                             extractIntoArr(supplierInfo,supplyItemInfo,supplierFilePath);
-
-                            
+                                                       
                             String detailModify = "";
                             switch(opt){
                                 case 1:
@@ -331,6 +335,7 @@ public class Supplier extends Person {
 
         for(int index = 0; index < supplierInfo.length;index++){
             String[] tokenSupplierInfo = supplierInfo[index].split("\\t");
+
             if(tempID.equals(tokenSupplierInfo[0])){
                 tokenSupplierInfo[opt] = newName;
 
@@ -541,13 +546,18 @@ public class Supplier extends Person {
     }
 
 
-
     public void displaySupplyList(){
         // show all the item that incharge by a supplier
     }
 
     public void viewSchedule(){
         // show the schedule that delivery to invetory
+    }
+
+    /*        super(id,name,phoneNo,email,address);
+        this.supplyItem = supplyItem; */
+    public String toString(){
+        return super.getId()+"\t"+super.getName()+"\t"+super.getContactNo()+"\t"+super.getEmail()+"\t"+super.getAddress()+"\t"+ supplyItem + "\n";   
     }
 
 }

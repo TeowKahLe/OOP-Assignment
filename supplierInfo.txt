@@ -17,3 +17,5 @@ Item[1]: MT001	Beef	Meat	Good	10.0	1.0
 U008	Lincoln	012-1234567	lo@gmail.com	g
 Item[1]: MT001	Beef	Meat	Good	10.0	1.0
 Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0
+U009	Willim	012-1234567	w@gmail.com	jalan insta
+Item[1]: BS001	Coke	Beverages	Good	1.0	3.0

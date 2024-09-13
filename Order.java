@@ -229,11 +229,6 @@ public class Order{
                              soOrder.getCustomerName() + "|" +
                              soOrder.getCustomerAddress() + "|" +
                              soOrder.getDateDispatched() + "|" + "\n");
-            } else if (this instanceof StockInOrder) {
-                StockInOrder siOrder = (StockInOrder) this;
-                writer.write(siOrder.getSupplierId() + "|" +
-                             siOrder.getSupplierName() + "|" +
-                             siOrder.getDateReceived() + "|" + "\n");
             }
     
             // Write item quantities and IDs
@@ -359,8 +354,27 @@ public class Order{
             e.printStackTrace();
         }
     }
-    
-    
+
+    public void storeItemtoArr(){
+        String itemFilePath = "itemInfo.txt";
+        String []tokenContents;
+
+        try(Scanner scanner = new Scanner (new File(itemFilePath))) {
+            while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+                if(lineContent != null){
+                    tokenContents = lineContent.split("\\|");
+                    //0-ID,1-Item Name,2-Category,3-Description,4-unitCost,5-unitPrice
+                    itemList.add(new Item(tokenContents[0],tokenContents[1],tokenContents[2],tokenContents[3],Double.parseDouble(tokenContents[4]),Double.parseDouble(tokenContents[5])));
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println(itemFilePath + " unable to open");
+        }
+    }
+
+
     //-----------------------------------------------------------------------------------Cls
     public static void clearScreen() {
    		System.out.print("\033[H\033[2J");
