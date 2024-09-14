@@ -4,3 +4,6 @@ C0005|James Lee|12 Mount Fo|null|
 SO0002|Pending|14 Sep 2024|01:00 AM|-|Stock Out Order|-|
 C0004|David Lee|124 Main St|null|
 55|MT001|23|MT002
+SO0003|Pending|14 Sep 2024|12:59 PM|-|Stock Out Order|-|
+C0004|David Lee|124 Main St|null|
+10|BS001|20|MT001|40|MT002

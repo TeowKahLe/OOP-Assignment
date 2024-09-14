@@ -343,7 +343,7 @@ public class Order{
         int opt = 0;
         boolean loop = true;
         while (loop) {
-            System.out.println("1.Back to Order Management\n2.Exit");
+            System.out.println("\nPlease select your action\n1.Back to Order Management\n2.Exit");
             try {
                 System.out.print("--> ");
                 opt = scanner.nextInt();

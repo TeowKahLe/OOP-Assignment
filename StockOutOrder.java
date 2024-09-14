@@ -1,6 +1,8 @@
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -66,11 +68,22 @@ public class StockOutOrder{
 		line.printEqualLine("STOCK OUT ORDER".length());
 		System.out.println("STOCK OUT ORDER");
 		line.printEqualLine("STOCK OUT ORDER".length());
-		//Display all stock out order only
+        System.out.print("+");
+        line.printLineNoNewLine(112);
+        System.out.println("+");
+        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n",
+                          "No.", "Order ID", "Approval", "Date", "Time", "Delivery", "Type");
+        System.out.print("+");
+        line.printLineNoNewLine(112);
+        System.out.println("+");
+		displayStockOutOrder();
+        System.out.print("+");
+        line.printLineNoNewLine(112);
+        System.out.println("+\n");
 		System.out.println("Please select your action");
-		System.out.println("1. Accept Order");
-		System.out.println("2. Cancel Order");
-        System.out.println("3. Add Order (For Customer)");
+		System.out.println("1. Add Order (For Customer)");
+		System.out.println("2. Accept order");
+        System.out.println("3. Reject Order ");
 		System.out.println("4. Return to Order Management");
 		System.out.println("5. Exit");
 
@@ -82,15 +95,14 @@ public class StockOutOrder{
                 scanner.nextLine();
 				switch(option){
 					case 1:
-						//Accept order
-    					break;
-    				case 2:
-						//Reject order
-    					break;
-    				case 3:
-						StockOutOrder stockOutOrder = new StockOutOrder();
+                        StockOutOrder stockOutOrder = new StockOutOrder();
                         stockOutOrder.customerInputOrder();
     					break;
+    				case 2:
+						//Acccept order
+    					break;
+    				case 3:
+						//Reject order
 					case 4:
 						error = false;
 						Order.orderManagement();
@@ -214,7 +226,7 @@ public class StockOutOrder{
         int opt = 0;
         boolean loop = true;
         while (loop) {
-            System.out.println("1.Back to Stock Out Order Menu\n2.Exit");
+            System.out.println("\nPlease select your action\n1.Back to Stock Out Order Menu\n2.Exit");
             try {
                 System.out.print("--> ");
                 opt = scanner.nextInt();
@@ -237,6 +249,43 @@ public class StockOutOrder{
         scanner.close();
 	}
 
-    //-----------------------------------------------------------------------------------Display Stock In Order
+    //-----------------------------------------------------------------------------------Display Stock Out Order
+    public static void displayStockOutOrder(){
+        File file = new File("orderInfo.txt");
+        boolean noOrder = true;
+        int num = 0;
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                // Read the first line (Order line)
+                String line = scanner.nextLine();
+                String[] orderDetails = line.split("\\|");
+                
+                // Check if the line starts with "SO" (indicating a Stock Out Order)
+                if (orderDetails[0].startsWith("SO")) {
+                    noOrder = false;
+                    System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n", num++, orderDetails[0], orderDetails[1], orderDetails[2], orderDetails[3], orderDetails[4], orderDetails[5], orderDetails[6]);
+                }
+            }
+        } catch (FileNotFoundException e) {
+        System.out.println("File not found: " + e.getMessage());
+    }
+
+    // If no Stock Out Orders were found, display a message
+        if (noOrder) {
+            System.out.println("No Stock Out Orders record....");
+        }
+    }
+
+    //-----------------------------------------------------------------------------------Accept Stock Out Order
+    public static void acceptStockOutOrder(){
+        Alignment.clearScreen();
+        displayStockOutOrder();
+
+        System.out.print("Please ");
+    }
+
+
+    
     
 }
