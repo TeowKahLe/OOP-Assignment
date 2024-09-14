@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
 public class Order{
     private String orderId;
     private String approvalStatus;
-    private Date orderDate;
+    private Date orderDate = new Date();
     private Date orderTime;
     private String deliveryMethod;
     private String orderType;
@@ -18,10 +19,14 @@ public class Order{
     private List<Item> itemList;
     private int[] itemQty;
 
+    Transaction transaction = new Transaction();
+
     //-----------------------------------------------------------------------------------Constructors
     public Order(){
         this.itemList = new ArrayList<>();
         this.itemQty = new int[0];
+        this.orderDate = new Date();
+        this.orderTime = new Time(System.currentTimeMillis());//Converts the current time into a Time object representing only the time portion (hours, minutes, seconds).
     }
 
     public Order(String orderId, String approvalStatus, Date orderDate, Date orderTime, 
