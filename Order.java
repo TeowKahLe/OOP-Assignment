@@ -236,7 +236,7 @@ public class Order{
     
             // Write StockOutOrder or StockInOrder specific details
             if (order.getOrderType() == "Stock In Order") {
-                
+
                //store stock in order attribute
 
             } else if (order.getOrderType() == "Stock Out Order") {
@@ -338,6 +338,32 @@ public class Order{
         System.out.print("+");
         alignmentLine.printLineNoNewLine(112);
         System.out.println("+");
+
+        Scanner scanner = new Scanner(System.in);
+        int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("1.Back to Order Management\n2.Exit");
+            try {
+                System.out.print("--> ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch(opt) {
+                    case 1: 
+                        Order.orderManagement();
+                        loop = false;
+                        break;
+                    case 2:
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid option");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)");
+                scanner.nextLine();
+            }
+        }
+        scanner.close();
     }
 
     public void storeItemtoArr(){
