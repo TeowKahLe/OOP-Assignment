@@ -7,3 +7,6 @@ C0004|David Lee|124 Main St|null|
 SO0003|Pending|14 Sep 2024|12:59 PM|-|Stock Out Order|-|
 C0004|David Lee|124 Main St|null|
 10|BS001|20|MT001|40|MT002
+SO0004|Pending|14 Sep 2024|05:18 PM|-|Stock Out Order|-|
+C0001|Emily Brown|101 Pine Rd|null|
+40|MT002|10|SD001

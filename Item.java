@@ -11,7 +11,6 @@ public class Item {
 	private String itemDesc;
 	private double unitCost;
 	private double unitPrice;
-	
     private Inventory inventory;
     //-----------------------------------------------------------------------------------Constructors
     public Item(){

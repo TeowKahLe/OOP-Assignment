@@ -2,7 +2,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -68,22 +70,11 @@ public class StockOutOrder{
 		line.printEqualLine("STOCK OUT ORDER".length());
 		System.out.println("STOCK OUT ORDER");
 		line.printEqualLine("STOCK OUT ORDER".length());
-        System.out.print("+");
-        line.printLineNoNewLine(112);
-        System.out.println("+");
-        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n",
-                          "No.", "Order ID", "Approval", "Date", "Time", "Delivery", "Type");
-        System.out.print("+");
-        line.printLineNoNewLine(112);
-        System.out.println("+");
 		displayStockOutOrder();
-        System.out.print("+");
-        line.printLineNoNewLine(112);
-        System.out.println("+\n");
 		System.out.println("Please select your action");
 		System.out.println("1. Add Order (For Customer)");
-		System.out.println("2. Accept order");
-        System.out.println("3. Reject Order ");
+		System.out.println("2. Search Order");
+        System.out.println("3. Manage Order status");
 		System.out.println("4. Return to Order Management");
 		System.out.println("5. Exit");
 
@@ -99,10 +90,10 @@ public class StockOutOrder{
                         stockOutOrder.customerInputOrder();
     					break;
     				case 2:
-						//Acccept order
+                        //Search Order
     					break;
     				case 3:
-						//Reject order
+                        manageStockOutOrderStatus();
 					case 4:
 						error = false;
 						Order.orderManagement();
@@ -128,8 +119,6 @@ public class StockOutOrder{
         Alignment line = new Alignment();
         Scanner scanner = new Scanner(System.in);
         int num = 0;
-
-        // Retrieve itemList from Order
         List<Item> itemList = Order.readItemFromFile("itemInfo.txt");
 
         // Check if itemList is null or empty
@@ -191,7 +180,7 @@ public class StockOutOrder{
 
         // Set order details
         Order order = new Order();
-        String orderId = Order.generateOrderId("SO");
+        String orderId = generateOrderId("SO");
         order.setOrderId(orderId);
         order.setApprovalStatus("Pending");
         order.setOrderDate(); // Set current date
@@ -221,7 +210,7 @@ public class StockOutOrder{
         );
         
         // Store order to file
-        Order.storeOrderToFile(order, null, stockOutOrder);
+        storeStockOutOrderToFile(order, stockOutOrder);
 
         int opt = 0;
         boolean loop = true;
@@ -249,15 +238,97 @@ public class StockOutOrder{
         scanner.close();
 	}
 
+    //-----------------------------------------------------------------------------------Generate Stock Out Order Id
+    public static String generateOrderId(String orderTypePrefix) {
+        String filePath = "stockOutOrderInfo.txt";
+        String latestOrderId = null;
+        int latestNumber = 0;
+
+        try (Scanner scanner = new Scanner(new File(filePath))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                // Check if the line starts with the given prefix
+                if (line.startsWith(orderTypePrefix)) {
+                    // Extract the number part from the ID
+                    String idPart = line.substring(orderTypePrefix.length(), orderTypePrefix.length() + 4);
+                    try {
+                        int number = Integer.parseInt(idPart);
+                        if (number > latestNumber) {
+                            latestNumber = number;
+                            latestOrderId = orderTypePrefix + String.format("%04d", latestNumber);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.print("ID number not valid");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the file: " + e.getMessage());
+        }
+
+        // Generate new order ID
+        if (latestOrderId == null) {
+            return orderTypePrefix + "0001";
+        } else {
+            int newNumber = Integer.parseInt(latestOrderId.substring(orderTypePrefix.length())) + 1;
+            return String.format("%s%04d", orderTypePrefix, newNumber);
+        }
+    }
+
+    //-----------------------------------------------------------------------------------Store stock out order to file
+    public static void storeStockOutOrderToFile(Order order, StockOutOrder stockOutOrder) {
+        try (FileWriter writer = new FileWriter("stockOutOrderInfo.txt", true)) { // Open in append mode
+            // Write Order details
+            writer.write(order.getOrderId() + "|" +
+                         order.getApprovalStatus() + "|" +
+                         order.getFormattedOrderDate() + "|" +
+                         order.getFormattedOrderTime() + "|" +
+                         order.getDeliveryMethod() + "|" +
+                         order.getOrderType() + "|" +
+                         order.getStaffId() + "|" + "\n");
+
+            writer.write(stockOutOrder.getCustomerId() + "|" +
+                         stockOutOrder.getCustomerName() + "|" +
+                         stockOutOrder.getCustomerAddress() + "|" +
+                         stockOutOrder.getDateDispatched() + "|" + "\n");
+    
+            // Write item quantities and IDs
+            boolean first = true; // Flag to handle leading separator
+            List<Item> items = order.getItemList();
+            int[] itemQty = order.getItemQty();
+            for (int i = 0; i < items.size(); i++) {
+                if (!first) {
+                    writer.write("|");
+                }
+                Item item = items.get(i);
+                writer.write(itemQty[i] + "|" + item.getItemId());
+                first = false;
+            }
+            writer.write("\n"); // Newline after item list
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     //-----------------------------------------------------------------------------------Display Stock Out Order
     public static void displayStockOutOrder(){
-        File file = new File("orderInfo.txt");
+        Alignment alignmentLine = new Alignment();
+        File file = new File("stockOutOrderInfo.txt");
         boolean noOrder = true;
-        int num = 0;
+        int num = 1;
+
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(112);
+        System.out.println("+");
+        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n",
+                          "No.", "Order ID", "Approval", "Date", "Time", "Delivery", "Type");
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(112);
+        System.out.println("+");
 
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
-                // Read the first line (Order line)
                 String line = scanner.nextLine();
                 String[] orderDetails = line.split("\\|");
                 
@@ -268,24 +339,195 @@ public class StockOutOrder{
                 }
             }
         } catch (FileNotFoundException e) {
-        System.out.println("File not found: " + e.getMessage());
-    }
-
-    // If no Stock Out Orders were found, display a message
+            System.out.println("File not found: " + e.getMessage());
+        }
+    
         if (noOrder) {
             System.out.println("No Stock Out Orders record....");
+        }
+
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(112);
+        System.out.println("+\n");
+    }
+
+    //-----------------------------------------------------------------------------------Display Stock Out Order Item List
+    public static void displayStockOutOrderItemList(String orderId) {
+        Alignment.clearScreen();
+        Alignment alignmentLine = new Alignment();
+        File orderFile = new File("stockOutOrderInfo.txt");
+        boolean noOrder = true;
+    
+        alignmentLine.printEqualLine("MANAGE ORDER".length() + 7);
+        System.out.println("MANAGE ORDER " + orderId);
+        alignmentLine.printEqualLine("MANAGE ORDER".length() + 7);
+    
+        // Print table header
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(124);
+        System.out.println("+");
+        System.out.printf("| %-3s | %-7s | %-15s | %-17s | %-15s | %-15s | %-11s | %-18s |\n",
+                          "No.", "Item Id", "Item Name", "Current Stock Qty", "Min Stock Limit", "Max Stock Limit", "Ordered Qty", "Ordered Item Value");
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(124);
+        System.out.println("+");
+    
+        // Search order ID in the file
+        int row = 1;
+        List<String> orderedItemIdList = new ArrayList<>();
+        List<Integer> orderedItemQtyList = new ArrayList<>();
+    
+        try (Scanner scanner = new Scanner(orderFile)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] orderDetails = line.split("\\|");
+    
+                // Check if the line is an order detail line
+                if (orderDetails[0].startsWith("SO")) {
+                    if (orderDetails[0].equals(orderId)) {
+                        noOrder = false;
+                        row = 1; // Reset row for this order
+                    } else {
+                        // Skip over the next 3 lines if not matching order
+                        for (int i = 0; i < 3; i++) {
+                            if (scanner.hasNextLine()) {
+                                scanner.nextLine();
+                            }
+                        }
+                    }
+                } else if (row == 1) {
+                    row++; // Move to next row if current row is customer details
+                } else if (row == 2) {
+                    row++; // Move to next row if current row is ordered items
+                    // Process ordered items
+                    for (int i = 0; i < orderDetails.length; i += 2) {
+                        if (i + 1 < orderDetails.length) {
+                            try {
+                                int qty = Integer.parseInt(orderDetails[i].trim());
+                                String itemId = orderDetails[i + 1].trim();
+                                orderedItemIdList.add(itemId);
+                                orderedItemQtyList.add(qty);
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid quantity format for item ID: " + orderDetails[i + 1].trim());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("stockOutOrderInfo.txt not found: " + e.getMessage());
+        }
+    
+        // If no order was found
+        if (noOrder) {
+            System.out.println("No searched order....");
+        } else {
+            // Read all items from itemInfo.txt
+            List<Item> itemList = Order.readItemFromFile("itemInfo.txt");
+    
+            // Display items and ordered quantities
+            for (int i = 0; i < orderedItemIdList.size(); i++) {
+                String orderedItemId = orderedItemIdList.get(i);
+                int orderedQty = orderedItemQtyList.get(i);
+            
+                boolean itemFound = false;
+                for (Item item : itemList) {
+                    // Check if the item is an instance of Inventory
+                    if (item instanceof Inventory) {
+                        Inventory inventoryItem = (Inventory) item;
+                        
+                        // Check for matching item ID
+                        if (inventoryItem.getItemId().equals(orderedItemId)) {
+                            // Display item information along with the ordered quantity
+                            System.out.printf("| %-3d | %-7s | %-15s | %-17d | %-15d | %-15d | %-11d | RM%-16.2f |\n",
+                                              (i + 1), // Item number
+                                              inventoryItem.getItemId(), 
+                                              inventoryItem.getItemName(), 
+                                              inventoryItem.getStockQty(), 
+                                              inventoryItem.getMinStockQty(), 
+                                              inventoryItem.getMaxStockQty(), 
+                                              orderedQty, 
+                                              inventoryItem.getUnitPrice() * orderedQty);
+                            itemFound = true;
+                            break; // Exit after finding the item
+                        }
+                    }
+                }
+                
+                if (!itemFound) {
+                    // Debug message if the item was not found in the itemList
+                    System.out.println("Item ID not found in itemList: " + orderedItemId);
+                }
+            }
+    
+            System.out.print("+");
+            alignmentLine.printLineNoNewLine(124);
+            System.out.println("+");
         }
     }
 
     //-----------------------------------------------------------------------------------Accept Stock Out Order
-    public static void acceptStockOutOrder(){
+    public static void manageStockOutOrderStatus() {
         Alignment.clearScreen();
-        displayStockOutOrder();
+        Scanner scanner = new Scanner(System.in);
+        File file = new File("stockOutOrderInfo.txt");
+        boolean noOrder = true;
+        int option = 0;
+        int num = 0;
+        String currentOrderId = "";
+    
+        displayStockOutOrder(); // Display available stock-out orders
+    
+        System.out.print("Which order do you want to manage? (please enter a number)\n--> ");
+        option = scanner.nextInt();
+        scanner.nextLine(); 
+    
+        try (Scanner fileScanner = new Scanner(file)) {
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                String[] orderDetails = line.split("\\|");
+    
+                if (orderDetails[0].startsWith("SO")) {
+                    num++;
+                    if (num == option) {
+                        currentOrderId = orderDetails[0];
+                        noOrder = false;
+                        break;
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("orderInfo.txt not found: " + e.getMessage());
+        }
+    
+        if (noOrder) {
+            System.out.println("No Stock Out Orders record....");
+        } else {
+            // Display the details of the selected order
+            displayStockOutOrderItemList(currentOrderId);
+        }
 
-        System.out.print("Please ");
+        boolean error = true;
+        int opt = 0;
+        try{
+            while(error){
+                System.out.print("[1] Accept Order\n[2] Reject Order\n-->");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                if(opt == 1){
+                    //accept order
+                }else if(opt == 2){
+                    //reject order
+                }
+            }
+            error = false;
+        } catch (Exception e){
+            System.out.println("Incorrect input(Please entry NUMBER only)");
+            scanner.nextLine(); //clear input buffer allow go into try block and prevent infinitely loop
+        }
+        
+
+        scanner.nextLine();
+        scanner.close();
     }
-
-
-    
-    
 }

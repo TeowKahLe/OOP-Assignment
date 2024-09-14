@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,86 +183,6 @@ public class Order{
         scanner.close();
 	}
 
-    //-----------------------------------------------------------------------------------Generate Order Id
-    public static String generateOrderId(String orderTypePrefix) {
-        String filePath = "orderInfo.txt";
-        String latestOrderId = null;
-        int latestNumber = 0;
-
-        try (Scanner scanner = new Scanner(new File(filePath))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                // Check if the line starts with the given prefix
-                if (line.startsWith(orderTypePrefix)) {
-                    // Extract the number part from the ID
-                    String idPart = line.substring(orderTypePrefix.length(), orderTypePrefix.length() + 4);
-                    try {
-                        int number = Integer.parseInt(idPart);
-                        if (number > latestNumber) {
-                            latestNumber = number;
-                            latestOrderId = orderTypePrefix + String.format("%04d", latestNumber);
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.print("ID number not valid");
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while reading the file: " + e.getMessage());
-        }
-
-        // Generate new order ID
-        if (latestOrderId == null) {
-            return orderTypePrefix + "0001";
-        } else {
-            int newNumber = Integer.parseInt(latestOrderId.substring(orderTypePrefix.length())) + 1;
-            return String.format("%s%04d", orderTypePrefix, newNumber);
-        }
-    }
-
-    //-----------------------------------------------------------------------------------Store order to file
-    public static void storeOrderToFile(Order order, StockInOrder stockInOrder, StockOutOrder stockOutOrder) {
-        try (FileWriter writer = new FileWriter("orderInfo.txt", true)) { // Open in append mode
-    
-            // Write Order details
-            writer.write(order.getOrderId() + "|" +
-                         order.getApprovalStatus() + "|" +
-                         order.getFormattedOrderDate() + "|" +
-                         order.getFormattedOrderTime() + "|" +
-                         order.getDeliveryMethod() + "|" +
-                         order.getOrderType() + "|" +
-                         order.getStaffId() + "|" + "\n");
-    
-            // Write StockOutOrder or StockInOrder specific details
-            if (order.getOrderType() == "Stock In Order") {
-
-               //store stock in order attribute
-
-            } else if (order.getOrderType() == "Stock Out Order") {
-                writer.write(stockOutOrder.getCustomerId() + "|" +
-                stockOutOrder.getCustomerName() + "|" +
-                stockOutOrder.getCustomerAddress() + "|" +
-                stockOutOrder.getDateDispatched() + "|" + "\n");
-            }
-    
-            // Write item quantities and IDs
-            boolean first = true; // Flag to handle leading separator
-            List<Item> items = order.getItemList();
-            int[] itemQty = order.getItemQty();
-            for (int i = 0; i < items.size(); i++) {
-                if (!first) {
-                    writer.write("|");
-                }
-                Item item = items.get(i);
-                writer.write(itemQty[i] + "|" + item.getItemId());
-                first = false;
-            }
-            writer.write("\n"); // Newline after item list
-    
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     //-----------------------------------------------------------------------------------read item from file then update ItemList
     public static List<Item> readItemFromFile(String filePath) {
@@ -288,6 +207,7 @@ public class Order{
     
                     // Cast Inventory to Item and add to itemList
                     items.add((Item) inventory);
+
                 } else {
                     System.out.println("Invalid data format in file.");
                 }
@@ -300,44 +220,8 @@ public class Order{
     
     //-----------------------------------------------------------------------------------Display All Order
     public static void displayAllOrder() {
-        Alignment.clearScreen();
-        Alignment alignmentLine = new Alignment();
-        File orderFile = new File("orderInfo.txt");
-        boolean noOrder = true; // Flag to check if any orders are found
-        int num = 0;
-    
-        System.out.print("+");
-        alignmentLine.printLineNoNewLine(112);
-        System.out.println("+");
-        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n",
-                          "No.", "Order ID", "Approval", "Date", "Time", "Delivery", "Type");
-        System.out.print("+");
-        alignmentLine.printLineNoNewLine(112);
-        System.out.println("+");
-    
-        try(Scanner scanner = new Scanner(orderFile)){
-            while(scanner.hasNextLine()){
-                String line = scanner.nextLine();
-                String[] orderDetails = line.split("\\|");
-
-                if (orderDetails.length == 7){
-                    noOrder = false;
-                    System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n", num++, orderDetails[0], orderDetails[1], orderDetails[2], orderDetails[3], orderDetails[4], orderDetails[5], orderDetails[6]);
-                }
-                
-            }
-            
-        }catch (FileNotFoundException e) {
-            System.out.println("orderInfo.txt not found: " + e.getMessage());
-        }
-
-        if(noOrder){
-            System.out.println("No order record...");
-        }
-
-        System.out.print("+");
-        alignmentLine.printLineNoNewLine(112);
-        System.out.println("+");
+        //display stock in order
+        StockOutOrder.displayStockOutOrder();
 
         Scanner scanner = new Scanner(System.in);
         int opt = 0;
@@ -365,6 +249,8 @@ public class Order{
         }
         scanner.close();
     }
+
+    
 
     public void storeItemtoArr(){
         String itemFilePath = "itemInfo.txt";

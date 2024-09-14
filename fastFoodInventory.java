@@ -2,7 +2,6 @@ import java.util.Scanner;
 
 public class fastFoodInventory {
     public static void main(String arg[]) {
-		Alignment.clearScreen();
     	Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
