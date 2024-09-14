@@ -236,8 +236,8 @@ public class Order{
     
             // Write StockOutOrder or StockInOrder specific details
             if (order.getOrderType() == "Stock In Order") {
-
-               // Write StockInOrder specific details
+                
+               //store stock in order attribute
 
             } else if (order.getOrderType() == "Stock Out Order") {
                 writer.write(stockOutOrder.getCustomerId() + "|" +
@@ -301,20 +301,43 @@ public class Order{
     //-----------------------------------------------------------------------------------Display All Order
     public static void displayAllOrder() {
         Alignment.clearScreen();
-        Alignment alignLine = new Alignment();
-        File file = new File("orderInfo.txt");
-        boolean hasOrders = false; // Flag to check if any orders are found
+        Alignment alignmentLine = new Alignment();
+        File orderFile = new File("orderInfo.txt");
+        boolean noOrder = true; // Flag to check if any orders are found
+        int num = 0;
     
         System.out.print("+");
-        alignLine.printLineNoNewLine(112);
+        alignmentLine.printLineNoNewLine(112);
         System.out.println("+");
         System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n",
                           "No.", "Order ID", "Approval", "Date", "Time", "Delivery", "Type");
         System.out.print("+");
-        alignLine.printLineNoNewLine(112);
+        alignmentLine.printLineNoNewLine(112);
         System.out.println("+");
     
-        
+        try(Scanner scanner = new Scanner(orderFile)){
+            while(scanner.hasNextLine()){
+                String line = scanner.nextLine();
+                String[] orderDetails = line.split("\\|");
+
+                if (orderDetails.length == 7){
+                    noOrder = false;
+                    System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n", num++, orderDetails[0], orderDetails[1], orderDetails[2], orderDetails[3], orderDetails[4], orderDetails[5], orderDetails[6]);
+                }
+                
+            }
+            
+        }catch (FileNotFoundException e) {
+            System.out.println("orderInfo.txt not found: " + e.getMessage());
+        }
+
+        if(noOrder){
+            System.out.println("No order record...");
+        }
+
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(112);
+        System.out.println("+");
     }
 
     public void storeItemtoArr(){
