@@ -3,7 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.io.IOException;
+//import java.io.IOException;
 import java.sql.Time;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -19,7 +19,7 @@ public class Order{
     private List<Item> itemList;
     private int[] itemQty;
 
-    Transaction transaction = new Transaction();
+    //Transaction transaction = new Transaction();
 
     //-----------------------------------------------------------------------------------Constructors
     public Order(){
@@ -134,9 +134,9 @@ public class Order{
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
 
-		line.printEqualLine("ORDER MANAGEMENT".length());
-		System.out.println("ORDER MANAGEMENT");
-		line.printEqualLine("ORDER MANAGEMENT".length());
+		line.printEqualLine(" ORDER MANAGEMENT ".length());
+		System.out.println(" ORDER MANAGEMENT ");
+		line.printEqualLine(" ORDER MANAGEMENT ".length());
 		System.out.println("Please select your action");
 		System.out.println("1. Display All Order");
 		System.out.println("2. Search Order");
@@ -196,13 +196,8 @@ public class Order{
             while (scanner.hasNextLine()) {
                 String[] itemFields = scanner.nextLine().split("\\|");
                 if (itemFields.length >= 11) {
+                    // Create the Inventory object first
                     Inventory inventory = new Inventory(
-                        itemFields[0], // itemId
-                        itemFields[1], // itemName
-                        itemFields[2], // itemCategory
-                        itemFields[3], // itemDesc
-                        Double.parseDouble(itemFields[4]), // unitCost
-                        Double.parseDouble(itemFields[5]), // unitPrice
                         Integer.parseInt(itemFields[6]), // stockQty
                         Double.parseDouble(itemFields[7]), // stockCost
                         Double.parseDouble(itemFields[8]), // stockValue
@@ -210,9 +205,20 @@ public class Order{
                         Integer.parseInt(itemFields[10]) // maxStockQty
                     );
     
-                    // Cast Inventory to Item and add to itemList
-                    items.add((Item) inventory);
-
+                    // Create the Item object, passing in the Inventory object
+                    Item item = new Item(
+                        itemFields[0], // itemId
+                        itemFields[1], // itemName
+                        itemFields[2], // itemCategory
+                        itemFields[3], // itemDesc
+                        Double.parseDouble(itemFields[4]), // unitCost
+                        Double.parseDouble(itemFields[5]), // unitPrice
+                        inventory // Pass the Inventory object to the Item constructor
+                    );
+    
+                    // Add Item to the list
+                    items.add(item);
+    
                 } else {
                     System.out.println("Invalid data format in file.");
                 }
@@ -220,7 +226,7 @@ public class Order{
         } catch (FileNotFoundException e) {
             System.out.println("Cannot locate file: " + filePath);
         }
-        return items; // Return the itemList
+        return items; // Return the list of Item objects
     }
     
     //-----------------------------------------------------------------------------------Display All Order
@@ -257,24 +263,24 @@ public class Order{
 
     
 
-    public void storeItemtoArr(){
-        String itemFilePath = "itemInfo.txt";
-        String []tokenContents;
+    //public void storeItemtoArr(){
+        //String itemFilePath = "itemInfo.txt";
+        //String []tokenContents;
 
-        try(Scanner scanner = new Scanner (new File(itemFilePath))) {
-            while(scanner.hasNextLine()){
-                String lineContent = scanner.nextLine();
-                if(lineContent != null){
-                    tokenContents = lineContent.split("\\|");
+        //try(Scanner scanner = new Scanner (new File(itemFilePath))) {
+           // while(scanner.hasNextLine()){
+                //String lineContent = scanner.nextLine();
+                //if(lineContent != null){
+                    //tokenContents = lineContent.split("\\|");
                     //0-ID,1-Item Name,2-Category,3-Description,4-unitCost,5-unitPrice
-                    itemList.add(new Item(tokenContents[0],tokenContents[1],tokenContents[2],tokenContents[3],Double.parseDouble(tokenContents[4]),Double.parseDouble(tokenContents[5])));
-                }
-            }
+                    //itemList.add(new Item(tokenContents[0],tokenContents[1],tokenContents[2],tokenContents[3],Double.parseDouble(tokenContents[4]),Double.parseDouble(tokenContents[5])));
+                //}
+            //}
 
-        } catch (IOException e) {
-            System.out.println(itemFilePath + " unable to open");
-        }
-    }
+        //} catch (IOException e) {
+            //System.out.println(itemFilePath + " unable to open");
+        //}
+    //}
 }
 
 

@@ -34,9 +34,9 @@ public class fastFoodInventory {
 						//menu();
 						//Order test = new Order();
 						//test.storeItemtoArr();
-						StockInOrder test1 = new StockInOrder();
-						test1.StockInOrderMenu();;
-						//Order.orderManagement();;
+						//StockInOrder test1 = new StockInOrder();
+						//test1.StockInOrderMenu();;
+						Order.orderManagement();;
 						break;
 					case 3:
 						System.exit(0);
