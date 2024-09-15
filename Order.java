@@ -3,7 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-//import java.io.IOException;
+import java.io.IOException;
 import java.sql.Time;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -19,7 +19,7 @@ public class Order{
     private List<Item> itemList;
     private int[] itemQty;
 
-    //Transaction transaction = new Transaction();
+    Transaction transaction = new Transaction();
 
     //-----------------------------------------------------------------------------------Constructors
     public Order(){
@@ -263,24 +263,24 @@ public class Order{
 
     
 
-    //public void storeItemtoArr(){
-        //String itemFilePath = "itemInfo.txt";
-        //String []tokenContents;
+    public void storeItemtoArr(){
+        String itemFilePath = "itemInfo.txt";
+        String []tokenContents;
 
-        //try(Scanner scanner = new Scanner (new File(itemFilePath))) {
-           // while(scanner.hasNextLine()){
-                //String lineContent = scanner.nextLine();
-                //if(lineContent != null){
-                    //tokenContents = lineContent.split("\\|");
+        try(Scanner scanner = new Scanner (new File(itemFilePath))) {
+           while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+                if(lineContent != null){
+                    tokenContents = lineContent.split("\\|");
                     //0-ID,1-Item Name,2-Category,3-Description,4-unitCost,5-unitPrice
-                    //itemList.add(new Item(tokenContents[0],tokenContents[1],tokenContents[2],tokenContents[3],Double.parseDouble(tokenContents[4]),Double.parseDouble(tokenContents[5])));
-                //}
-            //}
+                    itemList.add(new Item(tokenContents[0],tokenContents[1],tokenContents[2],tokenContents[3],Double.parseDouble(tokenContents[4]),Double.parseDouble(tokenContents[5])));
+                }
+            }
 
-        //} catch (IOException e) {
+        } catch (IOException e) {
             //System.out.println(itemFilePath + " unable to open");
-        //}
-    //}
+        }
+    }
 }
 
 
