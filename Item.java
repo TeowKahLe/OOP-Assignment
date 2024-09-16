@@ -11,20 +11,28 @@ public class Item {
 	private String itemDesc;
 	private double unitCost;
 	private double unitPrice;
-	
     private Inventory inventory;
     //-----------------------------------------------------------------------------------Constructors
     public Item(){
     }
 
     public Item(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice) {
+        this.itemId = itemId;
+        this.itemName = itemName;
+        this.itemCategory = itemCategory;
+        this.itemDesc = itemDesc;
+        this.unitCost = unitCost;
+        this.unitPrice = unitPrice;
+    }
+
+    public Item(String itemId, String itemName, String itemCategory, String itemDesc, double unitCost, double unitPrice, Inventory inventory) {
     	this.itemId = itemId;
         this.itemName = itemName;
         this.itemCategory = itemCategory;
         this.itemDesc = itemDesc;
         this.unitCost = unitCost;
         this.unitPrice = unitPrice;
-        this.inventory = new Inventory();
+        this.inventory = inventory;
     }
     
     //-----------------------------------------------------------------------------------Getters
@@ -318,19 +326,17 @@ public class Item {
     }
 
     // Create an Inventory instance
-    Inventory inventory = new Inventory();
-    inventory.setStockQty(0);
-    inventory.setStockCost(0.0);
-    inventory.setStockValue(0.0);
-    inventory.setMinStockQty(0);
-    inventory.setMaxStockQty(0);
+    Inventory inventory = new Inventory(0, 0.0, 0.0, 0, 0); // Pass default values for Inventory attributes
 
-    // Create an Item instance with Inventory details
+    // Create an Item instance with the category, name, description, cost, and price
     Item newItem = new Item(generateItemId(inputItemCategory), inputItemName, inputItemCategory, inputItemDesc, inputUnitCost, inputUnitPrice);
-    newItem.setInventory(inventory); // Ensure this method exists and sets the Inventory
+    
+    // Associate the Inventory object with the Item object
+    newItem.setInventory(inventory); // Ensure that Item class has a setInventory(Inventory inventory) method
 
-    // Store the details to itemInfo.txt
-    newItem.storeItemToFile(); // Call the method on the Item instance
+    // Store the details to itemInfo.txt (ensure the storeItemToFile method includes both Item and Inventory details)
+    newItem.storeItemToFile(); 
+
     scanner.close();
 }
 

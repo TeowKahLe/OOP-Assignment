@@ -1,3 +1,0 @@
-SO0001|Pending|Wed Sep 04 23:22:44 MYT 2024|Wed Sep 04 23:22:44 MYT 2024|-|Stock Out Order|-|
-C0005|James Lee|12 Mount Fo|null|
-10|SD001|20|MT001
