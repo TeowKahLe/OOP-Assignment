@@ -244,11 +244,11 @@ public class Item {
 }
 
     public void deleteItem(String itemId){
-
+        String itemPath = "itemInfo.txt";
     }
 
     public void modifyItem(String itemId, String itemName, double unitPrice, String itemDesc){
-
+        String itemPath = "itemInfo.txt";
     }
 
     //-----------------------------------------------------------------------------------Search Item (VeryVeryVery BIGGGG Problem later fix)
