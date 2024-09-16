@@ -1,9 +1,6 @@
-SO0001|Rejected|16 Sep 2024|04:10 PM|-|Stock Out Order|-
-C0002|Lily Green|456 Elm St|24 Sep 2024
-10|SD001|20|MT002|50|MT003|44|MT001
-SO0002|Accepted|16 Sep 2024|04:11 PM|Truck|Stock Out Order|-
-C0004|David Lee|124 Main St|21 Sep 2024
-10|SD002|25|MT001
-SO0003|Accepted|16 Sep 2024|04:11 PM|Truck|Stock Out Order|-
-C0005|James Lee|12 Mount Fo|19 Sep 2024
-20|SD001|45|MT002|17|MT001
+SO0001|Rejected|16 Sep 2024|10:05 PM|-|Stock Out Order|-
+C0001|Emily Brown|101 Pine Rd|25 Sep 2024
+10|MT001|20|BD001
+SO0002|Accepted|16 Sep 2024|10:06 PM|Bus|Stock Out Order|-
+C0001|Emily Brown|101 Pine Rd|24 Sep 2024
+10|MT001|5|BD001

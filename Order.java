@@ -154,7 +154,6 @@ public class Order{
 				switch(option){
     				case 1:
 						displayAllOrder();
-						//Order.orderManagement();
     					break;
     				case 2:
 						//Search Order
@@ -167,11 +166,9 @@ public class Order{
     					break;
 					case 5:
 						StockOutOrder.stockOutOrderMenu();
-                        Order.orderManagement();
     					break;
 					case 6:
-						error = false;
-						//menu();
+						fastFoodInventory.main(null);
 						break;
 					case 7:
 						System.exit(0);
@@ -261,8 +258,12 @@ public class Order{
         scanner.close();
     }
 
-    
+    //-----------------------------------------------------------------------------------Track Delivery
+    public static void trackDelivery(){
+        
+    }
 
+    //-----------------------------------------------------------------------------------Store Item To Array
     public void storeItemtoArr(){
         String itemFilePath = "itemInfo.txt";
         String []tokenContents;

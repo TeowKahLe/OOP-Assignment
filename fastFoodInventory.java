@@ -34,9 +34,10 @@ public class fastFoodInventory {
 						//menu();
 						//Order test = new Order();
 						//test.storeItemtoArr();
-						//StockInOrder test1 = new StockInOrder();
-						//test1.StockInOrderMenu();
-						Order.orderManagement();
+						StockInOrder test1 = new StockInOrder();
+						test1.StockInOrderMenu();
+						//Order.orderManagement();
+						//Inventory.inventoryManagement();
 						break;
 					case 3:
 						System.exit(0);
@@ -77,7 +78,7 @@ public class fastFoodInventory {
 				scanner.nextLine();
 				switch(opt){
     				case 1:
-						Item.itemManagement();
+						Inventory.inventoryManagement();
     					break;
     				case 2:
 						Order.orderManagement();
