@@ -1,4 +1,5 @@
 import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Scanner;
 import java.io.File;
@@ -41,9 +42,7 @@ public class StockOutOrder{
     public Date getDateDispatched() {
         return dateDispatched;
     }
-
-   
-
+    
     //-----------------------------------------------------------------------------------Setters
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
@@ -60,6 +59,7 @@ public class StockOutOrder{
     public void setDateDispatched(Date dateDispatched) {
         this.dateDispatched = dateDispatched;
     }
+
     
     //-----------------------------------------------------------------------------------Stock Out Order Menu
     public static void stockOutOrderMenu(){
@@ -68,8 +68,10 @@ public class StockOutOrder{
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
 
+        System.out.print("\t\t\t\t     ");
 		line.printEqualLine(" STOCK OUT ORDER ".length());
-		System.out.println(" STOCK OUT ORDER ");
+		System.out.println("\t\t\t\t      STOCK OUT ORDER ");
+        System.out.print("\t\t\t\t     ");
 		line.printEqualLine(" STOCK OUT ORDER ".length());
 		displayStockOutOrder();
 		System.out.println("Please select your action");
@@ -91,23 +93,53 @@ public class StockOutOrder{
                         stockOutOrder.customerInputOrder();
     					break;
     				case 2:
-                        //Search Order
+                        Alignment.clearScreen();
+                        System.out.print("\t\t\t\t     ");
+		                line.printEqualLine(" STOCK OUT ORDER ".length());
+		                System.out.println("\t\t\t\t      STOCK OUT ORDER ");
+                        System.out.print("\t\t\t\t     ");
+		                line.printEqualLine(" STOCK OUT ORDER ".length());
+                        displayStockOutOrder();
+                        searchStockOutOrder();
+                        int opt = 0;
+                        boolean loop = true;
+                        while (loop) {
+                            System.out.println("\nPlease select your action\n1.Back to Stock Out Order Menu\n2.Exit");
+                                try {
+                                    System.out.print("Selected action: ");
+                                    opt = scanner.nextInt();
+                                    scanner.nextLine();
+                                    switch(opt) {
+                                        case 1: 
+                                            StockOutOrder.stockOutOrderMenu();
+                                            loop = false;
+                                            break;
+                                        case 2:
+                                            System.exit(0);
+                                        default:
+                                            System.out.println("Invalid action selected\n");
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                                    scanner.nextLine();
+                                }
+                            }
     					break;
     				case 3:
                         manageStockOutOrderStatus();
+                        break;
 					case 4:
-						error = false;
 						Order.orderManagement();
 						break;
 					case 5:
 						System.exit(0);
 						break;
     				default:
-    					System.out.println("Invalid action selected");
+    					System.out.println("Invalid action selected\n");
     					break;	
     			}
 			}catch (Exception e){
-    			System.out.println("Incorrect input(Please enter NUMBER only)");
+    			System.out.println("Incorrect input(Please enter NUMBER only)\n");
     			scanner.nextLine();
     		}	
 		}
@@ -229,10 +261,10 @@ public class StockOutOrder{
                     case 2:
                         System.exit(0);
                     default:
-                        System.out.println("Invalid option");
+                        System.out.println("Invalid action selected\n");
                 }
             } catch (Exception e) {
-                System.out.println("Incorrect input (Please enter NUMBER only)");
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
                 scanner.nextLine();
             }
         }
@@ -286,13 +318,19 @@ public class StockOutOrder{
                          order.getFormattedOrderTime() + "|" +
                          order.getDeliveryMethod() + "|" +
                          order.getOrderType() + "|" +
-                         order.getStaffId() + "|" + "\n");
-
-            writer.write(stockOutOrder.getCustomerId() + "|" +
+                         order.getStaffId() + "\n");
+            if(stockOutOrder.getDateDispatched() == null){
+                writer.write(stockOutOrder.getCustomerId() + "|" +
                          stockOutOrder.getCustomerName() + "|" +
                          stockOutOrder.getCustomerAddress() + "|" +
-                         stockOutOrder.getDateDispatched() + "|" + "\n");
-    
+                         "-" + "\n");
+            }else{
+                writer.write(stockOutOrder.getCustomerId() + "|" +
+                         stockOutOrder.getCustomerName() + "|" +
+                         stockOutOrder.getCustomerAddress() + "|" +
+                         stockOutOrder.getDateDispatched() + "\n");
+            }
+            
             // Write item quantities and IDs
             boolean first = true; // Flag to handle leading separator
             List<Item> items = order.getItemList();
@@ -320,12 +358,12 @@ public class StockOutOrder{
         int num = 1;
 
         System.out.print("+");
-        alignmentLine.printLineNoNewLine(112);
+        alignmentLine.printLineNoNewLine(94);
         System.out.println("+");
-        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n",
-                          "No.", "Order ID", "Approval", "Date", "Time", "Delivery", "Type");
+        System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s |\n",
+                          "No.", "Order ID", "Approval", "Date", "Time", "Delivery");
         System.out.print("+");
-        alignmentLine.printLineNoNewLine(112);
+        alignmentLine.printLineNoNewLine(94);
         System.out.println("+");
 
         try (Scanner scanner = new Scanner(file)) {
@@ -336,7 +374,7 @@ public class StockOutOrder{
                 // Check if the line starts with "SO" (indicating a Stock Out Order)
                 if (orderDetails[0].startsWith("SO")) {
                     noOrder = false;
-                    System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n", num++, orderDetails[0], orderDetails[1], orderDetails[2], orderDetails[3], orderDetails[4], orderDetails[5], orderDetails[6]);
+                    System.out.printf("|%-3s | %-15s | %-15s | %-15s | %-15s | %-15s |\n", num++, orderDetails[0], orderDetails[1], orderDetails[2], orderDetails[3], orderDetails[4], orderDetails[5]);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -346,12 +384,12 @@ public class StockOutOrder{
         if (noOrder) {
             System.out.printf("%-113s|\n", "|No Stock Out Orders record....");
             System.out.print("+");
-            alignmentLine.printLineNoNewLine(112);
+            alignmentLine.printLineNoNewLine(94);
             System.out.println("+");
             return false;
         }
         System.out.print("+");
-        alignmentLine.printLineNoNewLine(112);
+        alignmentLine.printLineNoNewLine(94);
         System.out.println("+\n");
         return true;
     }
@@ -362,10 +400,12 @@ public class StockOutOrder{
         Alignment alignmentLine = new Alignment();
         File orderFile = new File("stockOutOrderInfo.txt");
         boolean noOrder = true;
-    
-        alignmentLine.printEqualLine(" MANAGE ORDER ".length() + 8);
-        System.out.println(" MANAGE ORDER " + orderId);
-        alignmentLine.printEqualLine(" MANAGE ORDER ".length() + 8);
+        
+        System.out.print("\t\t\t\t\t\t         ");
+        alignmentLine.printEqualLine("ORDER ".length() + 8);
+        System.out.println("\t\t\t\t\t\t\t  ORDER " + orderId);
+        System.out.print("\t\t\t\t\t\t         ");
+        alignmentLine.printEqualLine("ORDER ".length() + 8);
     
         // Print table header
         System.out.print("+");
@@ -444,7 +484,7 @@ public class StockOutOrder{
                         Inventory inventoryItem = item.getInventory();
     
                         // Display item information along with the ordered quantity
-                        System.out.printf("| %-3d | %-7s | %-15s | %-17d | %-15d | %-15d | %-11d | RM%-16.2f |\n",
+                        System.out.printf("| %-3d | %-7s | %-15s | %-17d | %-15d | %-15d | %-11d | RM %-15.2f |\n",
                                           (i + 1), // Item number
                                           item.getItemId(), 
                                           item.getItemName(), 
@@ -472,7 +512,94 @@ public class StockOutOrder{
         return true;
     }
     
+    //-----------------------------------------------------------------------------------Search Search Stock Out Order
+    public static void searchStockOutOrder(){
+        int ingnoreScanner = 1;
+        Alignment alignmentLine = new Alignment();
+        int option = 0;
+        boolean validOption = false;
+        Scanner scanner = new Scanner(System.in);
     
+        System.out.println("Which order do you want to search? (Please enter a number only): ");
+    
+        while (!validOption) {
+            System.out.print("Selected action: ");
+            try {
+                option = scanner.nextInt();
+                scanner.nextLine(); 
+
+                // Validate the selected option and retrieve the corresponding order ID
+                String selectedOrderId = null;
+                int num = 0;
+                File orderFile = new File("stockOutOrderInfo.txt");
+            
+                // Read the file to find the selected order ID
+                try (Scanner fileScanner = new Scanner(orderFile)) {
+                    while (fileScanner.hasNextLine()) {
+                        String line = fileScanner.nextLine();
+                        String[] orderDetails = line.split("\\|");
+
+                        if (orderDetails[0].startsWith("SO")) {
+                            num++;
+                            if (num == option) {
+                                selectedOrderId = orderDetails[0];
+                                break;
+                            }
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    System.out.println("File not found: " + e.getMessage());
+                }
+
+                if (selectedOrderId != null) {
+                    validOption = true;
+                
+                    // Display the details of the selected order
+                    displayStockOutOrderItemList(selectedOrderId);
+
+                    // Now, display the additional details
+                    try (Scanner fileScanner = new Scanner(orderFile)) {
+                        boolean orderFound = false;
+                        while (fileScanner.hasNextLine()) {
+                            String line = fileScanner.nextLine();
+                            String[] orderDetails = line.split("\\|");
+
+                            if (orderDetails[0].equals(selectedOrderId)) {
+                                orderFound = true;
+                                // Print additional details
+                                System.out.printf("| Approval Status : %-104s |\n", orderDetails[1]);
+                                System.out.printf("| Order Date      : %-104s |\n", orderDetails[2]);
+                                System.out.printf("| Order Time      : %-104s |\n", orderDetails[3]);
+                                System.out.printf("| Delivery method : %=104s |\n", orderDetails[4]);
+                                System.out.printf("| Order Type      : %-104s |\n", orderDetails[5]);
+                                System.out.printf("| Staff ID        : %-104s |\n", orderDetails[6]); 
+                                System.out.print("+");
+                                alignmentLine.printLineNoNewLine(124);
+                                System.out.println("+");
+                                break;
+                            }
+                        }
+                    
+                        if (!orderFound) {
+                            System.out.println("Order ID not found in the file.");
+                        }
+                    } catch (FileNotFoundException e) {
+                        System.out.println("File not found: " + e.getMessage());
+                    }
+                } else {
+                    System.out.println("Invalid action\n");
+                }
+            
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter a NUMBER only)\n");
+                scanner.nextLine(); // Clear the buffer
+            }
+        }
+
+        if(ingnoreScanner != 1){
+            scanner.close();
+        }
+    }
 
     //-----------------------------------------------------------------------------------Manage Stock Out Order Status
     public static void manageStockOutOrderStatus() {
@@ -480,96 +607,96 @@ public class StockOutOrder{
         Alignment alignmentLine = new Alignment();
         Scanner scanner = new Scanner(System.in);
         File file = new File("stockOutOrderInfo.txt");
-        boolean noOrder = true;
-        int option = 0;
-        int num = 0;
-        String currentOrderId = "";
-
+        
+        System.out.print("\t\t\t\t    ");
         alignmentLine.printEqualLine(" MANAGE ORDER STATUS ".length());
-        System.out.println(" MANAGE ORDER STATUS ");
+        System.out.println("\t\t\t\t     MANAGE ORDER STATUS ");
+        System.out.print("\t\t\t\t    ");
         alignmentLine.printEqualLine(" MANAGE ORDER STATUS ".length());
     
-        if(displayStockOutOrder()){
-            System.out.print("Which order do you want to manage? (please enter a number)\nSelected action: ");
-            option = scanner.nextInt();
-            scanner.nextLine(); 
+        if (displayStockOutOrder()) {
+            int option = -1;
+            String currentOrderId = null;
+            boolean noOrder = true;
+            int num = 0;
 
-            try (Scanner fileScanner = new Scanner(file)) {
-                while (fileScanner.hasNextLine()) {
-                    String line = fileScanner.nextLine();
-                    String[] orderDetails = line.split("\\|");
-        
-                    if (orderDetails[0].startsWith("SO")) {
-                        num++;
-                        if (num == option) {
-                            currentOrderId = orderDetails[0];
-                            noOrder = false;
-                            break;
+            System.out.print("Which order do you want to manage? (please enter a number)\n");
+            // Validate user input for selecting an order
+            while (true) {
+                
+                System.out.print("Selected action: ");
+                try {
+                    option = scanner.nextInt();
+                    scanner.nextLine(); // Clear the input buffer
+
+                    try (Scanner fileScanner = new Scanner(file)) {
+                        while (fileScanner.hasNextLine()) {
+                            String line = fileScanner.nextLine();
+                            String[] orderDetails = line.split("\\|");
+
+                            if (orderDetails[0].startsWith("SO")) {
+                                num++;
+                                if (num == option) {
+                                    currentOrderId = orderDetails[0];
+                                    noOrder = false;
+                                    break;
+                                }
+                            }
                         }
+                    } catch (FileNotFoundException e) {
+                        System.out.println("File not found: " + file.getName());
+                        return;
                     }
+
+                    if (!noOrder) {
+                        // Display the details of the selected order
+                        StockOutOrder.displayStockOutOrderItemList(currentOrderId);
+                        break; // Exit loop if order found
+                    } else {
+                        System.out.println("No Stock Out Orders record....");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Invalid action selected\n");
+                    scanner.nextLine();
                 }
-            } catch (FileNotFoundException e) {
-                System.out.println("orderInfo.txt not found: " + e.getMessage());
             }
-        
-            if (noOrder) {
-                System.out.println("No Stock Out Orders record....");
-                int opt = 0;
-                boolean loop = true;
-                while (loop) {
-                    System.out.println("\nPlease select your action\n1.Back to Stock Out Order Menu\n2.Exit");
-                    try {
-                        System.out.print("Selected action: ");
-                        opt = scanner.nextInt();
-                        scanner.nextLine();
-                        switch(opt) {
-                            case 1: 
-                                StockOutOrder.stockOutOrderMenu();
-                                loop = false;
-                                break;
-                            case 2:
-                                System.exit(0);
-                            default:
-                                System.out.println("Invalid option");
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Incorrect input (Please enter NUMBER only)");
-                        scanner.nextLine();
-                    }
-                }    
-            } else {
-                // Display the details of the selected order
-                StockOutOrder.displayStockOutOrderItemList(currentOrderId);
-            }
-    
+
+            System.out.print("\nPlease select your action\n[1] Accept Order\n[2] Reject Order\n");
+            // Handle actions for the selected order
             boolean error = true;
-            int opt = 0;
-            try{
-                while(error){
-                    System.out.print("\nPlease select your action\n[1] Accept Order\n[2] Reject Order\nSelected action: ");
+            while (error) {
+                
+                System.out.print("Selected action: ");
+                int opt = 0;
+                try {
                     opt = scanner.nextInt();
                     scanner.nextLine();
-                    if(opt == 1){
-                        StockOutOrder.modifyStockOutOrderStatus(currentOrderId, "Approved");
-                        break;
-                    }else if(opt == 2){
-                        StockOutOrder.modifyStockOutOrderStatus(currentOrderId,"Rejected");
-                        break;
-                    }else{
-                        System.out.print("Invalid option");
+                    switch (opt) {
+                        case 1:
+                            StockOutOrder.modifyStockOutOrderStatus(currentOrderId, "Accepted");
+                            error = false;
+                            break;
+                        case 2:
+                            StockOutOrder.modifyStockOutOrderStatus(currentOrderId, "Rejected");
+                            error = false;
+                            break;
+                        default:
+                            System.out.println("Invalid action selected\n");
+                            break;
                     }
+                } catch (Exception e) {
+                    System.out.println("Incorrect input (Please enter a NUMBER only)\n");
+                    scanner.nextLine();
                 }
-                error = false;
-            } catch (Exception e){
-                System.out.println("Incorrect input(Please entry NUMBER only)");
-                scanner.nextLine(); //clear input buffer allow go into try block and prevent infinitely loop
             }
+        } else {
+            System.out.println("Failed to display Stock Out Orders.");
         }
     
         int opt = 0;
         boolean loop = true;
+        System.out.println("\nPlease select your action\n1.Back to Stock Out Order Menu\n2.Exit");
         while (loop) {
-            System.out.println("\nPlease select your action\n1.Back to Stock Out Order Menu\n2.Exit");
             try {
                 System.out.print("Selected action: ");
                 opt = scanner.nextInt();
@@ -582,10 +709,10 @@ public class StockOutOrder{
                     case 2:
                         System.exit(0);
                     default:
-                        System.out.println("Invalid option");
+                        System.out.println("Invalid action selected\n");
                 }
             } catch (Exception e) {
-                System.out.println("Incorrect input (Please enter NUMBER only)");
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
                 scanner.nextLine();
             }
         }
@@ -598,23 +725,60 @@ public class StockOutOrder{
         File orderFile = new File("stockOutOrderInfo.txt");
         List<String> stockOutOrderFileContent = new ArrayList<>();
         boolean orderFound = false;
+        boolean modifyDispatchedDate = false;
+
+        // Random transportation method options
+        String[] transportOptions = {"Bus", "Van", "Truck"};
+        Random random = new Random();
 
         try (Scanner scanner = new Scanner(orderFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] orderDetails = line.split("\\|");
 
-                // Check if this is an order line (order ID should start with "SO")
+                // First line - Modify the approval status and potentially the transportation method
                 if (orderDetails[0].startsWith("SO")) {
-                    if (orderDetails[0].equals(orderId)) {
+                    if (orderDetails[0].equals(orderId)) { // Check for matching orderId
                         orderFound = true;
-                        // Modify the status in the order line
-                        orderDetails[1] = newStatus; // Assuming status is the second field
+                        // Modify the status in the order line (first line)
+                        orderDetails[1] = newStatus;
+
+                        // Modify delivery method and dispatched date based on status
+                        if (newStatus.equals("Accepted")) {
+                            if (orderDetails[4].equals("-")) {
+                                orderDetails[4] = transportOptions[random.nextInt(transportOptions.length)];
+                            }
+                            modifyDispatchedDate = true;
+                        } else if (newStatus.equals("Rejected")) {
+                            orderDetails[4] = "-"; // Reset delivery method
+                            modifyDispatchedDate = true;
+                        }
+
                         line = String.join("|", orderDetails);
                     }
-                }
+                } 
+                // Second line - Modify the dispatched date based on the status
+                else if (modifyDispatchedDate && !orderDetails[0].startsWith("SO") && orderDetails.length >= 4) {
+                    if (orderDetails[orderDetails.length - 1].equals("-")) {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+                        if (newStatus.equals("Accepted")) {
+                            int daysToAdd = random.nextInt(8) + 3; // Random number between 3 and 10
+                            long currentTime = new Date().getTime();
+                            long addedTime = daysToAdd * 24L * 60 * 60 * 1000; // Add days in milliseconds
+                            Date dispatchedDate = new Date(currentTime + addedTime);
 
-                stockOutOrderFileContent.add(line); // Add the (possibly modified) line to the list
+                            // Update the last part of the second line (dispatched date)
+                            orderDetails[orderDetails.length - 1] = dateFormat.format(dispatchedDate);
+                        } else if (newStatus.equals("Rejected")) {
+                            // Set dispatched date to "-"
+                            orderDetails[orderDetails.length - 1] = "-";
+                        }
+                        line = String.join("|", orderDetails);
+                    }
+                    modifyDispatchedDate = false; // Reset flag after modifying the dispatched date
+                } 
+                // Add the (possibly modified) line to the list
+                stockOutOrderFileContent.add(line);
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + orderFile.getName());
