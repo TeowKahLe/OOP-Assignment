@@ -163,6 +163,7 @@ public class Order{
     					break;
 					case 4:
 						//Stock In Order
+                        //StockInOrder.StockInOrderMenu();
     					break;
 					case 5:
 						StockOutOrder.stockOutOrderMenu();

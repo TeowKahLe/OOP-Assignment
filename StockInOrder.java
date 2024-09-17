@@ -37,17 +37,12 @@ public class StockInOrder extends Order{
     }
 
 //menu-------------------------------------------------------------------------------------
+
 public void StockInOrderMenu(){
     int opt = 0;
     boolean isDigit = false;
 
     while(opt != 4 || !isDigit){
-        System.out.println("Stock In Order");
-        line.printLine("Stock In Order".length());
-        System.out.println("1.Add Order");
-        System.out.println("2.Cancel Order");
-        System.out.println("3.Modify Order");
-        System.out.println("4.Back to staff menu");
 
         try{
             System.out.print("Enter your action >> ");
@@ -99,6 +94,10 @@ public void addPurchase(String[] itemOrderDetail){
 
     String[] filteredSupplID = new String[10];
     boolean found,isDigit,same;
+
+    
+    System.out.println("ADD ORDER");
+    line.printLine("ADD ORDER".length());
 
     super.getItemList().clear();
     supplierInfo.clear();
@@ -178,7 +177,9 @@ public void addPurchase(String[] itemOrderDetail){
         while(!found){
             System.out.print(String.format("%-30s","Supplier(enter supplier ID) ") + ": ");
             selectedSupplID = scanner.nextLine();
-            selectedSupplID = selectedSupplID.substring(0,1).toUpperCase() + selectedSupplID.substring(1);
+            if(Character.isLetter(selectedSupplID.charAt(0))){
+                selectedSupplID = selectedSupplID.substring(0,1).toUpperCase() + selectedSupplID.substring(1);
+            }
             for (String supplID : filteredSupplID) {
                 if(selectedSupplID.equals(supplID)){
                     found = true;
@@ -342,7 +343,7 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
         double totalAmount = 0;
         String itemID,itemName="",supplierID;
         double[] total = new double[10];
-        String[][] tempItemDetail = new String[10][6];
+        List <String> tempItemDetail = new ArrayList<>();
 
         //itemOrderDetail = ItemID  "\t" + qty + "\t" + SupplID;
         //itemOrderDetail = [0] ItemID,[1] qty,[2] SupplID;  item Name item unitCost
@@ -374,48 +375,469 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                 total[no] = super.transaction.calcSubTotal(unitCost, qty);
                 System.out.println("|" + (no+1) + "\t" + String.format("%-11s", supplierID) + "\t" + String.format("%-10s", itemID) + "\t" + String.format("%-10s", itemName) + "\t" + String.format("%-8d", qty) + "\tRM" + String.format("%-9.2f", unitCost) + "\tRM" + String.format("%-10.2f",total[no]) +"|");
                 
-                tempItemDetail[no][0]=supplierID;
-                tempItemDetail[no][1]=itemID;
-                tempItemDetail[no][2]=itemName;
-                tempItemDetail[no][3]=String.valueOf(qty);
-                tempItemDetail[no][4]=("RM"+String.format("%.2f", unitCost));
-                tempItemDetail[no][5]=("RM"+String.format("%.2f", total[no]));
+                tempItemDetail.add(supplierID + "\t" + itemID +  "\t" + itemName +  "\t" + String.valueOf(qty) + "\tRM" +(String.format("%.2f", unitCost)) + "\tRM" +String.format("%.2f", total[no]));
             }
         }
 
         totalAmount = super.transaction.calTotalAmount(total);
-        storeStockInOrderInfo(tempItemDetail,generateOrderID(), orderDate,orderTime,totalAmount);
 
         line.printEqualLine(101);
         System.out.println("|" + String.format("%87s", "Total: ") + "RM"+ String.format("%-10.2f", totalAmount) + "|");
         line.printEqualLine(101);
+
+        //store all the order detail into a list
+        String orderOvrData = generateOrderID() + "\t" + orderDate + "\t" + orderTime + "\tRM" + String.format("%.2f",totalAmount);
+        List<String> tempOrderDetail = new ArrayList<>();
+
+        tempOrderDetail.add(orderOvrData);
+        for (String itemContent : tempItemDetail) {
+            tempOrderDetail.add(itemContent);
+        }
+
+        completeOrderAction(tempOrderDetail);
+        //storeStockInOrderInfo(tempOrderDetail);
     }
 
-    public void storeStockInOrderInfo(String[][]tempItemDetail,String orderID, String orderDate,String orderTime,double totalAmount){
+    public void storeStockInOrderInfo(List <String>tempOrderDetail){
         String stockInFilePath = "stockInOrder.txt";
 
         try {
             FileWriter writer = new FileWriter(stockInFilePath,true);
-            writer.write(orderID + "\t" + orderDate + "\t" + orderTime + "\tRM" + String.format("%.2f", totalAmount) + "\n");
+            //write header content(ovr Content)
+            writer.write(tempOrderDetail.get(0)+"\n");
+            
 
-            for (String[] itemDetail : tempItemDetail) {
-                if(itemDetail != null){
-                    for(int element = 0; element< itemDetail.length;element++){
-                        if(itemDetail[element]!=null){
-                            writer.write(itemDetail[element] +"\t");
-
-                            if (element == 5){
-                                writer.write("\n");   
+            //write Item detail
+            for(int noLineContent=1;noLineContent<tempOrderDetail.size();noLineContent++){
+                if(tempOrderDetail.get(noLineContent) != null){
+                    String[] elementContent = tempOrderDetail.get(noLineContent).split("\\t");
+                    for(int element = 0; element< elementContent.length;element++){
+                        if(elementContent[element]!=null){
+                            if(element == 5){
+                                writer.write(elementContent[element] +"\n");
+                            }else{
+                                writer.write(elementContent[element] +"\t");
                             }
                         }
                     }
+                }else{
+                    break;
                 }
-
             }
 
             writer.close();
         } catch (Exception e) {
             System.out.println(stockInFilePath + "unable to open");
+        }
+    }
+
+    public void completeOrderAction(List<String>tempOrderDetail){
+        int action = 0;
+        
+        System.out.println("\nACTION");
+        line.printLine("ACTION".length());
+        System.out.println("1.Modify Order");
+        System.out.println("2.Cancel Order");
+        System.out.println("3.Confirm Order");
+        do{
+            try {
+                System.out.print("Enter your action: ");
+                action = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (action) {
+                    case 1:
+                        modifyUnstoredOrder(tempOrderDetail);
+                        break;
+                    case 2:
+                        System.out.println("Order cancelled...");
+                    break;
+                    case 3:
+                        int opt = 0;
+
+                        System.out.println("Delivery Method"); 
+                        System.out.println("1.Ground(RM4.50/ship)\n2.Sea(RM7.50/ship)\n3.Air(RM15.00/ship)");
+                        
+                        do{
+                            try {
+                                System.out.print("Select method(1,2 or 3): ");
+                                opt = scanner.nextInt();
+                                scanner.nextLine();
+                                if(opt == 1){
+                                    addDeliveryFee(tempOrderDetail,4.5,"Ground");
+                                }else if(opt == 2){
+                                    addDeliveryFee(tempOrderDetail,7.5,"Sea");
+                                }else if(opt == 3){
+                                    addDeliveryFee(tempOrderDetail,15,"Air");
+                                }else{
+                                System.out.println("The option only allow (1,2 or 3)");    
+                                }
+                                
+                                displayOrderListFromTemp(tempOrderDetail);
+                                System.out.println(super.getStaffId());
+                            } catch (Exception e) {
+                                scanner.nextLine();
+                                System.out.println("The option only allow (1,2 or 3)");
+                            }
+                        }while(opt < 1 && opt > 3);
+                        //payment
+                    break;
+                    default:
+                        break;
+                }
+
+                
+            } catch (Exception e) {
+                scanner.nextLine();
+                System.out.println("Action only allow (1,2 and 3)");
+            }
+
+            if(action < 1 || action > 3){
+                System.out.println("Action only allow (1,2 or 3)");
+            }
+        }while(action < 1 || action > 3);    
+    }
+
+    public void modifyUnstoredOrder(List<String>tempOrderDetail){
+        int action = 0;
+
+        System.out.println("1.Add an item");
+        System.out.println("2.Cancel an item");
+        System.out.println("3.Change an item quantity");
+        System.out.println("4.Back");
+
+
+        do{
+            try {
+                System.out.print("Enter your action: ");
+                action = scanner.nextInt();
+                scanner.nextLine();
+                
+                String addItemName,addItemID="",selectedSupplID="";
+                int qty = 0;
+                double addItemUnitCost = 0;
+
+                boolean isAlpha;
+                boolean found;
+                boolean same;
+
+                switch (action) {
+                    case 1:
+                    //add an item
+                        sortDisplayItemArr();
+                        do{
+                            found = false;
+                            isAlpha = true;
+                            same = false;
+                           
+                            //validate item name
+                            System.out.print("Enter the item NAME you want add: ");
+                            addItemName = scanner.nextLine();
+    
+                            for(char alphaCancelItem : addItemName.toCharArray()){
+                                if(!(Character.isLetter(alphaCancelItem))){
+                                    isAlpha = false;
+                                    break;
+                                }
+                            }
+    
+                            if(isAlpha){
+                                addItemName = addItemName.substring(0, 1).toUpperCase() + addItemName.substring(1).toLowerCase();
+                            }
+                            
+                            if(tempOrderDetail.size() < 11){ //1 HEADER + 10 ITEM IS MAX
+                                //check from item List (to check item available)
+                                //check order got duplicate item
+                                for (Item itemInfo : super.getItemList()) {
+                                    if(addItemName.equals(itemInfo.getItemName())){
+                                        found = true;
+                                        for (int element = 1;element<tempOrderDetail.size();element++) { //tempOrderDetail is 0 is ovrData + >0 is item so start with 1
+                                            String[] orderInfoElement = tempOrderDetail.get(element).split("\\t");
+                                            if(orderInfoElement[2].equals(addItemName)){
+                                                same = true;
+                                            }else{
+                                                addItemID = itemInfo.getItemId();
+                                                addItemUnitCost = itemInfo.getUnitCost();
+                                            }
+                                        }
+                                    }
+                                }
+                                if(same){
+                                    System.out.println("This item has ordered.Please select different product.");
+                                }
+    
+                                if(!found){
+                                    System.out.println("Sorry, we don't have this item.\nPlease refer above list.Thank you.");
+                                }
+                            }else{
+                                System.out.println("Your order item limit is reached\n");
+                                modifyUnstoredOrder(tempOrderDetail);
+                            }
+    
+                        }while(same || !found);
+
+                        //validate qty
+                        boolean isPosInt = false;
+                        while (!isPosInt) {
+                            try {
+                                System.out.print("Enter item quantity: ");
+                                qty = scanner.nextInt();
+                                scanner.nextLine();
+                                if(qty > 0){
+                                    isPosInt = true;
+                                }else{
+                                    System.out.println("Quantity only allow positive integer.");    
+                                }    
+                            } catch (Exception e) {
+                                scanner.nextLine();
+                                System.out.println("Quantity only allow positive integer.");
+                            }   
+                        }
+
+                        //filter and validate input of choosing supplier
+                        String [] filteredSupplID = new String[10];
+                filterSupplier(addItemName,filteredSupplID);
+
+                found = false;
+                while(!found){
+                    System.out.print(String.format("%-30s","Supplier(enter supplier ID) ") + ": ");
+                    selectedSupplID = scanner.nextLine();
+                    if(Character.isLetter(selectedSupplID.charAt(0))){
+                        selectedSupplID = selectedSupplID.substring(0,1).toUpperCase() + selectedSupplID.substring(1);
+                    }
+                    for (String supplID : filteredSupplID) {
+                        if(selectedSupplID.equals(supplID)){
+                            found = true;
+                        }
+                    }
+                    if(!found){
+                        System.out.println("Sorry,your supplier ID does not found in " + addItemName + " Supplier List.\nPlease refer above list.\n");
+                    }
+                }
+                    double addItemSubTotal = super.transaction.calcSubTotal(addItemUnitCost, qty);
+                    tempOrderDetail.add(selectedSupplID + "\t" + addItemID + "\t" + addItemName + "\t" + qty + "\tRM" + String.format("%.2f", addItemUnitCost) + "\tRM" + String.format("%.2f", addItemSubTotal));
+
+                    changeTotalModifyAdd(tempOrderDetail,addItemSubTotal);
+                    displayOrderListFromTemp(tempOrderDetail);
+                break;
+                    case 2:
+                    //cancel an item
+                    List<String> modifiedContent = new ArrayList<>();
+                    if(tempOrderDetail.size() > 2){ //mean if item only 1 in this order is unable to modify item out
+                        found = false;
+                        while(!found){
+                            isAlpha = true;
+                            System.out.print("Enter the item NAME you want delete: ");
+                            String cancelItemName = scanner.nextLine();
+    
+                            for(char alphaCancelItem : cancelItemName.toCharArray()){
+                                if(!(Character.isLetter(alphaCancelItem))){
+                                    isAlpha = false;
+                                    break;
+                                }
+                            }
+                            if(isAlpha){  
+                                cancelItemName = cancelItemName.substring(0,1).toUpperCase() + cancelItemName.substring(1).toLowerCase();
+                            }
+                            found = cancelItemToContent(tempOrderDetail, cancelItemName, modifiedContent);
+
+                            //rearrange the List
+                            String ovrData = modifiedContent.get(modifiedContent.size()-1);
+                            String replaceValue = modifiedContent.get(0);
+                            String nextContent = "";
+            
+                            for(int noLineContent = 0;noLineContent < modifiedContent.size();noLineContent++){ // last line is replace to one
+                
+                                if(noLineContent != (modifiedContent.size()-1)){    
+                                    nextContent = modifiedContent.get(noLineContent+1);
+                                    modifiedContent.set(noLineContent+1, replaceValue);
+                                    replaceValue = nextContent;
+                                }else{
+                                    modifiedContent.set(0, ovrData);
+                                }
+                            }
+                            
+                            if(!found){
+                                System.out.println("the item does not found in this order.");
+                            }
+                        }
+                        //change tempOrderDetail(before cancel an item) to modifiedContent(after cancel an item)
+                        tempOrderDetail.clear();
+                        for (String newContent : modifiedContent) {
+                            tempOrderDetail.add(newContent);
+                        }
+
+                        System.out.println("Modified order list");
+                        line.printLine("Modified order list".length());
+                        displayOrderListFromTemp(tempOrderDetail);
+                    }else{
+                        System.out.println("Sorry,you unable to modify the order to cancel an item because it only 1 item.Please select other option.\n");
+                        
+                    }
+                    break;
+                    case 3:
+                        //change qty
+                        found = false;
+                        String modifyQtyItemName = "";
+
+                        while(!found){
+                            isAlpha = true;
+                            System.out.print("Enter the item NAME that need to modify quantity: ");
+                            modifyQtyItemName = scanner.nextLine();
+                        
+                            for(char alphaModifyItem : modifyQtyItemName.toCharArray()){
+                                if(!(Character.isLetter(alphaModifyItem))){
+                                    isAlpha = false;
+                                    break;
+                                }
+                            }
+                            if(isAlpha){  
+                                modifyQtyItemName = modifyQtyItemName.substring(0,1).toUpperCase() + modifyQtyItemName.substring(1).toLowerCase();
+                            }
+                            
+                            //check the order have this item or not
+                            for (int element = 1;element<tempOrderDetail.size();element++) { //tempOrderDetail is 0 is ovrData + >0 is item so start with 1
+                                  
+                                String[] orderInfoElement = tempOrderDetail.get(element).split("\\t");
+                                    if(orderInfoElement[2].equals(modifyQtyItemName)){
+                                    found = true;
+                                }
+                            }
+
+                            if(!found){
+                                System.out.println("the item does not found in this order.");
+                            }
+                        }
+
+                        boolean sameQty;
+                        do{
+                            isPosInt = false;
+                            sameQty = false;
+                            while (!isPosInt) {
+                                try {
+                                    System.out.print("Enter item NEW quantity: ");
+                                    qty = scanner.nextInt();
+                                    scanner.nextLine();
+                                    if(qty > 0){
+                                        isPosInt = true;
+                                    }else{
+                                        System.out.println("Quantity only allow positive integer.");    
+                                    }    
+                                } catch (Exception e) {
+                                    scanner.nextLine();
+                                    System.out.println("Quantity only allow positive integer.");
+                                }   
+                            }
+
+                            List <String> modifiedQtyContent = new ArrayList<>();
+                            sameQty = changeItemQty(tempOrderDetail, modifyQtyItemName, modifiedQtyContent, qty);
+
+                            if(sameQty){
+                                System.out.println("Sorry,you does not change the quantity.");
+                            }else{
+                                 //rearrange the List
+                                String ovrData = modifiedQtyContent.get(modifiedQtyContent.size()-1);
+                                String replaceValue = modifiedQtyContent.get(0);
+                                String nextContent = "";
+            
+                                for(int noLineContent = 0;noLineContent < modifiedQtyContent.size();noLineContent++){ // last line is replace to one
+                
+                                    if(noLineContent != (modifiedQtyContent.size()-1)){    
+                                       nextContent = modifiedQtyContent.get(noLineContent+1);
+                                        modifiedQtyContent.set(noLineContent+1, replaceValue);
+                                        replaceValue = nextContent;
+                                    }else{
+                                       modifiedQtyContent.set(0, ovrData);
+                                    }
+                                
+                                    //change tempOrderDetail(before cancel an item) to modifiedQtyContent(after cancel an item)
+                                    tempOrderDetail.clear();
+                                    for (String newContent : modifiedQtyContent) {
+                                    tempOrderDetail.add(newContent);
+                                    }
+                                }
+                                System.out.println("Modified order list");
+                                line.printLine("Modified order list".length());
+                                displayOrderListFromTemp(tempOrderDetail);
+                            }
+                        }while(sameQty);  
+                    break;
+                    case 4:
+                    //back
+                    break;
+                    default:
+                        break;
+                }
+                completeOrderAction(tempOrderDetail);
+                
+            } catch (Exception e) {
+                scanner.nextLine();
+                System.out.println("Action only allow (1,2 and 3)");
+            }
+        }while(action < 1 || action > 4);
+    }
+
+    public void addDeliveryFee(List <String> tempOrderDetail,double deliveryFee,String shippingType){
+        List<String> modifiedOrderDetail = new ArrayList<>();
+
+        String[] elementDetail = tempOrderDetail.get(0).split("\\t");
+        //[0]orrderID,[1]Date,[2]Time,[3]Total
+        double newTotal = Double.parseDouble(elementDetail[3].substring(2)) + deliveryFee;
+
+        modifiedOrderDetail.add(elementDetail[0] + "\t" + elementDetail[1] + "\t" + elementDetail[2] + "\tRM" + String.format("%.2f", newTotal) + "\t" + shippingType);
+
+        for(int lineContent = 1;lineContent<tempOrderDetail.size();lineContent++){
+            modifiedOrderDetail.add(tempOrderDetail.get(lineContent));
+        }
+
+        //move update content to tempOrderDetail
+        tempOrderDetail.clear();
+
+        for (String modifiedContent : modifiedOrderDetail) {
+            tempOrderDetail.add(modifiedContent);
+        }
+    }
+
+    public void displayOrderListFromTemp(List<String> tempOrderDetail){
+        
+        String[] orderInfo = tempOrderDetail.get(0).split("\\t");
+
+        line.printEqualLine(101);
+        //0-orderID , 1-date, 2-time , 3.total
+        System.out.println("|Order ID: "+ orderInfo[0] + String.format("%84s", ("DATE: "+ orderInfo[1] + "  TIME: " + orderInfo[2] + "|")));
+
+        line.printEqualLine(101);
+        System.out.println("|No." + "\t" + String.format("%-11s", "Supplier ID") + "\t" + String.format("%-10s", "Item ID") + "\t" + String.format("%-10s", "Item Name") + "\t" + String.format("%-8s", "Quantity") + "\t" + String.format("%-9s", "Unit cost") + "\t" + String.format("%-12s", "Subtotal")+ "|");
+        line.printEqualLine(101);
+        
+        for(int line = 1;line<tempOrderDetail.size();line++){
+            String[] orderItemInfo = tempOrderDetail.get(line).split("\\t");
+            //0-supplID ,1-itemID ,2-itemName ,3-qty ,4- unitCost ,5- subtotal
+            System.out.println("|" + line + "\t" + String.format("%-11s", orderItemInfo[0]) + "\t" + String.format("%-10s", orderItemInfo[1]) + "\t" + String.format("%-10s", orderItemInfo[2]) + "\t" + String.format("%-8s", orderItemInfo[3]) + "\t" + String.format("%-11s", orderItemInfo[4]) + "\t" + String.format("%-12s",orderItemInfo[5]) +"|");
+        }
+        line.printEqualLine(101);
+        System.out.println("|" + String.format("%87s", "Total: ") + String.format("%-12s", orderInfo[3]) + "|");
+        line.printEqualLine(101);
+    }
+
+    public void changeTotalModifyAdd(List<String>tempOrderDetail,double addItemSubTotal){
+        List<String> tempModifiedContent = new ArrayList<>();
+
+        String[] elementOvrData = tempOrderDetail.get(0).split("\\t");
+        double newTotal = Double.parseDouble(elementOvrData[3].substring(2)) + addItemSubTotal;
+        
+
+        //0-Supplier ID 1- date 2- time 3-total
+        tempModifiedContent.add(elementOvrData[0] + "\t" +elementOvrData[1] + "\t" +elementOvrData[2] + "\tRM" + String.format("%.2f",newTotal));
+
+        for(int lineContent = 1;lineContent<tempOrderDetail.size();lineContent++){
+            tempModifiedContent.add(tempOrderDetail.get(lineContent));
+        }
+
+        //move tempOrderDetail(before change) to tempModifiedContent(after change)
+        tempOrderDetail.clear();
+        for (String content : tempModifiedContent) {
+            tempOrderDetail.add(content);
         }
     }
 
@@ -426,6 +848,9 @@ public void cancelPurchase(){
     boolean found = false;
     
     String stockInFilePath = "stockInOrder.txt";
+
+    System.out.println("CANCEL ORDER");
+    line.printLine("CANCEL ORDER".length());
 
     while (!found) {
         System.out.print("Enter the Order ID that you want cancel: ");
@@ -543,6 +968,9 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
         boolean found = false;
         String modifyOrderID = "";
 
+        
+        System.out.println("MODIFY ORDER");
+        line.printLine("MODIFY ORDER".length());
         while (!found) {
             System.out.print("Enter the Order ID that you want modify: ");
             modifyOrderID = scanner.nextLine();
@@ -553,7 +981,7 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
 
             found = findOrderIDFromFile(modifyOrderID);
             if(!found){
-                System.out.println("Sorry,we cant find the order you want to deleted.Please try again.");
+                System.out.println("Sorry,we cant find the order you want to modify.Please try again.");
             }
            }
            displayOrderListFromID(modifyOrderID);
@@ -561,18 +989,18 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
            int modifyOpt = 0;
            do{
             try {
-                System.out.println("\nModify option\n1.Cancel an item\n2.Modify an item quantity");
+                System.out.println("\nModify option\n1.Cancel an item\n2.Modify an item quantity\n3.Back");
                 System.out.print("Enter your option: ");
                 modifyOpt = scanner.nextInt();
                 scanner.nextLine(); 
-                if(modifyOpt != 1 && modifyOpt != 2){
-                    System.out.println("option only allow (1 or 2)");    
+                if(modifyOpt != 1 && modifyOpt != 2 && modifyOpt !=3){
+                    System.out.println("option only allow (1 or 2 or 3)");    
                 }
                } catch (Exception e) {
                 scanner.nextLine();
-                System.out.println("option only allow (1 or 2)");
+                System.out.println("option only allow (1 or 2 or 3)");
                }
-           }while(modifyOpt != 1 && modifyOpt != 2);
+           }while(modifyOpt != 1 && modifyOpt != 2  && modifyOpt !=3);
            
            modifyOrderFromFile(modifyOrderID, modifyOpt);
     }
@@ -583,8 +1011,7 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
         try {
             List<String> originalLine = Files.readAllLines(Paths.get(stockInFilePath));//before modify content
             List<String> requireModifyLine = new ArrayList<>(); // temp storage to store need modify data
-            List<String> modifiedSpecificLine = new ArrayList<>(); //modified temp storage 
-            List<String> updatedLine = new ArrayList<>();//after modified content
+            List<String> modifiedSpecificLine = new ArrayList<>(); //modified temp storage
             boolean need = false; //the allocate need modify content
             boolean found = false;
     
@@ -604,12 +1031,13 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
                 }      
             }
 
+            boolean isAlpha;
             if(modifyOpt==1){
                 if(requireModifyLine.size() > 2){ //mean if item only 1 in this order is unable to modify item out
                     found = false;
                     while(!found){
-                        boolean isAlpha = true;
-                        System.out.print("Enter the item u want delete: ");
+                        isAlpha = true;
+                        System.out.print("Enter the item NAME you want delete: ");
                         String cancelItemName = scanner.nextLine();
 
                         for(char alphaCancelItem : cancelItemName.toCharArray()){
@@ -622,45 +1050,83 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
                             cancelItemName = cancelItemName.substring(0,1).toUpperCase() + cancelItemName.substring(1).toLowerCase();
                         }
                         found = cancelItemToContent(requireModifyLine, cancelItemName, modifiedSpecificLine);
-
                         if(!found){
                             System.out.println("the item does not found in this order.");
                         }
-                    }                    
-                }else{
-                    System.out.println("Sorry,u unable to modify the order to cancel an item because it only 1 item.Please go to delete order\n");
-                }
-            }
-            //move to updateLine
-            int modifyListLineNo = 0;
-            for (String content : originalLine) {
-                if(content.startsWith("SI")){ //find the content next order?
-                    
-                    if(content.startsWith(modifyOrderID)){ //find modify content
-                        need = true;
-                    }else{
-                        need = false;
                     }
+                }else{
+                    System.out.println("Sorry,u unable to modify the order to cancel an item because it only 1 item.Please go to delete order.\n");
+                    cancelPurchase();
+                    StockInOrderMenu();
                 }
+
+            }else if(modifyOpt == 2){
+                found = false;
+                String modifyQtyItemName = "";
+
+                while(!found){ 
+                    isAlpha = true;
+                    System.out.print("Enter the item NAME that need to modify quantity: ");
+                    modifyQtyItemName = scanner.nextLine();
     
-                if(need){
-                    if(modifyListLineNo < modifiedSpecificLine.size()){
-                        updatedLine.add(modifiedSpecificLine.get(modifyListLineNo));
-                        modifyListLineNo++;
+                    for(char alphaModifyItem : modifyQtyItemName.toCharArray()){
+                        if(!(Character.isLetter(alphaModifyItem))){
+                            isAlpha = false;
+                            break;
+                        }
                     }
+                    if(isAlpha){  
+                        modifyQtyItemName = modifyQtyItemName.substring(0,1).toUpperCase() + modifyQtyItemName.substring(1).toLowerCase();
+                    }
+
+                    //find got this order and the item want to change qty have in this order
+                    found = checkExist(modifyOrderID,modifyQtyItemName,stockInFilePath);
+
+                    if(!found){
+                        System.out.println("the item does not found in this order.");
+                    }
+                }  
+    
+                    boolean isInt = false;
+                    boolean sameQty = false;
+                    do{
+                        isInt = false;
+                        sameQty = false;
+                        try {
+                            System.out.print("Enter the new quantity: ");
+                            int newQty = scanner.nextInt();
+                            scanner.nextLine();
+                            isInt = true;
+                            sameQty = changeItemQty(requireModifyLine, modifyQtyItemName, modifiedSpecificLine, newQty);
+                            
+                            if(sameQty){
+                                System.out.println("Sorry,you does not change the quantity.");
+                            }
+                            
+                        } catch (Exception e) {
+                            scanner.nextLine();
+                            System.out.println("Quantity only allow positive integer");
+                        }
+
+                    }while(!isInt || sameQty); 
+           
+
+            }else if(modifyOpt == 3){
+                StockInOrderMenu();
+            }
+
+            if(modifyOpt == 1 || modifyOpt == 2){
+                updateStoreFile(originalLine, requireModifyLine, modifiedSpecificLine, stockInFilePath, modifyOrderID);
+                if(modifyOpt==1){
+                    System.out.println("Item deleted from the order.");
                 }else{
-                    updatedLine.add(content);
+                    System.out.println("Item quantity changed.");
                 }
+                System.out.println("Updated order list");
+                displayOrderListFromID(modifyOrderID);
             }
-            
-            FileWriter writer = new FileWriter(stockInFilePath);
-            for (String updatedContent : updatedLine) {
-                writer.write(updatedContent + "\n");
-            }
-            writer.close();
-            System.out.println("Item deleted from the order.");
-            System.out.println("Updated order list");
-            displayOrderListFromID(modifyOrderID);
+
+
         } catch (IOException e) {
             System.out.println(stockInFilePath + "unable to open.");
         }
@@ -670,6 +1136,7 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
         boolean needCancel = false;
         boolean found = false;
         double minusAmount = 0;
+        modifiedSpecificLine.clear();
 
         for(int lineNo = 1;lineNo<requireModifiedContent.size();lineNo++){ //bcz 0 is overall data
             String[] elementContent = requireModifiedContent.get(lineNo).split("\\t");
@@ -684,33 +1151,156 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
                 modifiedSpecificLine.add(requireModifiedContent.get(lineNo));
             }else{
                 found = true;
-            }
-            
+            }         
         } 
          //modify ovr data
          if(found){
             String[] element = requireModifiedContent.get(0).split("\\t");
             double totalAmount = Double.parseDouble(element[3].substring(2)) - minusAmount;
             modifiedSpecificLine.add(element[0]+"\t"+super.getFormattedOrderDate()+"\t"+super.getFormattedOrderTime()+"\tRM"+String.format("%.2f", totalAmount));
-
-            // move ovr data to get(0)
-            String ovrData = modifiedSpecificLine.get(modifiedSpecificLine.size()-1);
-            String replaceValue = modifiedSpecificLine.get(0);
-            String nextContent = "";
-            for(int noLineContent = 1;noLineContent < requireModifiedContent.size();noLineContent++){ // last line is replace to one
-
-                if(noLineContent != (requireModifiedContent.size()-1)){    
-                    nextContent = modifiedSpecificLine.get(noLineContent);
-                    modifiedSpecificLine.set(noLineContent, replaceValue);
-                    replaceValue = nextContent;
-                }else{
-                    modifiedSpecificLine.set(0, ovrData);
-                }
-            }
          }
         return found;
         }
 
+        public boolean changeItemQty(List<String> requireModifiedContent,String modifyQtyItemName, List<String> modifiedSpecificLine,int newQty){
+            boolean change = false;
+            boolean sameQty = false;
+            double oldSubTotal=0,newSubTotal=0,unitPrice;
+            modifiedSpecificLine.clear();
+
+            for(int lineNo = 1;lineNo<requireModifiedContent.size();lineNo++){
+                String[] elementContent = requireModifiedContent.get(lineNo).split("\\t");
+                if(elementContent[2].equals(modifyQtyItemName)){
+                    change = true;
+                }else{
+                    change = false;
+                }
+
+                if(change){
+                    if(Integer.parseInt(elementContent[3]) != newQty){
+                        unitPrice = Double.parseDouble(elementContent[4].substring(2));
+                        oldSubTotal = Double.parseDouble(elementContent[5].substring(2));
+                        newSubTotal = newQty * unitPrice;
+                        modifiedSpecificLine.add(elementContent[0] + "\t" + elementContent[1] + "\t" + elementContent[2] + "\t" + newQty + "\t" + elementContent[4] + "\tRM" + String.format("%.2f", newSubTotal));
+                    }else{
+                        sameQty = true;
+                        break;
+                    }
+                }else{
+                    modifiedSpecificLine.add(requireModifiedContent.get(lineNo));
+                }
+            }
+
+            if(!sameQty){
+                double diffSubtotal = newSubTotal - oldSubTotal;
+    
+                String[] element = requireModifiedContent.get(0).split("\\t");
+                double totalAmount = Double.parseDouble(element[3].substring(2)) + diffSubtotal;
+                modifiedSpecificLine.add(element[0]+"\t"+super.getFormattedOrderDate()+"\t"+super.getFormattedOrderTime()+"\tRM"+String.format("%.2f", totalAmount));
+
+            }
+
+            return sameQty;
+        }
+
+        public void updateStoreFile(List<String> originalLine,List<String> requireModifiedContent,List<String> modifiedSpecificLine,String stockInFilePath,String modifyOrderID){
+            List<String> updatedLine = new ArrayList<>(); //after modified content
+            boolean need = false;
+
+                String ovrData = modifiedSpecificLine.get(modifiedSpecificLine.size()-1);
+                String replaceValue = modifiedSpecificLine.get(0);
+                String nextContent = "";
+
+                for(int noLineContent = 0;noLineContent < modifiedSpecificLine.size();noLineContent++){ // last line is replace to one
+    
+                    if(noLineContent != (modifiedSpecificLine.size()-1)){    
+                        nextContent = modifiedSpecificLine.get(noLineContent+1);
+                        modifiedSpecificLine.set(noLineContent+1, replaceValue);
+                        replaceValue = nextContent;
+                    }else{
+                        modifiedSpecificLine.set(0, ovrData);
+                    }
+                }
+
+                //move to updateLine
+                int modifyListLineNo = 0;
+                for (String content : originalLine) {
+                    if(content.startsWith("SI")){ //find the content next order?
+                    
+                        if(content.startsWith(modifyOrderID)){ //find modify content
+                            need = true;
+                        }else{
+                            need = false;
+                        }
+                    }
+    
+                    if(need){
+                        if(modifyListLineNo < modifiedSpecificLine.size()){
+                            updatedLine.add(modifiedSpecificLine.get(modifyListLineNo));
+                            modifyListLineNo++;
+                        }
+                    }else{
+                        updatedLine.add(content);
+                    }
+                }
+                //save in file
+                try {
+                    FileWriter writer = new FileWriter(stockInFilePath);
+                    for (String updatedContent : updatedLine) {
+                        writer.write(updatedContent + "\n");
+                    }
+                    writer.close();                        
+                } catch (IOException e) {
+                    System.out.println(stockInFilePath + "unable to open");
+                }
+                
+
+        }
+
+
+        public boolean checkExist(String modifyOrderID,String modifyQtyItemName,String stockInFilePath){
+            boolean found = false;
+            boolean selected = false;
+
+            try {
+                List<String> allContent = Files.readAllLines(Paths.get(stockInFilePath));
+                List<String> selectedOrderContent = new ArrayList<>();
+
+
+                //find got this Order BY ID
+                for (String content : allContent) {
+                    if(content != null){
+                        if(content.startsWith("SI")){
+                            String[] elementContent = content.split("\\t");
+                            if(elementContent[0].equals(modifyOrderID)){
+                                selected = true;
+                            }else{
+                                selected = false;
+                            }
+                        }
+
+                        if(selected){
+                            selectedOrderContent.add(content);
+                        }
+                    }
+                }
+
+                //Find got this item in selected order
+                for (String content : selectedOrderContent) {
+                    String[] elementContent = content.split("\\t");
+
+                    if(elementContent[2].equals(modifyQtyItemName)){
+                        found = true;
+                        break;
+                    }
+                }
+               
+            } catch (Exception e) {
+                System.out.println(stockInFilePath + "unable to open.");
+            }
+
+            return found;
+        }
 
 //generate Order ID------------------------------------------------------------------------------------------------
     public String generateOrderID(){

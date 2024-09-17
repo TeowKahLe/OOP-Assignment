@@ -27,15 +27,15 @@ public class fastFoodInventory {
 						newUser.storeStaffData();
     					break;
     				case 2:
-						//Staff userLogin = new Staff();
-						//userLogin.login();
+						Staff userLogin = new Staff();
+						userLogin.login();
     					//Supplier test3 = new Supplier();
 						//test3.addSupplier();
 						//menu();
 						//Order test = new Order();
 						//test.storeItemtoArr();
-						StockInOrder test1 = new StockInOrder();
-						test1.StockInOrderMenu();
+						//StockInOrder test1 = new StockInOrder();
+						//test1.StockInOrderMenu();
 						//Order.orderManagement();
 						//Inventory.inventoryManagement();
 						break;

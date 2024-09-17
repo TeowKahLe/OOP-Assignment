@@ -8,7 +8,8 @@ public class Transaction{
         return subtotal;
     }
 
-    public double calTotalAmount(double[] subAmount){
+    double calTotalAmount(double[] subAmount){
+        ovrTotal = 0;
         for (double sub : subAmount) {
             ovrTotal += sub;   
         }
