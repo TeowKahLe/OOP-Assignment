@@ -8,7 +8,6 @@ public class Staff extends Person{
     Scanner scanner = new Scanner(System.in);
     private String jobRole,password;
     Alignment line = new Alignment();
-    Order order = new Order();
 
     public Staff(){
         
@@ -69,6 +68,9 @@ public class Staff extends Person{
         System.out.println(String.format("%-24s",String.format("%-10s", "|Name ")+ ": " + getName()) + "|");
         System.out.println(String.format("%-24s",String.format("%-10s", "|Job Role ")+ ": " + getJobRole()) + "|");
         line.printLine(25);
+
+        storeStaffData();
+        fastFoodInventory.main(null);
     }
 
     public void storeStaffData(){
@@ -96,7 +98,7 @@ public class Staff extends Person{
 
     }
 
-    public void login(){
+    public void login(Order order){
         String tempID="",tempPassword="";
 
         String filePath = "staffInfo.txt";
@@ -146,7 +148,7 @@ public class Staff extends Person{
                             idFound = true;
                             pairPassword = true;
                             order.setStaffId(tempID);
-                            Order.orderManagement();
+                            fastFoodInventory.menu();
 
                             break;
 

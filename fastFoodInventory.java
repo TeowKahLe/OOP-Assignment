@@ -1,6 +1,8 @@
 import java.util.Scanner;
 
 public class fastFoodInventory {
+	static Order order = new Order(); // all fastFoodInvetory method use same Order
+	
     public static void main(String arg[]) {
     	Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
@@ -27,15 +29,15 @@ public class fastFoodInventory {
 						newUser.storeStaffData();
     					break;
     				case 2:
-						Staff userLogin = new Staff();
-						userLogin.login();
+						//Staff userLogin = new Staff(); (real)
+						//userLogin.login(order); (real)
     					//Supplier test3 = new Supplier();
 						//test3.addSupplier();
 						//menu();
 						//Order test = new Order();
 						//test.storeItemtoArr();
-						//StockInOrder test1 = new StockInOrder();
-						//test1.StockInOrderMenu();
+						StockInOrder test1 = new StockInOrder();
+						test1.StockInOrderMenu("LIN1");
 						//Order.orderManagement();
 						//Inventory.inventoryManagement();
 						break;
@@ -61,6 +63,7 @@ public class fastFoodInventory {
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
 		
+		
 		System.out.print("Fast Food Ordering System");
 		line.printLine("Fast Food Ordering System".length());
 		System.out.println("Please select your action");
@@ -81,7 +84,7 @@ public class fastFoodInventory {
 						Inventory.inventoryManagement();
     					break;
     				case 2:
-						Order.orderManagement();
+						orderManagement();
     					break;
 					case 3:
 						//*pending*
@@ -107,6 +110,71 @@ public class fastFoodInventory {
 		}
 		scanner.close();
 	}
+
+
+	 //-----------------------------------------------------------------------------------Order Management
+	 public static void orderManagement(){
+		Alignment.clearScreen();
+		Alignment line = new Alignment();
+		Scanner scanner = new Scanner(System.in);
+		boolean error = true;
+	
+		StockInOrder stockInOrder = new StockInOrder();
+	
+		line.printEqualLine(" ORDER MANAGEMENT ".length());
+		System.out.println(" ORDER MANAGEMENT ");
+		line.printEqualLine(" ORDER MANAGEMENT ".length());
+		System.out.println("Please select your action");
+		System.out.println("1. Display All Order");
+		System.out.println("2. Search Order");
+		System.out.println("3. Track Delivery");
+		System.out.println("4. Stock In Order");
+			System.out.println("5. Stock Out Order");
+		   System.out.println("6. Return to Menu");
+		System.out.println("7. Exit");
+	
+		while(error){
+			try{
+				System.out.print("Selected action: ");
+				int option = scanner.nextInt();
+				scanner.nextLine();
+				switch(option){
+					case 1:
+						Order.displayAllOrder();
+						break;
+					case 2:
+						//Search Order
+						break;
+					case 3:
+						//Track Delivery
+						break;
+					case 4:
+						//Stock In Order
+						stockInOrder.StockInOrderMenu(order.getStaffId());
+						break;
+					case 5:
+						StockOutOrder.stockOutOrderMenu();
+						break;
+					case 6:
+						fastFoodInventory.main(null);
+						break;
+					case 7:
+						System.exit(0);
+						break;
+					default:
+						System.out.println("Invalid action selected");
+						break;	
+				}
+			}catch (Exception e){
+				System.out.println("Incorrect input(Please enter NUMBER only)");
+				scanner.nextLine();
+			}	
+		}
+		scanner.close();
+	}
 }
+
+
+
 
 

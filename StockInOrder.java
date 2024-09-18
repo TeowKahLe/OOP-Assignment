@@ -38,13 +38,24 @@ public class StockInOrder extends Order{
 
 //menu-------------------------------------------------------------------------------------
 
-public void StockInOrderMenu(){
+public void StockInOrderMenu(String orderStaffID){
     int opt = 0;
     boolean isDigit = false;
+    Alignment.clearScreen();
+
+    if(orderStaffID != null){
+        super.setStaffId(orderStaffID);
+    }
 
     while(opt != 4 || !isDigit){
 
         try{
+            System.out.println("Stock In Order");
+            line.printLine("Stock In Order".length());
+            System.out.println("1.Add Order");
+            System.out.println("2.Cancel Order");
+            System.out.println("3.Modify Order");
+            System.out.println("4.Back to staff menu");
             System.out.print("Enter your action >> ");
             opt = scanner.nextInt();
             scanner.nextLine();
@@ -84,6 +95,7 @@ public void StockInOrderMenu(){
 //Add purchase order--------------------------------------------------------------------------------------------------------
 public void addPurchase(String[] itemOrderDetail){    
     Alignment.clearScreen();
+
     String selectedItemName;
     String selectedItemID;
     int qty;
@@ -372,7 +384,7 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                     }
                 }
 
-                total[no] = super.transaction.calcSubTotal(unitCost, qty);
+                total[no] = Transaction.calcSubTotal(unitCost, qty);
                 System.out.println("|" + (no+1) + "\t" + String.format("%-11s", supplierID) + "\t" + String.format("%-10s", itemID) + "\t" + String.format("%-10s", itemName) + "\t" + String.format("%-8d", qty) + "\tRM" + String.format("%-9.2f", unitCost) + "\tRM" + String.format("%-10.2f",total[no]) +"|");
                 
                 tempItemDetail.add(supplierID + "\t" + itemID +  "\t" + itemName +  "\t" + String.valueOf(qty) + "\tRM" +(String.format("%.2f", unitCost)) + "\tRM" +String.format("%.2f", total[no]));
@@ -381,12 +393,15 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
 
         totalAmount = super.transaction.calTotalAmount(total);
 
+        line.printLine(101);
+        System.out.println(String.format("%-88s","|Delivery Fee(-): ") + "RM"+String.format("%.2f", 0.0) + String.format("%7s", "|"));
+
         line.printEqualLine(101);
-        System.out.println("|" + String.format("%87s", "Total: ") + "RM"+ String.format("%-10.2f", totalAmount) + "|");
+        System.out.println(String.format("%-50s",("|Purchase by staff(-)")) + String.format("%38s", "Total: ") + "RM"+ String.format("%-10.2f", totalAmount) + "|");
         line.printEqualLine(101);
 
         //store all the order detail into a list
-        String orderOvrData = generateOrderID() + "\t" + orderDate + "\t" + orderTime + "\tRM" + String.format("%.2f",totalAmount);
+        String orderOvrData = generateOrderID() + "\t" + orderDate + "\t" + orderTime + "\tRM" + String.format("%.2f",totalAmount) + "\t" + "-" + "\t" +"-";
         List<String> tempOrderDetail = new ArrayList<>();
 
         tempOrderDetail.add(orderOvrData);
@@ -395,7 +410,6 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
         }
 
         completeOrderAction(tempOrderDetail);
-        //storeStockInOrderInfo(tempOrderDetail);
     }
 
     public void storeStockInOrderInfo(List <String>tempOrderDetail){
@@ -453,6 +467,7 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                         System.out.println("Order cancelled...");
                     break;
                     case 3:
+                    //payment
                         int opt = 0;
 
                         System.out.println("Delivery Method"); 
@@ -464,23 +479,23 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                                 opt = scanner.nextInt();
                                 scanner.nextLine();
                                 if(opt == 1){
-                                    addDeliveryFee(tempOrderDetail,4.5,"Ground");
+                                    addDeliverFeeStaffID(tempOrderDetail,4.5,"Ground",super.getStaffId());
                                 }else if(opt == 2){
-                                    addDeliveryFee(tempOrderDetail,7.5,"Sea");
+                                    addDeliverFeeStaffID(tempOrderDetail,7.5,"Sea",super.getStaffId());
                                 }else if(opt == 3){
-                                    addDeliveryFee(tempOrderDetail,15,"Air");
+                                    addDeliverFeeStaffID(tempOrderDetail,15,"Air",super.getStaffId());
                                 }else{
                                 System.out.println("The option only allow (1,2 or 3)");    
                                 }
                                 
-                                displayOrderListFromTemp(tempOrderDetail);
-                                System.out.println(super.getStaffId());
                             } catch (Exception e) {
                                 scanner.nextLine();
                                 System.out.println("The option only allow (1,2 or 3)");
                             }
-                        }while(opt < 1 && opt > 3);
-                        //payment
+                        }while(opt < 1 || opt > 3);
+
+                        displayOrderListFromTemp(tempOrderDetail);
+                        
                     break;
                     default:
                         break;
@@ -614,10 +629,11 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                         System.out.println("Sorry,your supplier ID does not found in " + addItemName + " Supplier List.\nPlease refer above list.\n");
                     }
                 }
-                    double addItemSubTotal = super.transaction.calcSubTotal(addItemUnitCost, qty);
+                    double addItemSubTotal = Transaction.calcSubTotal(addItemUnitCost, qty);
                     tempOrderDetail.add(selectedSupplID + "\t" + addItemID + "\t" + addItemName + "\t" + qty + "\tRM" + String.format("%.2f", addItemUnitCost) + "\tRM" + String.format("%.2f", addItemSubTotal));
 
                     changeTotalModifyAdd(tempOrderDetail,addItemSubTotal);
+
                     displayOrderListFromTemp(tempOrderDetail);
                 break;
                     case 2:
@@ -759,6 +775,7 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                                 System.out.println("Modified order list");
                                 line.printLine("Modified order list".length());
                                 displayOrderListFromTemp(tempOrderDetail);
+                                storeStockInOrderInfo(tempOrderDetail);
                             }
                         }while(sameQty);  
                     break;
@@ -777,14 +794,14 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
         }while(action < 1 || action > 4);
     }
 
-    public void addDeliveryFee(List <String> tempOrderDetail,double deliveryFee,String shippingType){
+    public void addDeliverFeeStaffID(List <String> tempOrderDetail,double deliveryFee,String shippingType,String staffID){
         List<String> modifiedOrderDetail = new ArrayList<>();
 
         String[] elementDetail = tempOrderDetail.get(0).split("\\t");
-        //[0]orrderID,[1]Date,[2]Time,[3]Total
+        //[0]orderID,[1]Date,[2]Time,[3]Total,[4]shipping type,[5]staffID
         double newTotal = Double.parseDouble(elementDetail[3].substring(2)) + deliveryFee;
 
-        modifiedOrderDetail.add(elementDetail[0] + "\t" + elementDetail[1] + "\t" + elementDetail[2] + "\tRM" + String.format("%.2f", newTotal) + "\t" + shippingType);
+        modifiedOrderDetail.add(elementDetail[0] + "\t" + elementDetail[1] + "\t" + elementDetail[2] + "\tRM" + String.format("%.2f", newTotal) + "\t" + shippingType + "\t" + staffID);
 
         for(int lineContent = 1;lineContent<tempOrderDetail.size();lineContent++){
             modifiedOrderDetail.add(tempOrderDetail.get(lineContent));
@@ -803,7 +820,7 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
         String[] orderInfo = tempOrderDetail.get(0).split("\\t");
 
         line.printEqualLine(101);
-        //0-orderID , 1-date, 2-time , 3.total
+        //0-orderID , 1-date, 2-time , 3.total , 4. deliveryMethod , 5. staff ID
         System.out.println("|Order ID: "+ orderInfo[0] + String.format("%84s", ("DATE: "+ orderInfo[1] + "  TIME: " + orderInfo[2] + "|")));
 
         line.printEqualLine(101);
@@ -815,8 +832,24 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
             //0-supplID ,1-itemID ,2-itemName ,3-qty ,4- unitCost ,5- subtotal
             System.out.println("|" + line + "\t" + String.format("%-11s", orderItemInfo[0]) + "\t" + String.format("%-10s", orderItemInfo[1]) + "\t" + String.format("%-10s", orderItemInfo[2]) + "\t" + String.format("%-8s", orderItemInfo[3]) + "\t" + String.format("%-11s", orderItemInfo[4]) + "\t" + String.format("%-12s",orderItemInfo[5]) +"|");
         }
+
+        //"1.Ground(RM4.50/ship)\n2.Sea(RM7.50/ship)\n3.Air(RM15.00/ship)"
+        double deliveryFee = 0;
+        if(orderInfo[4].equals("Ground")){
+            deliveryFee = 4.50;
+        }else if(orderInfo[4].equals("Sea")){
+            deliveryFee = 7.50;
+        }else if (orderInfo[4].equals("Air")) {
+            deliveryFee = 15.00;
+        }else{
+            deliveryFee = 0;
+        }
+
+        line.printLine(101);
+        System.out.println(String.format("%-88s",("|" + "Delivery Fee(" + orderInfo[4] + "): ")) + "RM"+String.format("%5.2f", deliveryFee) + String.format("%6s", "|"));
+
         line.printEqualLine(101);
-        System.out.println("|" + String.format("%87s", "Total: ") + String.format("%-12s", orderInfo[3]) + "|");
+        System.out.println(String.format("%-50s",("|Purchase by staff(" + orderInfo[5] + ")")) + String.format("%38s", "Total: ") + String.format("%-12s", orderInfo[3]) + "|");
         line.printEqualLine(101);
     }
 
@@ -828,7 +861,7 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
         
 
         //0-Supplier ID 1- date 2- time 3-total
-        tempModifiedContent.add(elementOvrData[0] + "\t" +elementOvrData[1] + "\t" +elementOvrData[2] + "\tRM" + String.format("%.2f",newTotal));
+        tempModifiedContent.add(elementOvrData[0] + "\t" +elementOvrData[1] + "\t" +elementOvrData[2] + "\tRM" + String.format("%.2f",newTotal) + "\t" + "-" + "\t" + "-");
 
         for(int lineContent = 1;lineContent<tempOrderDetail.size();lineContent++){
             tempModifiedContent.add(tempOrderDetail.get(lineContent));
@@ -910,7 +943,7 @@ public void displayOrderListFromID(String orderID){
         String[] orderInfo = selectedLine.get(0).split("\\t");
 
         line.printEqualLine(101);
-        //0-orderID , 1-date, 2-time , 3.total
+        //0-orderID , 1-date, 2-time , 3.total, 4. ship method, 5.staff id handle this order
         System.out.println("|Order ID: "+ orderInfo[0] + String.format("%84s", ("DATE: "+ orderInfo[1] + "  TIME: " + orderInfo[2] + "|")));
 
         line.printEqualLine(101);
@@ -922,8 +955,24 @@ public void displayOrderListFromID(String orderID){
             //0-supplID ,1-itemID ,2-itemName ,3-qty ,4- unitCost ,5- subtotal
             System.out.println("|" + line + "\t" + String.format("%-11s", orderItemInfo[0]) + "\t" + String.format("%-10s", orderItemInfo[1]) + "\t" + String.format("%-10s", orderItemInfo[2]) + "\t" + String.format("%-8s", orderItemInfo[3]) + "\t" + String.format("%-11s", orderItemInfo[4]) + "\t" + String.format("%-12s",orderItemInfo[5]) +"|");
         }
+        
+        //"1.Ground(RM4.50/ship)\n2.Sea(RM7.50/ship)\n3.Air(RM15.00/ship)"
+        double deliveryFee = 0;
+        if(orderInfo[4].equals("Ground")){
+            deliveryFee = 4.50;
+        }else if(orderInfo[4].equals("Sea")){
+            deliveryFee = 7.50;
+        }else if (orderInfo[4].equals("Air")) {
+            deliveryFee = 15.00;
+        }else{
+            deliveryFee = 0;
+        }
+
+        line.printLine(101);
+        System.out.println(String.format("%-88s",("|" + "Delivery Fee(" + orderInfo[4] + "): ")) + "RM"+String.format("%.2f", deliveryFee) + String.format("%7s", "|"));
+
         line.printEqualLine(101);
-        System.out.println("|" + String.format("%87s", "Total: ") + String.format("%-12s", orderInfo[3]) + "|");
+        System.out.println(String.format("%-50s",("|Purchase by staff(" + orderInfo[5] + ")")) + String.format("%38s", "Total: ") + String.format("%-12s", orderInfo[3]) + "|");
         line.printEqualLine(101);
 
     } catch (IOException e) {
@@ -1057,7 +1106,7 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
                 }else{
                     System.out.println("Sorry,u unable to modify the order to cancel an item because it only 1 item.Please go to delete order.\n");
                     cancelPurchase();
-                    StockInOrderMenu();
+                    StockInOrderMenu(super.getStaffId());
                 }
 
             }else if(modifyOpt == 2){
@@ -1112,7 +1161,7 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
            
 
             }else if(modifyOpt == 3){
-                StockInOrderMenu();
+                StockInOrderMenu(super.getStaffId());
             }
 
             if(modifyOpt == 1 || modifyOpt == 2){
@@ -1157,7 +1206,7 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
          if(found){
             String[] element = requireModifiedContent.get(0).split("\\t");
             double totalAmount = Double.parseDouble(element[3].substring(2)) - minusAmount;
-            modifiedSpecificLine.add(element[0]+"\t"+super.getFormattedOrderDate()+"\t"+super.getFormattedOrderTime()+"\tRM"+String.format("%.2f", totalAmount));
+            modifiedSpecificLine.add(element[0]+"\t"+super.getFormattedOrderDate()+"\t"+super.getFormattedOrderTime()+"\tRM"+String.format("%.2f", totalAmount) + "\t" + element[4] + "\t" + element[5]);
          }
         return found;
         }
@@ -1196,7 +1245,7 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
     
                 String[] element = requireModifiedContent.get(0).split("\\t");
                 double totalAmount = Double.parseDouble(element[3].substring(2)) + diffSubtotal;
-                modifiedSpecificLine.add(element[0]+"\t"+super.getFormattedOrderDate()+"\t"+super.getFormattedOrderTime()+"\tRM"+String.format("%.2f", totalAmount));
+                modifiedSpecificLine.add(element[0]+"\t"+super.getFormattedOrderDate()+"\t"+super.getFormattedOrderTime()+"\tRM"+String.format("%.2f", totalAmount)+"\t"+element[4]+"\t"+element[5]);
 
             }
 

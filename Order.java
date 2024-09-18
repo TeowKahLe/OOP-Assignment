@@ -16,14 +16,14 @@ public class Order{
     private String deliveryMethod;
     private String orderType;
     private String staffId;
-    private List<Item> itemList;
+    private static List<Item> itemList;
     private int[] itemQty;
 
     Transaction transaction = new Transaction();
 
     //-----------------------------------------------------------------------------------Constructors
     public Order(){
-        this.itemList = new ArrayList<>();
+        itemList = new ArrayList<>();
         this.itemQty = new int[0];
         this.orderDate = new Date();
         this.orderTime = new Time(System.currentTimeMillis());//Converts the current time into a Time object representing only the time portion (hours, minutes, seconds).
@@ -39,7 +39,7 @@ public class Order{
         this.deliveryMethod = deliveryMethod;
         this.orderType = orderType;
         this.staffId = staffId;
-        this.itemList = itemList;
+        Order.itemList = itemList;
         this.itemQty = itemQty;
     }
 
@@ -120,73 +120,12 @@ public class Order{
     }
 
     public void setItemList(List<Item> itemList) {
-        this.itemList = itemList;
+        Order.itemList = itemList;
     }
 
     public void setItemQty(int[] itemQty) {
         this.itemQty = itemQty;
     }
-
-    //-----------------------------------------------------------------------------------Order Management
-    public static void orderManagement(){
-        Alignment.clearScreen();
-	    Alignment line = new Alignment();
-    	Scanner scanner = new Scanner(System.in);
-		boolean error = true;
-
-		line.printEqualLine(" ORDER MANAGEMENT ".length());
-		System.out.println(" ORDER MANAGEMENT ");
-		line.printEqualLine(" ORDER MANAGEMENT ".length());
-		System.out.println("Please select your action");
-		System.out.println("1. Display All Order");
-		System.out.println("2. Search Order");
-		System.out.println("3. Track Delivery");
-		System.out.println("4. Stock In Order");
-   	 	System.out.println("5. Stock Out Order");
-   		System.out.println("6. Return to Menu");
-		System.out.println("7. Exit");
-
-		while(error){
-			try{
-				System.out.print("Selected action: ");
-    			int option = scanner.nextInt();
-                scanner.nextLine();
-				switch(option){
-    				case 1:
-						displayAllOrder();
-    					break;
-    				case 2:
-						//Search Order
-    					break;
-					case 3:
-						//Track Delivery
-    					break;
-					case 4:
-						//Stock In Order
-                        //StockInOrder.StockInOrderMenu();
-    					break;
-					case 5:
-						StockOutOrder.stockOutOrderMenu();
-    					break;
-					case 6:
-						fastFoodInventory.main(null);
-						break;
-					case 7:
-						System.exit(0);
-						break;
-    				default:
-    					System.out.println("Invalid action selected");
-    					break;	
-    			}
-			}catch (Exception e){
-    			System.out.println("Incorrect input(Please enter NUMBER only)");
-    			scanner.nextLine();
-    		}	
-		}
-        scanner.close();
-	}
-
-
     //-----------------------------------------------------------------------------------read item from file then update ItemList
     public static List<Item> readItemFromFile(String filePath) {
         List<Item> items = new ArrayList<>();
@@ -243,7 +182,7 @@ public class Order{
                 scanner.nextLine();
                 switch(opt) {
                     case 1: 
-                        Order.orderManagement();
+                        fastFoodInventory.orderManagement();
                         loop = false;
                         break;
                     case 2:
@@ -265,7 +204,7 @@ public class Order{
     }
 
     //-----------------------------------------------------------------------------------Store Item To Array
-    public void storeItemtoArr(){
+    public static void storeItemtoArr(){
         String itemFilePath = "itemInfo.txt";
         String []tokenContents;
 
@@ -280,7 +219,7 @@ public class Order{
             }
 
         } catch (IOException e) {
-            //System.out.println(itemFilePath + " unable to open");
+            System.out.println(itemFilePath + " unable to open");
         }
     }
 }
