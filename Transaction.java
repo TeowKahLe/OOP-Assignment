@@ -1,4 +1,7 @@
 import java.util.*;
+import java.io.*;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 
 public class Transaction{
     private String transactionID;
@@ -9,6 +12,26 @@ public class Transaction{
     private double transAmount;
     
     private List<Order> OrderInfo = new ArrayList<>();
+
+    Alignment line = new Alignment();
+
+    Transaction(){
+        transDate = new Date();
+        transTime = new Time(System.currentTimeMillis());
+    }
+
+    Transaction( String transactionID,double balance,Date transDate,Date transTime,String transactionType,double transAmount){
+        this.transactionID = transactionID;
+        Transaction.balance = balance;
+        transDate = new Date();
+        transTime = new Time(System.currentTimeMillis());
+        this.transactionType = transactionType;
+        this.transAmount = transAmount;
+    }
+
+    //format date and time
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy");
+    SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
 
 
     public String getTransactionID() {
@@ -82,25 +105,130 @@ public class Transaction{
     }
 
     public static void addBalance(double amount){
-        balance += amount;
+        Transaction.balance += amount;
     }
 
-    
     public static void minusBalance(double amount){
-        balance -= amount;
+        Transaction.balance -= amount;
     }
 
+    public boolean makeTransaction(String orderID,String transactionType,double amount){
+        String transFilePath = "Transaction.txt";
 
-    //store OrderList from file
-    public void storeOrderList(){
-        //String stockInFilePath = "stockInOrder.txt";
-        //String stockOutFilePath = "stockOutOrderInfo.txt";
-
-        //List<Item> itemList = new ArrayList<>();
-        //order List structure (order id,approvalStatus,orderDate,orderTime,delivMethod,orderType,staffID,itemList,itemQty[])
-
-        //stock in
         
+        /*writer.write(generateTransID(transFilePath) + "\t" + orderID + "\t" + dateFormatter.format(transDate) + "\t" + timeFormatter.format(transTime) + "\t" + transactionType + "\tRM" + amount + "\n");*/
 
+        //find current balance
+        try (Scanner scanner = new Scanner(new File(transFilePath))){
+            if(scanner.hasNextLine()){
+
+                String lineContent = scanner.nextLine();
+                String[] tokenContent = lineContent.split("\\t");
+                Transaction.balance = Double.parseDouble(tokenContent[1].substring(2));
+            }
+
+        } catch (Exception e) {
+            System.out.println(transFilePath +" unable to open.");
+        }
+
+        boolean ableTransfer = displayTransaction(amount,transFilePath);
+
+        if(ableTransfer){
+            calcNewBalance(amount,transFilePath);
+            try {
+                FileWriter writer = new FileWriter(transFilePath,true);
+                writer.write(generateTransID(transFilePath) + "\t" + orderID + "\t" + dateFormatter.format(transDate) + "\t" + timeFormatter.format(transTime) + "\t" + transactionType + "\tRM" + String.format("%.2f", amount) + "\n");
+    
+                writer.close();  
+                
+                System.out.println(String.format("%-20s", "New Balance: ") + "RM" + String.format("%.2f", balance));
+            } catch (IOException e) {
+                System.out.println("unable to write in " + transFilePath);
+            }
+        }else{
+            System.out.println("Sorry,insuffient balance unable to continue transaction.Transaction cancelled.");
+        }
+        return ableTransfer;
     }
+
+    public boolean displayTransaction(double transAmount,String transFilePath){
+        boolean ableTransfer = false;
+
+        line.printEqualLine("----------Transaction----------".length());
+        System.out.println("----------Transaction----------");
+        line.printEqualLine("----------Transaction----------".length());
+        System.out.println(String.format("%-20s", "Current Balance: ") + "RM" + String.format("%.2f", balance));
+
+        if(transAmount > 0){
+            System.out.println(String.format("%-20s", "Received Amount: ") + "RM" + String.format("%.2f",transAmount));
+            ableTransfer = true;
+
+        }else if(transAmount < 0){
+
+            System.out.println(String.format("%-20s", "Pay Amount: ") + "RM" + String.format("%.2f",Math.abs(transAmount))); //abs have abosolute num which is alway positive
+            if(balance >= Math.abs(transAmount)){
+                ableTransfer = true;
+            }else{
+                ableTransfer = false;
+            }
+
+        }else{
+            System.out.println("No transaction.");
+            ableTransfer = false;
+        }  
+
+        return ableTransfer;
+    }
+
+    public void calcNewBalance(double transAmount,String transFilePath){
+        if(transAmount > 0){
+            addBalance(transAmount);
+        }else{
+            minusBalance(Math.abs(transAmount));
+        }
+
+        List<String> tempStorage = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(new File(transFilePath))){
+            while(scanner.hasNextLine()){
+                tempStorage.add(scanner.nextLine());
+            }
+            
+        } catch (Exception e) {
+            System.out.println(transFilePath + " unable to open.");
+        }
+
+        try {
+            // write with updated current balance
+            FileWriter writer = new FileWriter(transFilePath);
+            writer.write("Current Balance: " + "\tRM" + String.format("%.2f", balance) + "\n");
+
+            //write the transaction record back
+            for(int noLine = 1;noLine<tempStorage.size();noLine++){//0 is balance
+                if(tempStorage.get(noLine) != null){
+                    writer.write(tempStorage.get(noLine) + "\n");
+                }
+               
+            }
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("unable to write in " + transFilePath);
+        }
+        
+    }
+
+    public String generateTransID(String transFilePath){
+        int noLine = 0;
+        try (Scanner scanner = new Scanner(new File(transFilePath))){
+            while(scanner.hasNextLine()){
+                noLine++;
+                scanner.nextLine();
+            }
+
+        } catch (Exception e) {
+            System.out.println(transFilePath + " unable to open.");
+        }
+        return ("T" + String.format("%05d", noLine));
+    }
+
 }

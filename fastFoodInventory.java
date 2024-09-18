@@ -1,3 +1,5 @@
+//import java.io.File;
+//import java.io.FileWriter;
 import java.util.Scanner;
 
 public class fastFoodInventory {
@@ -7,7 +9,7 @@ public class fastFoodInventory {
     	Alignment line = new Alignment();
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
-
+		
     	//header
     	System.out.println("Welcome to Fast Food Inventory System");
     	line.printLine("Welcome to Fast Food Inventory System".length());
@@ -38,6 +40,7 @@ public class fastFoodInventory {
 						//test.storeItemtoArr();
 						StockInOrder test1 = new StockInOrder();
 						test1.StockInOrderMenu("LIN1");
+						//Transaction transaction = new Transaction();
 						//Order.orderManagement();
 						//Inventory.inventoryManagement();
 						break;

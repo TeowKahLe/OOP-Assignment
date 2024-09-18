@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.io.IOException;
@@ -11,13 +12,14 @@ import java.text.SimpleDateFormat;
 public class Order{
     private String orderId;
     private String approvalStatus;
-    private Date orderDate = new Date();
+    private Date orderDate;
     private Date orderTime;
     private String deliveryMethod;
     private String orderType;
     private String staffId;
     private static List<Item> itemList;
     private int[] itemQty;
+    private double total;
 
     Transaction transaction = new Transaction();
 
@@ -31,7 +33,7 @@ public class Order{
 
     public Order(String orderId, String approvalStatus, Date orderDate, Date orderTime, 
                  String deliveryMethod, String orderType, String staffId, 
-                 List<Item> itemList, int[] itemQty) {
+                 List<Item> itemList, int[] itemQty,double total) {
         this.orderId = orderId;
         this.approvalStatus = approvalStatus;
         this.orderDate = orderDate;
@@ -41,6 +43,7 @@ public class Order{
         this.staffId = staffId;
         Order.itemList = itemList;
         this.itemQty = itemQty;
+        this.total=total;
     }
 
     //--------------------------------------------------------------------------------------Getters
@@ -90,6 +93,10 @@ public class Order{
         return itemQty;
     }
 
+    public double getTotal() {
+        return total;
+    }
+
     //-----------------------------------------------------------------------------------Setters
     public void setOrderId(String orderId) {
         this.orderId = orderId;
@@ -126,6 +133,11 @@ public class Order{
     public void setItemQty(int[] itemQty) {
         this.itemQty = itemQty;
     }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
     //-----------------------------------------------------------------------------------read item from file then update ItemList
     public static List<Item> readItemFromFile(String filePath) {
         List<Item> items = new ArrayList<>();
@@ -204,7 +216,7 @@ public class Order{
     }
 
     //-----------------------------------------------------------------------------------Store Item To Array
-    public static void storeItemtoArr(){
+    public static List<Item> storeItemtoArr(){
         String itemFilePath = "itemInfo.txt";
         String []tokenContents;
 
@@ -221,9 +233,12 @@ public class Order{
         } catch (IOException e) {
             System.out.println(itemFilePath + " unable to open");
         }
+        return itemList;
+    }
+
+    public String toString(){
+        return orderId + "\t" + orderDate + "\t" + orderTime + "\t" + deliveryMethod + "\t" + orderType + "\t" + staffId + "\t" + itemList + "\t" + Arrays.toString(itemQty) + "\t" + total + "\t" + approvalStatus;
+
     }
 }
-
-
-
 

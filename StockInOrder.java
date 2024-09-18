@@ -495,7 +495,17 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                         }while(opt < 1 || opt > 3);
 
                         displayOrderListFromTemp(tempOrderDetail);
-                        
+                        String[] elementContent = tempOrderDetail.get(0).split("\\t");
+                        String purchaseOrderID = elementContent[0];
+                        double transAmount = Double.parseDouble(elementContent[3].substring(2));
+
+                        boolean ableTransfer = transaction.makeTransaction(purchaseOrderID,"Purchase",(transAmount * -1));
+                        if(ableTransfer){
+                            storeStockInOrderInfo(tempOrderDetail);
+                        }else{
+                            StockInOrderMenu(super.getStaffId());
+                        }
+
                     break;
                     default:
                         break;
@@ -899,6 +909,9 @@ public void cancelPurchase(){
        }
        displayOrderListFromID(deletedOrderID);
 
+       //find total price
+       double totalRefund = findTotalPrice(deletedOrderID);
+
        String confirm = "";
 
        do{
@@ -907,6 +920,7 @@ public void cancelPurchase(){
 
         if(confirm.equalsIgnoreCase("Y")){
             deleteOrderFromFile(stockInFilePath, deletedOrderID);
+            transaction.makeTransaction(deletedOrderID, "Refund", totalRefund);
             System.out.println("Record deleted");
         }else if(confirm.equalsIgnoreCase("N")){
             System.out.println("Cancel action terminated.");
@@ -969,7 +983,7 @@ public void displayOrderListFromID(String orderID){
         }
 
         line.printLine(101);
-        System.out.println(String.format("%-88s",("|" + "Delivery Fee(" + orderInfo[4] + "): ")) + "RM"+String.format("%.2f", deliveryFee) + String.format("%7s", "|"));
+        System.out.println(String.format("%-88s",("|" + "Delivery Fee(" + orderInfo[4] + "): ")) + "RM"+String.format("%5.2f", deliveryFee) + String.format("%6s", "|"));
 
         line.printEqualLine(101);
         System.out.println(String.format("%-50s",("|Purchase by staff(" + orderInfo[5] + ")")) + String.format("%38s", "Total: ") + String.format("%-12s", orderInfo[3]) + "|");
@@ -1009,6 +1023,30 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
     } catch (IOException e) {
         System.out.println(stockInFilePath + "unable to open.");
     }
+}
+
+public double findTotalPrice(String deleteOrderID){
+    double totalPrice = 0.0;
+
+    String stockInFilePath = "stockInOrder.txt";
+
+    try (Scanner scanner = new Scanner (new File(stockInFilePath))){
+        while(scanner.hasNextLine()){
+            String lineContent = scanner.nextLine();
+            if(lineContent.startsWith("SI")){
+                String[] elementContent = lineContent.split("\\t");
+                if(elementContent[0].equals(deleteOrderID)){
+                    totalPrice = Double.parseDouble(elementContent[3].substring(2));
+                }
+            }
+
+        }
+        
+    } catch (Exception e) {
+        System.out.println(stockInFilePath + " unable to open.");
+    }
+
+    return totalPrice;
 }
 
 //modify purchase -------------------------------------------------------------------------------------------------
@@ -1366,7 +1404,11 @@ public void deleteOrderFromFile(String stockInFilePath,String deletedOrderID){
                     noLine++;
                 }
             }
-            idNum = Integer.parseInt(tempStore.get(noLine-1).substring(2,6));
+
+            if(!tempStore.isEmpty()){
+                idNum = Integer.parseInt(tempStore.get(noLine-1).substring(2,6));
+            }
+            
 
         } catch (IOException e) {
             System.out.println(stockInFilePath + " unable to open.");
