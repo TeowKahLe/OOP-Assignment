@@ -39,7 +39,8 @@ public class fastFoodInventory {
 						//Order test = new Order();
 						//test.storeItemtoArr();
 						StockInOrder test1 = new StockInOrder();
-						test1.StockInOrderMenu("LIN1");
+						//test1.stockInOrderMenu("LIN1");
+						test1.generateReport();
 						//Transaction transaction = new Transaction();
 						//Order.orderManagement();
 						//Inventory.inventoryManagement();
@@ -153,7 +154,8 @@ public class fastFoodInventory {
 						break;
 					case 4:
 						//Stock In Order
-						stockInOrder.StockInOrderMenu(order.getStaffId());
+						Alignment.clearScreen();
+						stockInOrder.stockInOrderMenu(order.getStaffId());
 						break;
 					case 5:
 						StockOutOrder.stockOutOrderMenu();

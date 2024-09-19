@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.io.IOException;
@@ -210,11 +209,6 @@ public class Order{
         scanner.close();
     }
 
-    //-----------------------------------------------------------------------------------Track Delivery
-    public static void trackDelivery(){
-        
-    }
-
     //-----------------------------------------------------------------------------------Store Item To Array
     public static List<Item> storeItemtoArr(){
         String itemFilePath = "itemInfo.txt";
@@ -234,11 +228,6 @@ public class Order{
             System.out.println(itemFilePath + " unable to open");
         }
         return itemList;
-    }
-
-    public String toString(){
-        return orderId + "\t" + orderDate + "\t" + orderTime + "\t" + deliveryMethod + "\t" + orderType + "\t" + staffId + "\t" + itemList + "\t" + Arrays.toString(itemQty) + "\t" + total + "\t" + approvalStatus;
-
     }
 }
 

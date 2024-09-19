@@ -1,12 +1,15 @@
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Scanner;
 import java.io.File;
 import java.nio.file.Files;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+
 
 public class StockInOrder extends Order{
     private List<Supplier> supplierInfo = new ArrayList<>();
@@ -38,51 +41,110 @@ public class StockInOrder extends Order{
 
 //menu-------------------------------------------------------------------------------------
 
-public void StockInOrderMenu(String orderStaffID){
+public void stockInOrderMenu(String orderStaffID){
     int opt = 0;
     boolean isDigit = false;
-    Alignment.clearScreen();
+    boolean found = false;
 
     if(orderStaffID != null){
         super.setStaffId(orderStaffID);
     }
 
-    while(opt != 4 || !isDigit){
+    while(opt != 9 || !isDigit){
 
         try{
-            System.out.println("Stock In Order");
+            System.out.println("\nStock In Order");
             line.printLine("Stock In Order".length());
             System.out.println("1.Add Order");
             System.out.println("2.Cancel Order");
             System.out.println("3.Modify Order");
-            System.out.println("4.Back to staff menu");
+            System.out.println("4.Receive Order");
+            System.out.println("5.Search Order");
+            System.out.println("6.Display All Stock In Order");
+            System.out.println("7.Display Stock In Order Schedule");
+            System.out.println("8.Display Received Stock In Order");
+            System.out.println("9.Back to staff menu");
             System.out.print("Enter your action >> ");
             opt = scanner.nextInt();
             scanner.nextLine();
             isDigit = true;
-            if(!(opt>=1 && opt <=4)){
+            if(!(opt>=1 && opt <=9)){
                 System.out.println("The action does not found.\nPlease refer to above list.\n");
             }
 
            switch(opt){
-               case 1:
+                case 1:
                    //add
                    String[] itemOrderDetail = new String[10];
                    addPurchase(itemOrderDetail);
                    displayOrderList(itemOrderDetail);
-
                    break;
-               case 2:
+                case 2:
                    //cancel
                    cancelPurchase();
                    break;
-               case 3:
+                case 3:
                    //modify
                    modifyPurchase();
                    break;
-               case 4:
-                   fastFoodInventory.menu();
+                case 4:
+                    //update received
+                    receiveOrder();
+                    break;
+                case 5:
+                    found = false;
+                        while(!found){
+                            found = searchOrder();
+
+                            if(!found){
+                                System.out.println("Order ID does not found.");
+                            }
+                        }
+                    stockInOrderMenu(super.getStaffId());
+                break;   
+                case 6:
+                    displayAllStockInOrder();
+                    int action = 0;
+                    found = false;
+
+                    do{
+                        try {
+                            System.out.println("1.Search order for more detail\n2.back");
+                            System.out.print("Enter your action: ");
+                            action = scanner.nextInt();
+                            scanner.nextLine();
+                            if(action == 1){
+                                while(!found){
+                                    found = searchOrder();
+        
+                                if(!found){
+                                    System.out.println("Order ID does not found.");
+                                }
+                            }
+                            }else if(action == 2){
+
+                            }else{
+                                System.out.println("Invalid action.Action only allow(1 or 2)");
+                            }
+                                            
+                        } catch (Exception e) {
+                            scanner.nextLine();
+                            System.out.println("Invalid action.Action only allow(1 or 2)");
+                        }
+                    }while(action != 1 && action != 2);
+
+                    stockInOrderMenu(super.getStaffId());
                    break;
+                case 7:
+                    trackDelivery();
+                    break;
+                case 8:
+                    displayReceivedOrder();
+                    break;    
+                case 9:
+                   fastFoodInventory.menu();
+                break;
+                   
            }
 
         } catch (Exception e) {
@@ -133,8 +195,14 @@ public void addPurchase(String[] itemOrderDetail){
         while(!found || same){
             found = false;
             same = false;
-            System.out.print(String.format("%-30s","Item(enter item name)") + ": ");
+            System.out.print(String.format("%-30s","Item(enter item name)(X or x for exit)") + ": ");
             selectedItemName = scanner.nextLine();
+
+            
+            if(selectedItemName.equals("X") || selectedItemName.equals("x")){
+                stockInOrderMenu(super.getStaffId());//for exit
+            }
+
             //Find ID
             for (Item item : super.getItemList()) {
                 if(item.getItemName().equalsIgnoreCase(selectedItemName)){
@@ -503,7 +571,7 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                         if(ableTransfer){
                             storeStockInOrderInfo(tempOrderDetail);
                         }else{
-                            StockInOrderMenu(super.getStaffId());
+                            stockInOrderMenu(super.getStaffId());
                         }
 
                     break;
@@ -896,17 +964,26 @@ public void cancelPurchase(){
     line.printLine("CANCEL ORDER".length());
 
     while (!found) {
-        System.out.print("Enter the Order ID that you want cancel: ");
+        System.out.print("Enter the Order ID that you want cancel (X or x for exit): ");
         deletedOrderID = scanner.nextLine();
-        if(Character.isLetter(deletedOrderID.charAt(0)) && Character.isLetter(deletedOrderID.charAt(1))){
-            deletedOrderID = deletedOrderID.substring(0,2).toUpperCase() + deletedOrderID.substring(2);
+
+        
+        if(deletedOrderID.equals("X") || deletedOrderID.equals("x")){
+            stockInOrderMenu(super.getStaffId());//for exit
+        }else{
+
+            if(deletedOrderID.length() > 2){
+                if(Character.isLetter(deletedOrderID.charAt(0)) && Character.isLetter(deletedOrderID.charAt(1))){
+                    deletedOrderID = deletedOrderID.substring(0,2).toUpperCase() + deletedOrderID.substring(2);
+                }
+            }
         }
         
         found = findOrderIDFromFile(deletedOrderID);
         if(!found){
             System.out.println("Sorry,we cant find the order you want to deleted.Please try again.");
         }
-       }
+    }
        displayOrderListFromID(deletedOrderID);
 
        //find total price
@@ -920,7 +997,7 @@ public void cancelPurchase(){
 
         if(confirm.equalsIgnoreCase("Y")){
             deleteOrderFromFile(stockInFilePath, deletedOrderID);
-            transaction.makeTransaction(deletedOrderID, "Refund", totalRefund);
+            transaction.makeTransaction(deletedOrderID, "Fully Refund", totalRefund);
             System.out.println("Record deleted");
         }else if(confirm.equalsIgnoreCase("N")){
             System.out.println("Cancel action terminated.");
@@ -1051,46 +1128,56 @@ public double findTotalPrice(String deleteOrderID){
 
 //modify purchase -------------------------------------------------------------------------------------------------
 //cancel few item or change qty
-    public void modifyPurchase(){
-        boolean found = false;
-        String modifyOrderID = "";
+public void modifyPurchase(){
+    boolean found = false;
+    String modifyOrderID = "";
 
         
-        System.out.println("MODIFY ORDER");
-        line.printLine("MODIFY ORDER".length());
-        while (!found) {
-            System.out.print("Enter the Order ID that you want modify: ");
-            modifyOrderID = scanner.nextLine();
+    System.out.println("MODIFY ORDER");
+    line.printLine("MODIFY ORDER".length());
+    while (!found) {
+        System.out.print("Enter the Order ID that you want modify (X or x for exit): ");
+        modifyOrderID = scanner.nextLine();
             
-            if(Character.isLetter(modifyOrderID.charAt(0)) && Character.isLetter(modifyOrderID.charAt(1))){
-                modifyOrderID = modifyOrderID.substring(0,2).toUpperCase() + modifyOrderID.substring(2);
+        if(modifyOrderID.equals("X") || modifyOrderID.equals("x")){
+                found = true; //for exit
+            
+        }else{
+        
+            if(modifyOrderID.length() > 2){
+                if(Character.isLetter(modifyOrderID.charAt(0)) && Character.isLetter(modifyOrderID.charAt(1))){
+                    modifyOrderID = modifyOrderID.substring(0,2).toUpperCase() + modifyOrderID.substring(2);
+                }
             }
-
+            
             found = findOrderIDFromFile(modifyOrderID);
             if(!found){
                 System.out.println("Sorry,we cant find the order you want to modify.Please try again.");
-            }
-           }
-           displayOrderListFromID(modifyOrderID);
-
-           int modifyOpt = 0;
-           do{
-            try {
-                System.out.println("\nModify option\n1.Cancel an item\n2.Modify an item quantity\n3.Back");
-                System.out.print("Enter your option: ");
-                modifyOpt = scanner.nextInt();
-                scanner.nextLine(); 
-                if(modifyOpt != 1 && modifyOpt != 2 && modifyOpt !=3){
-                    System.out.println("option only allow (1 or 2 or 3)");    
-                }
-               } catch (Exception e) {
-                scanner.nextLine();
-                System.out.println("option only allow (1 or 2 or 3)");
-               }
-           }while(modifyOpt != 1 && modifyOpt != 2  && modifyOpt !=3);
+            }else{
+                displayOrderListFromID(modifyOrderID);
+                
+                int modifyOpt = 0;
+                do{
+                    try {
+                        System.out.println("\nModify option\n1.Cancel an item\n2.Modify an item quantity\n3.Back");
+                        System.out.print("Enter your option: ");
+                        modifyOpt = scanner.nextInt();
+                        scanner.nextLine(); 
+                
+                        if(modifyOpt != 1 && modifyOpt != 2 && modifyOpt !=3){
+                            System.out.println("option only allow (1 or 2 or 3)");    
+                        }
+                    } catch (Exception e) {
+                        scanner.nextLine();
+                        System.out.println("option only allow (1 or 2 or 3)");
+                    }
+                }while(modifyOpt != 1 && modifyOpt != 2  && modifyOpt !=3);
            
-           modifyOrderFromFile(modifyOrderID, modifyOpt);
+                modifyOrderFromFile(modifyOrderID, modifyOpt);
+            }
+        }
     }
+}
 
     public void modifyOrderFromFile(String modifyOrderID,int modifyOpt){
         String stockInFilePath = "stockInOrder.txt";
@@ -1137,14 +1224,18 @@ public double findTotalPrice(String deleteOrderID){
                             cancelItemName = cancelItemName.substring(0,1).toUpperCase() + cancelItemName.substring(1).toLowerCase();
                         }
                         found = cancelItemToContent(requireModifyLine, cancelItemName, modifiedSpecificLine);
+
                         if(!found){
                             System.out.println("the item does not found in this order.");
+                        }else{
+                            double totalRefund = findTotalItemCost(requireModifyLine, cancelItemName);
+                            transaction.makeTransaction(modifyOrderID, "Partial Refund", totalRefund);
                         }
                     }
                 }else{
                     System.out.println("Sorry,u unable to modify the order to cancel an item because it only 1 item.Please go to delete order.\n");
                     cancelPurchase();
-                    StockInOrderMenu(super.getStaffId());
+                    stockInOrderMenu(super.getStaffId());
                 }
 
             }else if(modifyOpt == 2){
@@ -1188,6 +1279,16 @@ public double findTotalPrice(String deleteOrderID){
                             
                             if(sameQty){
                                 System.out.println("Sorry,you does not change the quantity.");
+                            }else{
+                                double diffTotal = findDiffItemCost(requireModifyLine, modifyQtyItemName, newQty);
+                                // oldsubtotal - newsubtotal if(negative) need pay more else need refund
+                                if (diffTotal > 0) {
+                                    transaction.makeTransaction(modifyOrderID, "Reduce Item Quantity", diffTotal);
+                                }else if(diffTotal < 0) {
+                                    transaction.makeTransaction(modifyOrderID, "Add Item Quantity", diffTotal);
+                                } else{
+                                    System.out.println("No transaction make.");
+                                }
                             }
                             
                         } catch (Exception e) {
@@ -1199,7 +1300,7 @@ public double findTotalPrice(String deleteOrderID){
            
 
             }else if(modifyOpt == 3){
-                StockInOrderMenu(super.getStaffId());
+                stockInOrderMenu(super.getStaffId());
             }
 
             if(modifyOpt == 1 || modifyOpt == 2){
@@ -1247,7 +1348,7 @@ public double findTotalPrice(String deleteOrderID){
             modifiedSpecificLine.add(element[0]+"\t"+super.getFormattedOrderDate()+"\t"+super.getFormattedOrderTime()+"\tRM"+String.format("%.2f", totalAmount) + "\t" + element[4] + "\t" + element[5]);
          }
         return found;
-        }
+    }
 
         public boolean changeItemQty(List<String> requireModifiedContent,String modifyQtyItemName, List<String> modifiedSpecificLine,int newQty){
             boolean change = false;
@@ -1276,7 +1377,7 @@ public double findTotalPrice(String deleteOrderID){
                 }else{
                     modifiedSpecificLine.add(requireModifiedContent.get(lineNo));
                 }
-            }
+        }
 
             if(!sameQty){
                 double diffSubtotal = newSubTotal - oldSubTotal;
@@ -1389,6 +1490,34 @@ public double findTotalPrice(String deleteOrderID){
             return found;
         }
 
+        public double findTotalItemCost(List<String> requireModifyLine,String cancelItemName){
+            double totalRefund = 0.0;
+
+            for(int lineNo = 1;lineNo<requireModifyLine.size();lineNo++){ //bcz 0 is overall data
+                String[] elementContent = requireModifyLine.get(lineNo).split("\\t");
+                if(elementContent[2].equals(cancelItemName)){
+                    totalRefund = Double.parseDouble(elementContent[5].substring(2));
+                }
+            }
+            return totalRefund;
+        }
+
+        public double findDiffItemCost(List<String> requireModifyLine,String modifyQtyItemName,int newQty){
+            double diffTotal = 0,unitPrice,oldSubTotal,newSubTotal;
+
+            for(int lineNo = 1;lineNo<requireModifyLine.size();lineNo++){
+                String[] elementContent = requireModifyLine.get(lineNo).split("\\t");
+                if(elementContent[2].equals(modifyQtyItemName)){
+                    unitPrice = Double.parseDouble(elementContent[4].substring(2));
+                    oldSubTotal = Double.parseDouble(elementContent[5].substring(2));
+                    newSubTotal = newQty * unitPrice;
+                    diffTotal = oldSubTotal - newSubTotal;
+                }
+            }
+
+            return diffTotal;
+        }
+
 //generate Order ID------------------------------------------------------------------------------------------------
     public String generateOrderID(){
         int noLine = 0;
@@ -1436,5 +1565,380 @@ public double findTotalPrice(String deleteOrderID){
         System.out.println(stockInFilePath + "unable to open.");
     }
     return found;
- }   
+ }
+ 
+ //Display all stock in order----------------------------------------------------------------------
+    public void displayAllStockInOrder(){
+        String stockInFilePath = "stockInOrder.txt";
+
+        System.out.print("+");
+        line.printLineNoNewLine(112);
+        System.out.println("+");
+        System.out.printf("| %-3s | %-15s | %-15s | %-15s | %-15s | %-14s | %-15s |\n",
+        "No.", "Order ID", "Status", "Date", "Time", "Delivery","Total");
+        System.out.print("+");
+        line.printLineNoNewLine(112);
+        System.out.println("+");
+
+        try(Scanner scanner = new Scanner(new File(stockInFilePath))) {
+            int noOrder = 1;
+            while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+                if(lineContent.startsWith("SI")){
+                    String[] elementContent = lineContent.split("\\t");
+                    //[0]orderID,[1]orderDate,[2]orderTime,[3]total price,[4]delivery method,[5]staffID
+                    System.out.printf("| %-3s | %-15s | %-15s | %-15s | %-15s | %-14s | %-15s |\n",
+        noOrder, elementContent[0], "Paid", elementContent[1], elementContent[2], elementContent[4],elementContent[3]);
+                    noOrder++;
+                }
+            }
+
+        System.out.print("+");
+        line.printLineNoNewLine(112);
+        System.out.println("+");
+        } catch (IOException e) {
+            System.out.println(stockInFilePath + " unable to open.");
+        }
+
+    }
+
+ //Display received order ------------------------------------
+ public void displayReceivedOrder(){
+    String receivedFilePath = "receivedOrderItem.txt";
+
+    System.out.print("+");
+    line.printLineNoNewLine(112);
+    System.out.println("+");
+    System.out.printf("| %-3s | %-15s | %-15s | %-15s | %-15s | %-14s | %-15s |\n",
+    "No.", "Order ID", "Status", "Date", "Time", "Delivery","Total");
+    System.out.print("+");
+    line.printLineNoNewLine(112);
+    System.out.println("+");
+
+    try(Scanner scanner = new Scanner(new File(receivedFilePath))) {
+        int noOrder = 1;
+        while(scanner.hasNextLine()){
+            String lineContent = scanner.nextLine();
+            if(lineContent.startsWith("SI")){
+                String[] elementContent = lineContent.split("\\t");
+                //[0]orderID,[1]orderDate,[2]orderTime,[3]total price,[4]delivery method,[5]staffID
+                System.out.printf("| %-3s | %-15s | %-15s | %-15s | %-15s | %-14s | %-15s |\n",
+    noOrder, elementContent[0], "Paid", elementContent[1], elementContent[2], elementContent[4],elementContent[3]);
+                noOrder++;
+            }
+        }
+
+    System.out.print("+");
+    line.printLineNoNewLine(112);
+    System.out.println("+");
+
+    System.out.println("Press any key to continue...");
+    System.in.read();  // Waits for a key press
+    } catch (IOException e) {
+        System.out.println(receivedFilePath + " unable to open.");
+    }
+} 
+
+//Search order-----------------------------------------------
+    public boolean searchOrder(){
+        String stockInFilePath = "stockInOrder.txt";
+        boolean selected = false;
+        boolean found = false;
+        boolean isAlpha = false;
+        int itemNo = 1;
+        double deliveryFee = 0.0;
+        String deliveryMethod = "",total="",staffID = "";
+
+        System.out.println("SEARCH ORDER");
+        line.printLine("SEARCH ORDER".length());
+        System.out.print("Enter Order ID that you want to view (X or x for exit): ");
+        String searchID = scanner.nextLine();
+
+      if(searchID.equals("X") || searchID.equals("x")){
+        found = true; //for exit
+      }else{
+
+        if(searchID.length()>2){
+            if(Character.isLetter(searchID.charAt(0)) && Character.isLetter(searchID.charAt(1))){
+                isAlpha = true;
+            }
+        }
+
+        if(isAlpha){
+            searchID = searchID.substring(0, 2).toUpperCase() + searchID.substring(2);
+        }
+
+        try (Scanner scanner = new Scanner(new File(stockInFilePath))){
+            while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+                if(lineContent.startsWith("SI")){
+                    String[] elementOvrContent = lineContent.split("\\t");
+                    if(elementOvrContent[0].equals(searchID)){
+
+                         deliveryMethod = elementOvrContent[4];
+                         total = elementOvrContent[3];
+                         staffID = elementOvrContent[5]; 
+
+                        //print ovr order info
+                        line.printEqualLine(101);
+                        System.out.println("|Order ID: "+ elementOvrContent[0] + String.format("%84s", ("DATE: "+ elementOvrContent[1] + "  TIME: " + elementOvrContent[2] + "|")));
+                        line.printEqualLine(101);
+
+                        System.out.println("|No." + "\t" + String.format("%-11s", "Supplier ID") + "\t" + String.format("%-10s", "Item ID") + "\t" + String.format("%-10s", "Item Name") + "\t" + String.format("%-8s", "Quantity") + "\t" + String.format("%-9s", "Unit cost") + "\t" + String.format("%-12s", "Subtotal")+ "|");
+                        line.printEqualLine(101);
+
+                        selected = true;
+                        found = true;
+                    }else{
+                        selected = false;
+                    }
+                }else{
+                    //print item order detail
+                    if(selected && found){
+                        String[] elementItemContent = lineContent.split("\\t");
+
+                        //0-supplID ,1-itemID ,2-itemName ,3-qty ,4- unitCost ,5- subtotal
+                        System.out.println("|" + itemNo + "\t" + String.format("%-11s", elementItemContent[0]) + "\t" + String.format("%-10s", elementItemContent[1]) + "\t" + String.format("%-10s", elementItemContent[2]) + "\t" + String.format("%-8s", elementItemContent[3]) + "\t" + String.format("%-11s", elementItemContent[4]) + "\t" + String.format("%-12s",elementItemContent[5]) +"|");
+                        itemNo++;
+                    }
+                }
+            }
+
+            if(found){
+                //"1.Ground(RM4.50/ship)\n2.Sea(RM7.50/ship)\n3.Air(RM15.00/ship)"
+                if(deliveryMethod.equals("Ground")){
+                    deliveryFee = 4.50;
+                }else if(deliveryMethod.equals("Sea")){
+                    deliveryFee = 7.50;
+                }else if (deliveryMethod.equals("Air")) {
+                    deliveryFee = 15.00;
+                }else{
+                    deliveryFee = 0;
+                }
+
+                line.printLine(101);
+                System.out.println(String.format("%-88s",("|" + "Delivery Fee(" + deliveryMethod + "): ")) + "RM"+String.format("%5.2f", deliveryFee) + String.format("%6s", "|"));
+
+                line.printEqualLine(101);
+                System.out.println(String.format("%-50s",("|Purchase by staff(" + staffID + ")")) + String.format("%38s", "Total: ") + String.format("%-12s", total) + "|");
+                line.printEqualLine(101);
+
+                System.out.println("Press any key to continue...");
+                System.in.read();  // Waits for a key press
+            }
+            
+        } catch (Exception e) {
+            System.out.println(stockInFilePath + " unable to open.");
+        }
+      }
+        return found;
+    }
+
+    // track delivery ----------------------------------------------------------------------------------------
+    public void trackDelivery(){
+        //display the unreach date stock in order info
+        String stockInFilePath = "stockInOrder.txt";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+        Calendar calendar = Calendar.getInstance(); //initial with current date and time
+
+        try (Scanner scanner = new Scanner(new File(stockInFilePath))){
+            System.out.println("\nSTOCK IN ORDER SCHEDULE");
+            line.printLine("STOCK IN ORDER SCHEDULE".length());
+            line.printLine(152);
+            System.out.printf("|%-15s|\t%-30s|\t%-30s|\t%-20s|\t%-20s|\t%-15s|\n","Order ID","Order Date","Estimate Receive Date","Delivery Method","Handle by","Status");
+            line.printLine(152);
+            while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+                if(lineContent.startsWith("SI")){
+                    String[] elementContent = lineContent.split("\\t");
+                    
+                    Date orderDate = dateFormat.parse(elementContent[1]);//convert from string to date
+                    calendar.setTime(orderDate); // set to order date
+
+                    if(elementContent[4].equals("Ground")){
+                        calendar.add(Calendar.DAY_OF_MONTH,7);
+                    }else if(elementContent[4].equals("Sea")){ 
+                        calendar.add(Calendar.DAY_OF_MONTH,5);
+                    }else{ //air
+                        calendar.add(Calendar.DAY_OF_MONTH,3); // add 3 day
+                    }                    
+
+
+                    String estimateReceiveDate = dateFormat.format(calendar.getTime());
+                    Date    currentDate = new Date();
+                    String status ;
+                    if(currentDate.before(calendar.getTime())){
+                        status = "delivering";
+                    }else if(currentDate.after(calendar.getTime())){
+                        status = "late";
+                    }else{
+                        status = "reach estimate time";
+                    }
+
+                    System.out.printf("|%-15s|\t%-30s|\t%-30s|\t%-20s|\t%-20s|\t%-15s|\n",elementContent[0],elementContent[1],estimateReceiveDate,elementContent[4],elementContent[5],status);
+                    line.printLine(152);
+                    
+                    System.out.println("Press any key to continue...");
+                    System.in.read();  // Waits for a key press
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(stockInFilePath + " unable to open.");
+        }
+    }
+
+    //receive order ---------------------------------------------------------------------------------------------------------------------
+    public void receiveOrder(){
+        String receivedOrderID ="";
+        boolean found = false;
+        
+        String stockInFilePath = "stockInOrder.txt";
+    
+        System.out.println("UPDATE RECEIVED ORDER");
+        line.printLine("UPDATE RECEIVED ORDER".length());
+    
+        while (!found) {
+            System.out.print("Enter the Order ID that received (X or x for exit): ");
+            receivedOrderID = scanner.nextLine();
+    
+            
+            if(receivedOrderID.equals("X") || receivedOrderID.equals("x")){
+                stockInOrderMenu(super.getStaffId());//for exit
+            }else{
+    
+                if(receivedOrderID.length() > 2){
+                    if(Character.isLetter(receivedOrderID.charAt(0)) && Character.isLetter(receivedOrderID.charAt(1))){
+                        receivedOrderID = receivedOrderID.substring(0,2).toUpperCase() + receivedOrderID.substring(2);
+                    }
+                }
+            }
+            
+            found = findOrderIDFromFile(receivedOrderID);
+            if(!found){
+                System.out.println("Sorry,we cant find the order that you received.Please try again.");
+            }
+        }
+           displayOrderListFromID(receivedOrderID);
+    
+           String confirm = "";
+    
+           do{
+            System.out.print("Confirm received(Y - Yes|N - No): ");
+            confirm = scanner.nextLine();
+    
+            if(confirm.equalsIgnoreCase("Y")){
+                storeReceivedOrder(stockInFilePath, receivedOrderID);
+                System.out.println("Record updated");
+            }else if(confirm.equalsIgnoreCase("N")){
+                System.out.println("Action terminated.");
+            }else{
+                System.out.println("Invalid action.Please select(Y or N)");
+            }
+           }while(!(confirm.equalsIgnoreCase("Y")) && !(confirm.equalsIgnoreCase("N")));
+    }
+
+    public void storeReceivedOrder(String stockInFilePath,String receivedOrderID){
+
+    try {
+        List<String> originalLine = Files.readAllLines(Paths.get(stockInFilePath));//before deleted received order content
+        List<String> updatedLine = new ArrayList<>();//after deleted received order content
+        List<String> receivedContent = new ArrayList<>();//stored received Content move to received order file
+        boolean skip = false; //move original to update if founded deleted ID skip will true so the deleted content will not store in updated array
+
+        for (String content : originalLine) {
+            if(content.startsWith("SI")){ //find the content next order?
+                
+                if(content.startsWith(receivedOrderID)){ //find deleted order
+                    skip = true;
+                }else{
+                    skip = false;
+                }
+            }
+
+            if(!skip){
+                updatedLine.add(content);
+            }else{
+                receivedContent.add(content);
+            }      
+        }
+
+        FileWriter writer = new FileWriter(stockInFilePath);
+        //remove received detail from stockInOrder.txt
+        for (String updatedContent : updatedLine) {
+            writer.write(updatedContent + "\n");
+        }
+        writer.close();
+
+        //move the received content to receivedOrderItem.txt
+        FileWriter moveWriter = new FileWriter("receivedOrderItem.txt",true);
+            for (String receivedInfo : receivedContent) {
+                moveWriter.write(receivedInfo + "\n");
+            }
+        moveWriter.close();
+
+    } catch (IOException e) {
+        System.out.println(stockInFilePath + "unable to open.");
+    }
+    }
+
+    //stock in order
+    public void generateReport(){
+        int[] itemQty = new int[50];
+        String[] itemName = new String[50];
+        double[] unitCost = new double[50];
+        double[] itemValue = new double[50];
+        boolean sameItem = false;
+
+        int itemNo = 0;
+
+        String stockInFilePath = "stockInOrder.txt";
+
+        try (Scanner scanner = new Scanner(new File(stockInFilePath))){
+            while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+
+                if(!(lineContent.startsWith("SI"))){
+                    String[] elementContent = lineContent.split("\\t");
+                    if(itemName[0] != null){
+                        sameItem = false;
+                        for (int noItem=0;noItem <= itemNo;noItem++) {
+                            if(itemName[noItem] != null){ 
+                                if(elementContent[2].equals(itemName[noItem])){ //got this item alrdy no need store the item name
+                                    itemQty[noItem] += Integer.parseInt(elementContent[3]);
+                                    sameItem = true;
+                                    break;
+                                }
+                            }     
+                        }
+                    }
+                    
+                    if(!sameItem){
+                        unitCost[itemNo] = Double.parseDouble(elementContent[4].substring(2));
+                        itemName[itemNo] = elementContent[2];
+                        itemQty[itemNo] = Integer.parseInt(elementContent[3]);
+                        itemNo++;
+                    } 
+                }
+            }
+            double totalSpend =0.0;
+
+            line.printLine(55);
+            System.out.printf("%-54s%s\n","|STOCK IN ORDER REPORT","|");
+            line.printLine(55);
+            System.out.printf("|%-15s |%-20s| %-14s|\n","Item Name","Total Quantity","Item Value(RM)");
+            line.printLine(55);
+            for(int i =0 ; i< itemNo;i++){
+                itemValue[i] = unitCost[i] * itemQty[i];
+                totalSpend += itemValue[i];
+                
+            System.out.printf("|%-15s |%-20d| %14.2f|\n",itemName[i],itemQty[i],itemValue[i]);
+            }
+            line.printLine(55);
+            System.out.printf("|%37s|%15.2f|\n","Total Spend:" ,totalSpend);
+            line.printLine(55);
+        } catch (Exception e) {
+            System.out.println(stockInFilePath + " unable to open.");
+        }
+
+    } 
 }

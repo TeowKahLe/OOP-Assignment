@@ -6,14 +6,14 @@ import java.text.SimpleDateFormat;
 public class Transaction{
     private String transactionID;
     private static double balance;
-    private Date transDate = new Date();
+    private Date transDate;
     private Date transTime;
     private String transactionType;
     private double transAmount;
     
     private List<Order> OrderInfo = new ArrayList<>();
 
-    Alignment line = new Alignment();
+    static Alignment line = new Alignment();
 
     Transaction(){
         transDate = new Date();
@@ -229,6 +229,40 @@ public class Transaction{
             System.out.println(transFilePath + " unable to open.");
         }
         return ("T" + String.format("%05d", noLine));
+    }
+
+    public static void generateReport(){
+        //T00001	SI0005	19 Sept 2024	02:18 am	Purchase	RM-1357.50
+        String transFilePath = "Transaction.txt";
+        double profit = 0.0;
+
+        try (Scanner scanner = new Scanner(new File(transFilePath))){
+            line.printLine(117);
+            System.out.printf("%-116s%s\n","|TRANSACTION REPORT","|");
+            line.printLine(117);
+            System.out.printf("|%-15s|%-15s|%-25s|%-20s|%-20s|%-15s|\n","Transaction ID","Order ID","Transaction Date","Transaction Time","Transaction Type","Total(RM)");
+            line.printLine(117);
+            while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+                if(lineContent.startsWith("T")){
+                    String[] elementContent = lineContent.split("\\t");
+                    double total = Double.parseDouble(elementContent[5].substring(2));
+                    profit+=total;
+                    System.out.printf("|%-15s|%-15s|%-25s|%-20s|%-20s|%15s|\n",elementContent[0],elementContent[1],elementContent[2],elementContent[3],elementContent[4],elementContent[5].substring(2));
+                }
+            }
+            line.printLine(117);
+            if(profit < 0){
+                System.out.printf("|%-98s %-3s %12.2f%s\n","Loss:","|",profit,"|");
+            }else{
+                
+                System.out.printf("|%-98s %-3s %12.2f%s\n","Profit:","|",profit,"|");
+            }
+            line.printLine(117);
+            
+        } catch (Exception e) {
+            System.out.println(transFilePath + " unable to open");
+        }
     }
 
 }
