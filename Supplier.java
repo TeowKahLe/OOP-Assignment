@@ -146,6 +146,8 @@ public class Supplier extends Person {
 
         setId('U', "supplierInfo.txt",calcContentDeletedIDArray());
 
+        displayItem();
+
         for(int i=0;i< noSupplyItem;i++){
             enterSupplyItem();
         }
@@ -398,6 +400,7 @@ public class Supplier extends Person {
             }
         }
 
+        displayItem();
         //find the index need modify first
         int indexNeedModify = 0;
         for(int index = 0; index < supplierInfo.length;index++){
@@ -464,6 +467,7 @@ public class Supplier extends Person {
         }
     }
     //Enter supply item ---------------------------------------------------------------------------------------------------
+    //for add
     public void enterSupplyItem(){
         String []tokenContents;
         boolean found = false;
@@ -508,12 +512,13 @@ public class Supplier extends Person {
           // Find the Item ID from text file then retrieve all data in Item List
     }
 
+
+    //for modify
     public void enterSupplyItem(String[][] supplyItemInfo,int indexNeedModify,int item){
         String[] tokenContents;
         boolean found = false;
 
         String itemFilePath = "itemInfo.txt";
-        //String supplierFilePath = "supplierInfo.txt";
 
         String tempItemName;
 
@@ -547,7 +552,6 @@ public class Supplier extends Person {
                  System.out.println(itemFilePath + " unable to open");
             }
         }
-
           // Find the Item ID from text file then retrieve all data in Item List
     }
 
@@ -615,4 +619,60 @@ public class Supplier extends Person {
         return super.getId()+"\t"+super.getName()+"\t"+super.getContactNo()+"\t"+super.getEmail()+"\t"+super.getAddress()+"\t"+ supplyItem + "\n";   
     }
 
+    
+    public void displayItem(){
+        String itemFilePath = "itemInfo.txt";
+
+        String[] categoryCode = new String[10];
+        int storedCodeIndex=0;
+
+        //store category id code first
+        try (Scanner scanner = new Scanner(new File(itemFilePath))){
+
+            line.printLine(100);
+            System.out.print("ID" + "\t" + String.format("%-20s","Item Name") + "\t" + String.format("%-10s","Category") + "\t" + String.format("%-20s", "Description") + "\t" + String.format("%-7s", "Unit Cost") + "\t" + String.format("%-7s", "Unit Price") + "\n");
+            line.printLine(100);
+
+            while(scanner.hasNextLine()){
+                String[] elementContent = scanner.nextLine().split("\\|");
+
+                //cmp got same category code
+                if(categoryCode[0] == null){
+                    categoryCode[0] = elementContent[0].substring(0,2);
+                    storedCodeIndex++;
+                }else{
+                    boolean sameCategory = false;
+                    for (String storeCode : categoryCode) {
+                        if((elementContent[0].substring(0,2).equals(storeCode))){
+                            sameCategory = true;
+                            break;
+                        }
+                    }
+                    if(!sameCategory){
+                        categoryCode[storedCodeIndex] = elementContent[0].substring(0,2);
+                        storedCodeIndex++;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(itemFilePath + " unable to open.");
+        }
+
+        //display according category id
+        for(int index=0;index<storedCodeIndex;index++){
+            try (Scanner scanner = new Scanner(new File(itemFilePath))){
+                while(scanner.hasNextLine()){
+                    String lineContent = scanner.nextLine();
+                    if(lineContent.startsWith(categoryCode[index])){
+                        String[] elementContent = lineContent.split("\\|");
+
+                        System.out.println(elementContent[0] + "\t" + String.format("%-20s",elementContent[1]) + "\t" + String.format("%-10s", elementContent[2]) + "\t" + String.format("%-20s", elementContent[3]) + "\tRM" + String.format("%5.2f", Double.parseDouble(elementContent[4])) + "\t\tRM" + String.format("%5.2f", Double.parseDouble(elementContent[5])) + "\n");
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println(itemFilePath + " unable to open.");
+            }
+        }
+        
+        }
 }

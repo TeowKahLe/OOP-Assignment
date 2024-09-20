@@ -33,14 +33,14 @@ public class fastFoodInventory {
     				case 2:
 						//Staff userLogin = new Staff(); //(real)
 						//userLogin.login(order); //(real)
-    					Supplier test3 = new Supplier();
-						test3.deleteSupplier();
+    					//Supplier test3 = new Supplier();
 						//menu();
 						//Order test = new Order();
 						//test.storeItemtoArr();
 						//StockInOrder test1 = new StockInOrder();
 						//test1.stockInOrderMenu("LIN1");
-						//test1.generateReport();
+						//StockInOrder.storeItemtoArr();
+						//test1.sortDisplayItemArr();
 						//Transaction transaction = new Transaction();
 						//Order.orderManagement();
 						//Inventory.inventoryManagement();
