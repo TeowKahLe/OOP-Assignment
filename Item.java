@@ -2,7 +2,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import javax.sound.sampled.Line;
 
 public class Item {
 	private String itemId;
@@ -341,11 +343,63 @@ public class Item {
 }
 
     public void deleteItem(String itemId){
-        String itemPath = "itemInfo.txt";
+        //
+    }
+    
+    private ArrayList<Item> readItemsFromFile(String filePath){
+        return new ArrayList<>();
     }
 
-    public void modifyItem(String itemId, String itemName, double unitPrice, String itemDesc){
-        String itemPath = "itemInfo.txt";
+    private void saveItemToFile(ArrayList<Item> itemList, String filePath){
+        //
+    }
+
+    public void modifyItem(String itemId, int stockQty, int minStockQty, int maxStockQty){
+        Scanner scanner = new Scanner(System.in);
+        Inventory inventory = new Inventory();
+        ArrayList<Item> itemList = readItemsFromFile("itemInfo.txt");
+
+        System.out.println("Enter item id: ");
+        String newId = scanner.nextLine();
+
+        Item itemModify = null;
+        for(Item item : itemList){
+            if (item.getItemId().equals(newId)) {
+                itemModify = item;
+            }
+        }
+
+        if(itemModify != null){
+            System.out.println("Modify item detail\n");
+            Line.printLine("Modify item detail\n".length());
+	        System.out.println("1. Stock Quantity\n2. Minimum Stock Quantity\n3. Maximum Stock Quantity\n");
+            int opt = scanner.nextInt();
+            switch(opt){
+                case 1:
+                System.out.println("Enter new Stock Quantity\n");
+                int newStkQty = scanner.nextInt();
+                itemModify.setStockQty(newStkQty);
+                break;
+
+                case 2:
+                System.out.println("Enter new Minimum Stock Quantity\n");
+                int newMinStkQty = scanner.nextInt();
+                itemModify.setMinStockQty(newMinStkQty);
+                break;
+
+                case 3:
+                System.out.println("Enter new Maximum Stock Quantity\n");
+                int newMaxStkQty = scanner.nextInt();
+                itemModify.setMaxStockQty(newMaxStkQty);
+                break;
+
+                default:
+                System.out.println("Invalid option");
+            }
+            saveItemToFile(itemList, "itemInfo.txt");
+        }else{
+            System.out.println("Item ID" + itemId);
+        }
     }
 
     //-----------------------------------------------------------------------------------Search Item (VeryVeryVery BIGGGG Problem later fix)
