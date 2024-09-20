@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import javax.sound.sampled.Line;
 
 public class Item {
 	private String itemId;
@@ -246,20 +245,65 @@ public class Item {
 }
 
     public void deleteItem(String itemId){
-        //
+        File inputFile = new File("itemInfo.txt");
+        File tempFile = new File("deletedItemId.txt");
+
+        try {
+            Scanner fileScanner = new Scanner(inputFile);
+            FileWriter fileWriter = new FileWriter(tempFile, true);
+
+            System.out.println("Enter the item ID you wish to delete: ");
+            Scanner scanner = new Scanner(System.in);
+            String newId = scanner.nextLine();
+
+            while (fileScanner.hasNextLine()) { 
+                String line = fileScanner.nextLine();
+                String[] itemDetail = line.split("|");
+
+                if(itemDetail[0].equals(newId)){
+                    fileWriter.write(line + "\n");
+                }
+            }
+            fileScanner.close();
+            fileWriter.close();
+
+            if(inputFile.delete()){
+                tempFile.renameTo(inputFile);
+            }else{
+                System.out.println("Cannot delete the origina file");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
-    private ArrayList<Item> readItemsFromFile(String filePath){
+    public ArrayList<Item> readItemsFromFile(String filePath){
         return new ArrayList<>();
     }
 
-    private void saveItemToFile(ArrayList<Item> itemList, String filePath){
-        //
+    public void saveItemToFile(ArrayList<Item> itemList, String filePath){
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(filePath);
+            for(Item item : itemList){
+                writer.write(item.toString() + "|");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            if(writer != null){
+                try{
+                    writer.close();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void modifyItem(String itemId, int stockQty, int minStockQty, int maxStockQty){
         Scanner scanner = new Scanner(System.in);
-        Inventory inventory = new Inventory();
+        Alignment Line = new Alignment();
         ArrayList<Item> itemList = readItemsFromFile("itemInfo.txt");
 
         System.out.println("Enter item id: ");
@@ -281,19 +325,19 @@ public class Item {
                 case 1:
                 System.out.println("Enter new Stock Quantity\n");
                 int newStkQty = scanner.nextInt();
-                itemModify.setStockQty(newStkQty);
+                itemModify.inventory.setStockQty(newStkQty);
                 break;
 
                 case 2:
                 System.out.println("Enter new Minimum Stock Quantity\n");
                 int newMinStkQty = scanner.nextInt();
-                itemModify.setMinStockQty(newMinStkQty);
+                itemModify.inventory.setMinStockQty(newMinStkQty);
                 break;
 
                 case 3:
                 System.out.println("Enter new Maximum Stock Quantity\n");
                 int newMaxStkQty = scanner.nextInt();
-                itemModify.setMaxStockQty(newMaxStkQty);
+                itemModify.inventory.setMaxStockQty(newMaxStkQty);
                 break;
 
                 default:
@@ -301,7 +345,7 @@ public class Item {
             }
             saveItemToFile(itemList, "itemInfo.txt");
         }else{
-            System.out.println("Item ID" + itemId);
+            System.out.println("Item ID" + itemId + "does not exists");
         }
     }
 
