@@ -142,6 +142,8 @@ public class Transaction{
                 writer.close();  
                 
                 System.out.println(String.format("%-20s", "New Balance: ") + "RM" + String.format("%.2f", balance));
+                System.out.println("Press enter to continue...");
+                System.in.read();  // Waits for a key press
             } catch (IOException e) {
                 System.out.println("unable to write in " + transFilePath);
             }

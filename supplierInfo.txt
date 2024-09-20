@@ -1,6 +1,7 @@
 U001	Jackson	012-1234567	lo@gmail.com	jalan pisang
-Item[1]: MT001	Beef	Meat	Good	10.0	1.0
-Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0
+Item[1]: MT001	Beef	Meat	Good	10.00	1.00
+Item[2]: SD001	Prawn	Seafood	Tasty	10.00	12.00
+Item[3]: BS001	Coke	Beverages	Good	1.00	3.00
 U002	Lin	012-1234567	lo@gmail.com	jalan pisang
 Item[1]: MT001	Beef	Meat	Good	10.0	1.0
 Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0
@@ -19,3 +20,6 @@ Item[1]: MT001	Beef	Meat	Good	10.0	1.0
 Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0
 U009	Willim	012-1234567	w@gmail.com	jalan insta
 Item[1]: BS001	Coke	Beverages	Good	1.0	3.0
+U010	Brooke	012-12345678	!@gmail.com	123
+Item[1]: MT003	Chicken	Meat	Good	10.0	1.0
+Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0

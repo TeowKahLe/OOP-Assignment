@@ -118,7 +118,7 @@ public class Supplier extends Person {
     }
 
     //Add supplier---------------------------------------------------------------------------------------------
-    public void addSupplier(){
+    public void register(){
         boolean positiveIntLower5 = false;
         int noSupplyItem = 0;
 
@@ -146,6 +146,8 @@ public class Supplier extends Person {
 
         setId('U', "supplierInfo.txt",calcContentDeletedIDArray());
 
+        displayItem();
+
         for(int i=0;i< noSupplyItem;i++){
             enterSupplyItem();
         }
@@ -161,9 +163,19 @@ public class Supplier extends Person {
         System.out.println("DELETE SUPPLIER");
         line.printLine("DELETE SUPPLIER".length());
 
+        displaySupplierList();
+
         while(found == false){
-            System.out.print("Enter the Supplier ID that need to DELETE: ");
+            System.out.print("Enter the Supplier ID that need to DELETE (Enter X or x to QUIT): ");
             String tempID = scanner.nextLine();
+
+            if(tempID.length() > 1){
+                tempID = tempID.substring(0, 1).toUpperCase() + tempID.substring(1);
+             }
+             
+             if(tempID.equals("X")||tempID.equals("x")){
+                break;
+             }
 
             try(Scanner scanner = new Scanner(new File(supplierFilePath))) {
                 while(scanner.hasNextLine()){
@@ -173,6 +185,7 @@ public class Supplier extends Person {
                         if(tempID.equals(tokenContents[0])){
                             found = true;
                             findDeleteRecord(tempID,supplierFilePath);
+                            displaySupplierList();
                             System.out.println(tempID + " data is deleted.");
                             saveDeletedSupplierID(tempID);
                             break;
@@ -189,7 +202,7 @@ public class Supplier extends Person {
             }
 
         }
-        
+        fastFoodInventory.main(null);
     }
 
     public void findDeleteRecord(String startDeleteID,String supplierFilePath){
@@ -275,9 +288,18 @@ public class Supplier extends Person {
             
         }
         
+        displaySupplierList();
         while(!found){    
-            System.out.print("Enter the Supplier ID that need to MODIFY: ");
+            System.out.print("Enter the Supplier ID that need to MODIFY (Enter X or x to QUIT): ");
             String tempID = scanner.nextLine();
+
+            if(tempID.length() > 1){
+                tempID = tempID.substring(0, 1).toUpperCase() + tempID.substring(1);
+             }
+             
+             if(tempID.equals("X")||tempID.equals("x")){
+                break;
+             }
     
             try (Scanner scanner = new Scanner(new File(supplierFilePath))){
                 while(scanner.hasNextLine()){
@@ -315,6 +337,7 @@ public class Supplier extends Person {
                                     break;
                             }
                                 modifyFile(supplierInfo,supplyItemInfo,supplierFilePath);//update file with modify value
+                                displaySupplierList();
                                 System.out.println(detailModify + " has been updated.");
                         }
                     }
@@ -328,7 +351,7 @@ public class Supplier extends Person {
                 System.out.println(supplierFilePath + " unable to open");
             }
         }
-
+        fastFoodInventory.main(null);
     }
 
     public void replaceNewData(String[] supplierInfo,String[][] supplyItemInfo,String tempID,int opt,String newName){
@@ -377,6 +400,7 @@ public class Supplier extends Person {
             }
         }
 
+        displayItem();
         //find the index need modify first
         int indexNeedModify = 0;
         for(int index = 0; index < supplierInfo.length;index++){
@@ -443,6 +467,7 @@ public class Supplier extends Person {
         }
     }
     //Enter supply item ---------------------------------------------------------------------------------------------------
+    //for add
     public void enterSupplyItem(){
         String []tokenContents;
         boolean found = false;
@@ -487,12 +512,13 @@ public class Supplier extends Person {
           // Find the Item ID from text file then retrieve all data in Item List
     }
 
+
+    //for modify
     public void enterSupplyItem(String[][] supplyItemInfo,int indexNeedModify,int item){
         String[] tokenContents;
         boolean found = false;
 
         String itemFilePath = "itemInfo.txt";
-        //String supplierFilePath = "supplierInfo.txt";
 
         String tempItemName;
 
@@ -526,8 +552,50 @@ public class Supplier extends Person {
                  System.out.println(itemFilePath + " unable to open");
             }
         }
-
           // Find the Item ID from text file then retrieve all data in Item List
+    }
+
+    //display supplier list --------------------------------------------------------------------------------------
+    public void displaySupplierList(){
+        String supplierFilePath = "supplierInfo.txt";
+        int noSupplyItem = 0;
+        boolean ignoreNewLine = true;
+
+        try (Scanner scanner = new Scanner(new File(supplierFilePath))){
+            System.out.println("SUPPLIER LIST");
+            line.printLine("SUPPLIER LIST".length());
+            
+            line.printLine(95);
+            System.out.printf("|%-10s %-20s %-20s %-20s %-20s|\n","ID","Name","Phone Number","Gmail","Address");
+
+            while(scanner.hasNextLine()){
+                String lineContent = scanner.nextLine();
+                //U001	Jackson	012-1234567	lo@gmail.com	jalan pisang
+                String[] elementContent = lineContent.split("\\t"); 
+                if(lineContent.startsWith("U")){
+                    noSupplyItem = 0;
+                    if(!ignoreNewLine){
+                        System.out.println("\n");
+                    }
+                    ignoreNewLine = false;
+                    line.printLine(95);
+                    System.out.printf("|%-10s %-20s %-20s %-20s %-20s|\n",elementContent[0],elementContent[1],elementContent[2],elementContent[3],elementContent[4]);
+                    line.printLine(95);
+                }else{
+                    if(noSupplyItem == 0){
+                        System.out.print("Supplier Item: ");
+                    }
+                    noSupplyItem++;
+                    System.out.printf("%d%s %-15s",noSupplyItem , ")" , elementContent[1]);
+                    
+                }
+            }
+            if(!ignoreNewLine){
+                System.out.println("\n");
+            }
+        } catch (IOException e) {
+            System.out.println(supplierFilePath + " unable to open.");
+        }
     }
 
     //store in supplierInfo.txt------------------------------------------------------------------------------------------------------
@@ -545,19 +613,66 @@ public class Supplier extends Person {
         }
     }
 
-
-    public void displaySupplyList(){
-        // show all the item that incharge by a supplier
-    }
-
-    public void viewSchedule(){
-        // show the schedule that delivery to invetory
-    }
-
     /*        super(id,name,phoneNo,email,address);
         this.supplyItem = supplyItem; */
     public String toString(){
         return super.getId()+"\t"+super.getName()+"\t"+super.getContactNo()+"\t"+super.getEmail()+"\t"+super.getAddress()+"\t"+ supplyItem + "\n";   
     }
 
+    
+    public void displayItem(){
+        String itemFilePath = "itemInfo.txt";
+
+        String[] categoryCode = new String[10];
+        int storedCodeIndex=0;
+
+        //store category id code first
+        try (Scanner scanner = new Scanner(new File(itemFilePath))){
+
+            line.printLine(100);
+            System.out.print("ID" + "\t" + String.format("%-20s","Item Name") + "\t" + String.format("%-10s","Category") + "\t" + String.format("%-20s", "Description") + "\t" + String.format("%-7s", "Unit Cost") + "\t" + String.format("%-7s", "Unit Price") + "\n");
+            line.printLine(100);
+
+            while(scanner.hasNextLine()){
+                String[] elementContent = scanner.nextLine().split("\\|");
+
+                //cmp got same category code
+                if(categoryCode[0] == null){
+                    categoryCode[0] = elementContent[0].substring(0,2);
+                    storedCodeIndex++;
+                }else{
+                    boolean sameCategory = false;
+                    for (String storeCode : categoryCode) {
+                        if((elementContent[0].substring(0,2).equals(storeCode))){
+                            sameCategory = true;
+                            break;
+                        }
+                    }
+                    if(!sameCategory){
+                        categoryCode[storedCodeIndex] = elementContent[0].substring(0,2);
+                        storedCodeIndex++;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(itemFilePath + " unable to open.");
+        }
+
+        //display according category id
+        for(int index=0;index<storedCodeIndex;index++){
+            try (Scanner scanner = new Scanner(new File(itemFilePath))){
+                while(scanner.hasNextLine()){
+                    String lineContent = scanner.nextLine();
+                    if(lineContent.startsWith(categoryCode[index])){
+                        String[] elementContent = lineContent.split("\\|");
+
+                        System.out.println(elementContent[0] + "\t" + String.format("%-20s",elementContent[1]) + "\t" + String.format("%-10s", elementContent[2]) + "\t" + String.format("%-20s", elementContent[3]) + "\tRM" + String.format("%5.2f", Double.parseDouble(elementContent[4])) + "\t\tRM" + String.format("%5.2f", Double.parseDouble(elementContent[5])) + "\n");
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println(itemFilePath + " unable to open.");
+            }
+        }
+        
+        }
 }
