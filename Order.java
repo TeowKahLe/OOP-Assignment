@@ -18,7 +18,6 @@ public class Order{
     private String staffId;
     private static List<Item> itemList;
     private int[] itemQty;
-    private double total;
 
     Transaction transaction = new Transaction();
 
@@ -32,7 +31,7 @@ public class Order{
 
     public Order(String orderId, String approvalStatus, Date orderDate, Date orderTime, 
                  String deliveryMethod, String orderType, String staffId, 
-                 List<Item> itemList, int[] itemQty,double total) {
+                 List<Item> itemList, int[] itemQty) {
         this.orderId = orderId;
         this.approvalStatus = approvalStatus;
         this.orderDate = orderDate;
@@ -42,7 +41,6 @@ public class Order{
         this.staffId = staffId;
         Order.itemList = itemList;
         this.itemQty = itemQty;
-        this.total=total;
     }
 
     //--------------------------------------------------------------------------------------Getters
@@ -92,10 +90,6 @@ public class Order{
         return itemQty;
     }
 
-    public double getTotal() {
-        return total;
-    }
-
     //-----------------------------------------------------------------------------------Setters
     public void setOrderId(String orderId) {
         this.orderId = orderId;
@@ -133,9 +127,6 @@ public class Order{
         this.itemQty = itemQty;
     }
 
-    public void setTotal(double total) {
-        this.total = total;
-    }
 
     //-----------------------------------------------------------------------------------read item from file then update ItemList
     public static List<Item> readItemFromFile(String filePath) {
