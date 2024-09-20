@@ -1,3 +1,4 @@
+import java.util.Scanner;
 
 public class Inventory{
     private int stockQty;
@@ -64,4 +65,107 @@ public class Inventory{
     public void setMaxStockQty(int maxStockQty){
     	this.maxStockQty = maxStockQty;
     }
+
+    //-----------------------------------------------------------------------------------Inventory Management
+    public static void inventoryManagement(){
+		Alignment.clearScreen();
+		Alignment line = new Alignment();
+    	Scanner scanner = new Scanner(System.in);
+		boolean error = true;
+
+		System.out.println("Please choose one option");
+		line.printEqualLine("Please choose one option".length());
+		System.out.println("1. Add item");
+		System.out.println("2. Modify item");
+		System.out.println("3. Delete item");
+		System.out.println("4. Search item");
+		System.out.println("5. Display all item");
+		System.out.println("6. Return to menu");
+		System.out.println("7. Exit");
+
+		while(error){
+			try{
+				System.out.print("Selected action: ");
+    			int opt = scanner.nextInt();
+				scanner.nextLine();
+				switch(opt){
+    				case 1:
+						Item addItem = new Item();
+                        boolean loop = true;
+                        while (loop) {
+                        addItem.addItem();
+                        System.out.println("1.Add more item\n2.Back to Item Management\n3.Exit");
+                        try {
+                            System.out.print("--> ");
+                            opt = scanner.nextInt();
+                            scanner.nextLine();
+                            switch(opt) {
+                                case 1: 
+                                    continue;
+                                case 2:
+                                    Inventory.inventoryManagement();
+                                    loop = false;
+                                    break;
+                                case 3:
+                                    System.exit(0);
+                                default:
+                                    System.out.println("Invalid option");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Incorrect input (Please enter NUMBER only)");
+                            scanner.nextLine(); // Clear the buffer to avoid infinite loop
+                        }
+                    }
+                    break;
+    				case 2:
+						Alignment.clearScreen();
+						//modify
+    					break;
+					case 3:
+						Alignment.clearScreen();
+						//delete
+    					break;
+					case 4:
+						Alignment.clearScreen();
+                    	//searchItem();
+                    	System.out.println("Search again or back to itemManagement or Exit?(1 = Search, 2 = itemManagement, 3 = Exit)");
+                    	int searchOpt = scanner.nextInt();
+						scanner.nextLine(); // Consume the newline character
+
+                    	switch (searchOpt) {
+                        	case 1:
+                            	//searchItem();
+                            	break;
+                        	case 2:
+                            	// Return to item management
+                            	break;
+                        	case 3:
+                            	System.exit(0);
+                            	break;
+                        	default:
+                            	System.out.println("Invalid option");
+                            	break;
+                    	}
+                    	break;
+					case 5:
+						Item.displayAllItem();
+						break;
+					case 6:
+						error = false;
+						fastFoodInventory.menu();
+						break;
+					case 7:
+						System.exit(0);
+						break;
+    				default:
+    					System.out.println("Invalid action selected");
+    					break;	
+    			}
+			}catch (Exception e){
+    			System.out.println("Incorrect input(Please enter NUMBER only)");
+    			scanner.nextLine();
+    		}	
+		}
+		scanner.close();
+	}
 }

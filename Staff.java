@@ -9,7 +9,6 @@ public class Staff extends Person{
     private String jobRole,password;
     Alignment line = new Alignment();
 
-
     public Staff(){
         
     }
@@ -69,6 +68,9 @@ public class Staff extends Person{
         System.out.println(String.format("%-24s",String.format("%-10s", "|Name ")+ ": " + getName()) + "|");
         System.out.println(String.format("%-24s",String.format("%-10s", "|Job Role ")+ ": " + getJobRole()) + "|");
         line.printLine(25);
+
+        storeStaffData();
+        fastFoodInventory.main(null);
     }
 
     public void storeStaffData(){
@@ -96,7 +98,7 @@ public class Staff extends Person{
 
     }
 
-    public void login(){
+    public void login(Order order){
         String tempID="",tempPassword="";
 
         String filePath = "staffInfo.txt";
@@ -107,24 +109,26 @@ public class Staff extends Person{
         System.out.println("Login");
         line.printLine("Login".length());
         
-
-        
         do{
             boolean matchFormat = false;
-            String upperTempID = "";
             
             while(matchFormat == false){
                 System.out.print(String.format("%-34s","Enter Staff ID(Enter X QUIT):") + " >> ");
                 tempID = scanner.nextLine();
-                upperTempID = tempID.toUpperCase();
-                if(upperTempID.equals("X")){
-                    System.out.println("HALO");
+
+                if(tempID.length() > 1){
+                   tempID = tempID.substring(0, 1).toUpperCase() + tempID.substring(1);
+                }else{
+                    tempID = tempID.toUpperCase();
+                }
+                
+                if(tempID.equals("X")){
                     break;
                 }
                 matchFormat = super.checkFormatID(tempID);
             }
 
-            if(upperTempID.equals("X")){
+            if(tempID.equals("X")){
                 String[] emptyArr ={};
                 fastFoodInventory.main(emptyArr);
             }
@@ -143,6 +147,9 @@ public class Staff extends Person{
                             System.out.println("Login Successful");
                             idFound = true;
                             pairPassword = true;
+                            order.setStaffId(tempID);
+                            fastFoodInventory.menu();
+
                             break;
 
                         }else if(tempID.equals(tokenContent[0]) && !tempPassword.equals(tokenContent[tokenContent.length-1])){// founded ID but incorrect password
