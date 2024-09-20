@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.io.IOException;
 
-public class Person {
+public abstract class Person {
     private String id,name,contactNo,email,address;
     Scanner scanner = new Scanner(System.in);
     
@@ -19,6 +19,8 @@ public class Person {
     Pattern emailPattern = Pattern.compile(".+@.+\\.com"); //. mean any characaters
 
     Pattern idPattern = Pattern.compile("S(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})");
+
+    Alignment line = new Alignment();
 
     public Person(){
         
@@ -192,6 +194,8 @@ public class Person {
         setAddress(enterAddress());
     }
 
+
+    public abstract void register();
     //Validate----------------------------------------------------------------------------------------------
     public boolean checkFormatID(String id){
         Matcher idMatcher = idPattern.matcher(id);

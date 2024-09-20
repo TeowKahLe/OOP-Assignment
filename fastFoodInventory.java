@@ -27,20 +27,20 @@ public class fastFoodInventory {
     			switch(option){
     				case 1:
 						Staff newUser = new Staff();
-						newUser.signUp();
+						newUser.register();
 						newUser.storeStaffData();
     					break;
     				case 2:
-						//Staff userLogin = new Staff(); (real)
-						//userLogin.login(order); (real)
-    					//Supplier test3 = new Supplier();
-						//test3.addSupplier();
+						//Staff userLogin = new Staff(); //(real)
+						//userLogin.login(order); //(real)
+    					Supplier test3 = new Supplier();
+						test3.deleteSupplier();
 						//menu();
 						//Order test = new Order();
 						//test.storeItemtoArr();
-						StockInOrder test1 = new StockInOrder();
+						//StockInOrder test1 = new StockInOrder();
 						//test1.stockInOrderMenu("LIN1");
-						test1.generateReport();
+						//test1.generateReport();
 						//Transaction transaction = new Transaction();
 						//Order.orderManagement();
 						//Inventory.inventoryManagement();
@@ -54,8 +54,8 @@ public class fastFoodInventory {
     			}
 			error = false;
     		}catch (Exception e){
+				scanner.nextLine(); //clear input buffer allow go into try block and prevent infinitely loop
     			System.out.println("Incorrect input(Please entry NUMBER only)");
-    			scanner.nextLine(); //clear input buffer allow go into try block and prevent infinitely loop
     		}	
 	  }
 	  scanner.close();

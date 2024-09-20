@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 public class Staff extends Person{
     Scanner scanner = new Scanner(System.in);
     private String jobRole,password;
-    Alignment line = new Alignment();
 
     public Staff(){
         
@@ -35,7 +34,7 @@ public class Staff extends Person{
         this.password = password;
     }
 
-    public void signUp(){
+    public void register(){
         String tempJobRole,tempPassword;
 
         //sign up page header
@@ -73,20 +72,7 @@ public class Staff extends Person{
         fastFoodInventory.main(null);
     }
 
-    public void storeStaffData(){
-        //create or open file
-        /*try {
-            File staffInfoFile = new File("staffInfo.txt");
-            if(staffInfoFile.createNewFile()){
-                System.out.println(staffInfoFile.getName() + " created");
-            }else{
-                System.out.println(staffInfoFile.getName() + " exist");
-            }
-        } catch (IOException e) {
-            System.out.println("File unable to create.");
-        }*/
-
-        //write content in file    
+    public void storeStaffData(){    
         try {
             FileWriter writer = new FileWriter("staffInfo.txt",true); 
             writer.write(super.getId()+"\t"+super.getName()+"\t"+super.getContactNo()+"\t"+super.getEmail()+"\t"+super.getAddress()+"\t"+ jobRole +"\t"+ password+"\n");
@@ -113,7 +99,7 @@ public class Staff extends Person{
             boolean matchFormat = false;
             
             while(matchFormat == false){
-                System.out.print(String.format("%-34s","Enter Staff ID(Enter X QUIT):") + " >> ");
+                System.out.print(String.format("%-34s","Enter Staff ID(Enter X or x to QUIT):") + " >> ");
                 tempID = scanner.nextLine();
 
                 if(tempID.length() > 1){
@@ -122,15 +108,11 @@ public class Staff extends Person{
                     tempID = tempID.toUpperCase();
                 }
                 
-                if(tempID.equals("X")){
-                    break;
+                if(tempID.equals("X")||tempID.equals("x")){
+                    String[] emptyArr ={};
+                    fastFoodInventory.main(emptyArr);
                 }
                 matchFormat = super.checkFormatID(tempID);
-            }
-
-            if(tempID.equals("X")){
-                String[] emptyArr ={};
-                fastFoodInventory.main(emptyArr);
             }
 
              System.out.print(String.format("%-35s","\nEnter Password:") + " >> ");

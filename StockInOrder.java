@@ -20,6 +20,16 @@ public class StockInOrder extends Order{
 
     Scanner scanner = new Scanner(System.in);
 
+//Constructor------------------------------------------------------------------
+    StockInOrder(){
+
+    }   
+    
+    StockInOrder(List<Supplier> supplierInfo,Date dateReceived){
+        this.supplierInfo = supplierInfo;
+        this.dateReceived = dateReceived;
+    }
+
 //getter & setter --------------------------------------------------------------
     public List<Supplier> getSupplierInfo(){
         return supplierInfo;
@@ -929,6 +939,9 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
         line.printEqualLine(101);
         System.out.println(String.format("%-50s",("|Purchase by staff(" + orderInfo[5] + ")")) + String.format("%38s", "Total: ") + String.format("%-12s", orderInfo[3]) + "|");
         line.printEqualLine(101);
+
+        System.out.println("Press enter to continue...");
+        scanner.nextLine();  // Waits for a key press
     }
 
     public void changeTotalModifyAdd(List<String>tempOrderDetail,double addItemSubTotal){
@@ -962,6 +975,8 @@ public void cancelPurchase(){
 
     System.out.println("CANCEL ORDER");
     line.printLine("CANCEL ORDER".length());
+
+    displayAllStockInOrder();
 
     while (!found) {
         System.out.print("Enter the Order ID that you want cancel (X or x for exit): ");
@@ -1066,6 +1081,8 @@ public void displayOrderListFromID(String orderID){
         System.out.println(String.format("%-50s",("|Purchase by staff(" + orderInfo[5] + ")")) + String.format("%38s", "Total: ") + String.format("%-12s", orderInfo[3]) + "|");
         line.printEqualLine(101);
 
+        System.out.println("Press enter to continue...");
+        System.in.read();  // Waits for a key press
     } catch (IOException e) {
         System.out.println(stockInFilePath + "unable to open.");
     }   
@@ -1132,9 +1149,11 @@ public void modifyPurchase(){
     boolean found = false;
     String modifyOrderID = "";
 
-        
     System.out.println("MODIFY ORDER");
     line.printLine("MODIFY ORDER".length());
+
+    displayAllStockInOrder();
+
     while (!found) {
         System.out.print("Enter the Order ID that you want modify (X or x for exit): ");
         modifyOrderID = scanner.nextLine();
@@ -1632,7 +1651,7 @@ public void modifyPurchase(){
     line.printLineNoNewLine(112);
     System.out.println("+");
 
-    System.out.println("Press any key to continue...");
+    System.out.println("Press enter to continue...");
     System.in.read();  // Waits for a key press
     } catch (IOException e) {
         System.out.println(receivedFilePath + " unable to open.");
@@ -1723,7 +1742,7 @@ public void modifyPurchase(){
                 System.out.println(String.format("%-50s",("|Purchase by staff(" + staffID + ")")) + String.format("%38s", "Total: ") + String.format("%-12s", total) + "|");
                 line.printEqualLine(101);
 
-                System.out.println("Press any key to continue...");
+                System.out.println("Press enter to continue...");
                 System.in.read();  // Waits for a key press
             }
             
@@ -1778,7 +1797,7 @@ public void modifyPurchase(){
                     System.out.printf("|%-15s|\t%-30s|\t%-30s|\t%-20s|\t%-20s|\t%-15s|\n",elementContent[0],elementContent[1],estimateReceiveDate,elementContent[4],elementContent[5],status);
                     line.printLine(152);
                     
-                    System.out.println("Press any key to continue...");
+                    System.out.println("Press enter to continue...");
                     System.in.read();  // Waits for a key press
                 }
             }
@@ -1933,6 +1952,7 @@ public void modifyPurchase(){
                 
             System.out.printf("|%-15s |%-20d| %14.2f|\n",itemName[i],itemQty[i],itemValue[i]);
             }
+            
             line.printLine(55);
             System.out.printf("|%37s|%15.2f|\n","Total Spend:" ,totalSpend);
             line.printLine(55);
