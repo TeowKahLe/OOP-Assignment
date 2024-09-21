@@ -26,11 +26,13 @@ public class fastFoodInventory {
     			//go to selected method
     			switch(option){
     				case 1:
+						Alignment.clearScreen();
 						Staff newUser = new Staff();
 						newUser.register();
 						newUser.storeStaffData();
-    					break;
+						break;
     				case 2:
+						Alignment.clearScreen();
 						Staff userLogin = new Staff();
 						userLogin.login(order);
 						break;
@@ -57,7 +59,7 @@ public class fastFoodInventory {
 		boolean error = true;
 		
 		
-		System.out.print("Fast Food Ordering System");
+		System.out.println("Fast Food Ordering System");
 		line.printLine("Fast Food Ordering System".length());
 		System.out.println("Please select your action");
 		System.out.println("1. Item Management");
@@ -80,13 +82,21 @@ public class fastFoodInventory {
 						orderManagement();
     					break;
 					case 3:
-						//Transaction
+						Alignment.clearScreen();
+						Transaction.generateReport();
+						returnMenu();
     					break;
 					case 4:
+						Alignment.clearScreen();
 						StockInOrder stockInOrder = new StockInOrder();
 						stockInOrder.generateReport();
+						System.out.println("\n\n");
+						StockOutOrder stockOutOrder = new StockOutOrder();
+						stockOutOrder.generateReport();
+						returnMenu();
     					break;
 					case 5:
+						Alignment.clearScreen();
 						main(new String[]{});
 						break;
 					case 6:
@@ -140,7 +150,8 @@ public class fastFoodInventory {
 						StockOutOrder.stockOutOrderMenu();
 						break;
 					case 3:
-						fastFoodInventory.main(null);
+						Alignment.clearScreen();
+						fastFoodInventory.menu();
 						break;
 					case 4:
 						System.exit(0);
@@ -155,6 +166,34 @@ public class fastFoodInventory {
 			}	
 		}
 		scanner.close();
+	}
+
+	public static void returnMenu(){
+		// Back to menu or exit
+		Scanner scanner = new Scanner(System.in);
+        int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("\nPlease select your action\n1.Back to Fast Food Inventory Menu\n2.Exit");
+            try {
+                System.out.print("Selected action: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch (opt) {
+                    case 1:
+                        menu();
+                        break;
+                    case 2:
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid action selected\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                scanner.nextLine();
+            }
+        }
+        scanner.close();
 	}
 }
 

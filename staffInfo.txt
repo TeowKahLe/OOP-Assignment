@@ -5,3 +5,7 @@ S004	Lincoln	012-1234567	!@gmail.com	jalan pisang	intern	abc123
 S005	Lin	012-1234567	lo@gmail.com	jalan oren	intern	abc123
 S006	Jack	012-1234567	!@gmail.com	jalan epal	intern	abc123
 S007	lin	011-12345677	!@gmial.com	home	intern	abc123
+S008	Tan Ah Lee	012-8392839	tan23@gmail.com	Paya Road	intern	abc123
+S009	Panda Lee	012-3933935	panda@gmail.com	Bamboo Road	intern	abc123
+S010	Pewdroppa	017-4894049	pew244@gmail.com	Muddor Road	intern	abc123
+S011	Kang Ting	012-48393835	lolkang@gmail.com	Bayan Lepas	intern	abc123

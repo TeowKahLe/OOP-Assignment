@@ -247,6 +247,7 @@ public class Item {
     public void deleteItem(String itemId){
         File inputFile = new File("itemInfo.txt");
         File tempFile = new File("deletedItemId.txt");
+        Boolean ignoreScanner = true;
 
         try {
             Scanner fileScanner = new Scanner(inputFile);
@@ -267,6 +268,10 @@ public class Item {
             fileScanner.close();
             fileWriter.close();
 
+            if(ignoreScanner == true){
+                scanner.close();
+            }
+
             if(inputFile.delete()){
                 tempFile.renameTo(inputFile);
             }else{
@@ -275,6 +280,7 @@ public class Item {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
     }
     
     public ArrayList<Item> readItemsFromFile(String filePath){
@@ -303,6 +309,7 @@ public class Item {
 
     public void modifyItem(String itemId, int stockQty, int minStockQty, int maxStockQty){
         Scanner scanner = new Scanner(System.in);
+        Boolean ignoreScanner = true;
         Alignment Line = new Alignment();
         ArrayList<Item> itemList = readItemsFromFile("itemInfo.txt");
 
@@ -346,6 +353,10 @@ public class Item {
             saveItemToFile(itemList, "itemInfo.txt");
         }else{
             System.out.println("Item ID" + itemId + "does not exists");
+        }
+
+        if(ignoreScanner == true){
+            scanner.close();
         }
     }
 

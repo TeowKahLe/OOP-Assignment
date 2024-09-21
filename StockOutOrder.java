@@ -68,7 +68,6 @@ public class StockOutOrder{
     	Scanner scanner = new Scanner(System.in);
 		boolean error = true;
         StockOutOrder stockOutOrder = new StockOutOrder();
-
         System.out.print("\t\t\t\t     ");
 		line.printEqualLine(" STOCK OUT ORDER ".length());
 		System.out.println("\t\t\t\t      STOCK OUT ORDER ");
@@ -79,9 +78,10 @@ public class StockOutOrder{
 		System.out.println("1. Add Order (For Customer)");
 		System.out.println("2. Search Order");
         System.out.println("3. Manage Order status");
-        System.out.println("4. Delete Order");
-		System.out.println("5. Return to Order Management");
-		System.out.println("6. Exit");
+        System.out.println("4. Track Delivery");
+        System.out.println("5. Delete Order");
+		System.out.println("6. Return to Order Management");
+		System.out.println("7. Exit");
 
 		
 		while(error){
@@ -120,15 +120,19 @@ public class StockOutOrder{
                             }
     					break;
     				case 3:
+                        Alignment.clearScreen();
                         stockOutOrder.manageStockOutOrderStatus();
                         break;
                     case 4:
+                        stockOutOrder.trackDelivery();
+                        break;
+                    case 5:
                         stockOutOrder.deleteStockOutOrder();
                         break;
-					case 5:
+					case 6:
 						fastFoodInventory.orderManagement();
 						break;
-					case 6:
+					case 7:
 						System.exit(0);
 						break;
     				default:
@@ -334,7 +338,7 @@ public class StockOutOrder{
     }
 
     //-----------------------------------------------------------------------------------Delete stock out order
-    public void deleteStockOutOrder() {
+    private void deleteStockOutOrder() {
         Alignment.clearScreen();
         Alignment alignmentLine = new Alignment();
         int option = 0;
@@ -356,23 +360,27 @@ public class StockOutOrder{
         alignmentLine.printLineNoNewLine(94);
         System.out.println("+");
     
-        // Display rejected orders
-        List<String[]> rejectedOrders = new ArrayList<>();
+        // List of all orders
+        List<String[]> allOrders = new ArrayList<>();
         int num = 0;
         File orderFile = new File("stockOutOrderInfo.txt");
     
+        // Read the file and populate the orders list
         try (Scanner fileScanner = new Scanner(orderFile)) {
             while (fileScanner.hasNextLine()) {
-                String orderDetailsLine = fileScanner.nextLine();
-                String customerDetailsLine = fileScanner.nextLine(); // Assuming the next line is customer details
-                String itemListLine = fileScanner.nextLine(); // Assuming the next line is item list
+                String[] orderData = new String[3];
+                orderData[0] = fileScanner.nextLine(); // Order Details
+                orderData[1] = fileScanner.nextLine(); // Customer Details
+                orderData[2] = fileScanner.nextLine(); // Item List
     
-                String[] orderDetails = orderDetailsLine.split("\\|");
-                if (orderDetails[1].equals("Rejected")) { // Only process rejected orders
-                    rejectedOrders.add(new String[]{orderDetailsLine, customerDetailsLine, itemListLine});
+                String[] orderDetails = orderData[0].split("\\|");
+    
+                // Display only rejected orders
+                if (orderDetails[1].equals("Rejected")) {
                     System.out.printf("| %-3d | %-15s | %-15s | %-15s | %-15s | %-14s |\n",
                             ++num, orderDetails[0], orderDetails[1], orderDetails[2], orderDetails[3], orderDetails[4]);
                 }
+                allOrders.add(orderData); // Add every order (whether rejected or not)
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
@@ -382,53 +390,84 @@ public class StockOutOrder{
         alignmentLine.printLineNoNewLine(94);
         System.out.println("+");
     
-        // If no rejected orders found
-        if (rejectedOrders.isEmpty()) {
+        
+        if (num == 0) {
+            // If no rejected orders found
             System.out.println("No Rejected Orders found.");
-        }
+        }else{
+            // Let the user choose which order to delete
+            System.out.println("Which rejected order do you want to delete? (Please enter a number only): ");
     
-        // Let the user choose which order to delete
-        System.out.println("Which rejected order do you want to delete? (Please enter a number only): ");
-    
-        while (!validOption) {
-            System.out.print("Selected action: ");
-            try {
-                option = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-    
-                // Validate the selected option
-                if (option < 1 || option > rejectedOrders.size()) {
-                    System.out.println("Invalid choice. Please try again.");
-                    continue;
+            while (!validOption) {
+                System.out.print("Selected action: ");
+                try {
+                    option = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+        
+                    if (option < 1 || option > num) {
+                        System.out.println("Invalid choice. Please try again.");
+                        continue;
+                    }
+        
+                    // Get the order ID of the selected rejected order
+                    String orderIdToDelete = null;
+                    int rejectedOrderCount = 0;
+                    for (String[] orderData : allOrders) {
+                        String[] orderDetails = orderData[0].split("\\|");
+                        if (orderDetails[1].equals("Rejected")) {
+                            rejectedOrderCount++;
+                            if (rejectedOrderCount == option) {
+                                orderIdToDelete = orderDetails[0]; // Get the order ID
+                                break;
+                            }
+                        }
+                    }
+        
+                    System.out.print("You have selected to delete the following order ID: ");
+                    System.out.println(orderIdToDelete);
+        
+                    // Confirm deletion
+                    System.out.print("Are you sure you want to delete this order? (yes/no): ");
+                    String confirmation = scanner.nextLine();
+                    if (!confirmation.equalsIgnoreCase("yes")) {
+                        System.out.println("Deletion cancelled.");
+                        break;
+                    } else {
+                        // Delete the selected order by writing all orders except the one selected
+                        File tempFile = new File("tempFile.txt");
+        
+                        try (FileWriter writer = new FileWriter(tempFile)) {
+                            for (String[] orderData : allOrders) {
+                                String[] orderDetails = orderData[0].split("\\|");
+        
+                                if (!orderDetails[0].equals(orderIdToDelete)) {
+                                    // Write back all orders that are not deleted
+                                    writer.write(orderData[0] + "\n"); // Order Details
+                                    writer.write(orderData[1] + "\n"); // Customer Details
+                                    writer.write(orderData[2] + "\n"); // Item List
+                                }
+                            }
+                        } catch (IOException e) {
+                            System.out.println("Error while deleting order: " + e.getMessage());
+                        }
+        
+                        // Replace original file with the updated file
+                        if (orderFile.delete()) {
+                            tempFile.renameTo(orderFile);
+                        }
+        
+                        System.out.println("Order with ID " + orderIdToDelete + " has been deleted.");
+                        validOption = true;
+                    }
+        
+                } catch (Exception e) {
+                    System.out.println("Incorrect input (Please enter a NUMBER only)");
+                    scanner.nextLine(); // Clear the buffer
                 }
-    
-                // Get the selected order details
-                String[] orderToDelete = rejectedOrders.get(option - 1);
-                String[] orderDetails = orderToDelete[0].split("\\|"); 
-                System.out.print("You have selected to delete the following order ID: ");
-                System.out.println(orderDetails[0]);
-    
-                // Confirm deletion
-                System.out.print("Are you sure you want to delete this order? (yes/no): ");
-                String confirmation = scanner.nextLine();
-                if (!confirmation.equalsIgnoreCase("yes")) {
-                    System.out.println("Deletion cancelled.");
-                    break;
-                } else {
-                    // Delete the selected order from the file
-                    deleteOrder(orderFile, orderToDelete[0]);
-    
-                    // Show which order was deleted
-                    System.out.println("Order with ID " + orderDetails[0] + " has been deleted.");
-                    validOption = true;
-                }
-    
-            } catch (Exception e) {
-                System.out.println("Incorrect input (Please enter a NUMBER only)");
-                scanner.nextLine(); // Clear the buffer
             }
         }
     
+        // Back to menu or exit
         int opt = 0;
         boolean loop = true;
         while (loop) {
@@ -454,43 +493,9 @@ public class StockOutOrder{
         }
         scanner.close();
     }
+    
 
-    private void deleteOrder(File orderFile, String orderIdToDelete) {
-        File tempFile = new File("stockOutOrderInfo.txt");
     
-        try (Scanner fileScanner = new Scanner(orderFile);
-             FileWriter writer = new FileWriter(tempFile)) {
-    
-            while (fileScanner.hasNextLine()) {
-                String orderDetailsLine = fileScanner.nextLine();
-                String customerDetailsLine = fileScanner.nextLine();
-                String itemListLine = fileScanner.nextLine();
-    
-                // Only write back orders that do not match the orderIdToDelete
-                String[] orderDetails = orderDetailsLine.split("\\|");
-                if (!orderDetails[0].equals(orderIdToDelete)) {
-                    // Write back the order details
-                    writer.write(orderDetailsLine + "\n");
-                    writer.write(customerDetailsLine + "\n");
-                    writer.write(itemListLine + "\n");
-                } else {
-                    System.out.println("Skipping storing details back for order ID: " + orderIdToDelete);
-                }
-            }
-    
-        } catch (IOException e) {
-            System.out.println("Error while deleting order: " + e.getMessage());
-        }
-    
-        // Replace the original file with the temp file
-        if (orderFile.delete()) {
-            if (!tempFile.renameTo(orderFile)) {
-                System.out.println("Error renaming temp file to original file.");
-            }
-        } else {
-            System.out.println("Error deleting the original file.");
-        }
-    }
 
     //-----------------------------------------------------------------------------------Store stock out order to file
     public void storeStockOutOrderToFile(Order order, StockOutOrder stockOutOrder) {
@@ -816,9 +821,88 @@ public class StockOutOrder{
         }
     }
 
+    //-----------------------------------------------------------------------------------Track Delivery
+    public void trackDelivery() {
+        Alignment.clearScreen();
+        Alignment alignmentLine = new Alignment();
+    
+        System.out.print("\t\t\t\t         ");
+        alignmentLine.printEqualLine(" TRACK DELIVERY ".length());
+        System.out.println("\t\t\t\t          TRACK DELIVERY ");
+        System.out.print("\t\t\t\t         ");
+        alignmentLine.printEqualLine(" TRACK DELIVERY ".length());
+    
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(98);
+        System.out.println("+");
+        System.out.printf("| %-10s | %-10s | %-11s | %-15s | %-20s | %-15s |\n",
+                "Order ID", "Delivery", "Customer ID", "Customer Name", "Address", "Date Dispatched");
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(98);
+        System.out.println("+");
+    
+        File orderFile = new File("stockOutOrderInfo.txt");
+    
+        try (Scanner fileScanner = new Scanner(orderFile)) {
+            while (fileScanner.hasNextLine()) {
+                String orderDetailsLine = fileScanner.nextLine(); // Order details
+                String customerDetailsLine = fileScanner.nextLine(); // Customer details
+    
+                String[] orderDetails = orderDetailsLine.split("\\|");
+                String[] customerDetails = customerDetailsLine.split("\\|");
+    
+                // Only process Accepted orders
+                if (orderDetails[1].equals("Accepted")) {
+                    String orderId = orderDetails[0]; // Order ID
+                    String deliveryMethod = orderDetails[4]; // Delivery method
+                    String customerId = customerDetails[0]; // Customer ID
+                    String customerName = customerDetails[1]; // Customer name
+                    String customerAddress = customerDetails[2]; // Customer address
+                    String dateDispatched = customerDetails[customerDetails.length - 1]; // Date dispatched (last value in customer details)
+    
+                    // Display the accepted order details
+                    System.out.printf("| %-10s | %-10s | %-11s | %-15s | %-20s | %-15s |\n",
+                            orderId, deliveryMethod, customerId, customerName, customerAddress, dateDispatched);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
+        }
+    
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(98);
+        System.out.println("+");
+
+        Scanner scanner = new Scanner(System.in);
+        int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("\nPlease select your action\n1.Back to Stock Out Order Menu\n2.Exit");
+            try {
+                System.out.print("Selected action: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch (opt) {
+                    case 1:
+                        StockOutOrder.stockOutOrderMenu();
+                        loop = false;
+                        break;
+                    case 2:
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid action selected\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                scanner.nextLine();
+            }
+        }
+        scanner.close();
+    }
+    
+
     //-----------------------------------------------------------------------------------Manage Stock Out Order Status
     public void manageStockOutOrderStatus() {
-        Alignment.clearScreen();
         Alignment alignmentLine = new Alignment();
         Scanner scanner = new Scanner(System.in);
         File file = new File("stockOutOrderInfo.txt");
@@ -841,26 +925,34 @@ public class StockOutOrder{
                 try {
                     option = scanner.nextInt();
                     scanner.nextLine(); // Clear the input buffer
-
+            
                     try (Scanner fileScanner = new Scanner(file)) {
+                        num = 0; // Reset num for each attempt
+                        boolean found = false; // Flag to track if order is found
+            
                         while (fileScanner.hasNextLine()) {
                             String line = fileScanner.nextLine();
                             String[] orderDetails = line.split("\\|");
-
+            
                             if (orderDetails[0].startsWith("SO")) {
                                 num++;
                                 if (num == option) {
                                     currentOrderId = orderDetails[0];
                                     noOrder = false;
+                                    found = true;
                                     break;
                                 }
                             }
+                        }
+            
+                        if (!found) {
+                            System.out.println("Invalid selection. Please select a valid order number.");
                         }
                     } catch (FileNotFoundException e) {
                         System.out.println("File not found: " + file.getName());
                         return;
                     }
-
+            
                     if (!noOrder) {
                         // Display the details of the selected order
                         Alignment.clearScreen();
@@ -870,7 +962,7 @@ public class StockOutOrder{
                         System.out.print("\t\t\t\t\t\t         ");
                         alignmentLine.printEqualLine("ORDER ".length() + 8);
                         StockOutOrder displayItemList = new StockOutOrder();
-                        if(displayItemList.displayStockOutOrderItemList(currentOrderId, "Approval") == false){
+                        if (displayItemList.displayStockOutOrderItemList(currentOrderId, "Approval") == false) {
                             StockOutOrder modifyRejectStatus = new StockOutOrder();
                             modifyRejectStatus.modifyStockOutOrderStatus(currentOrderId, "Rejected");
                             int opt = 0;
@@ -881,7 +973,7 @@ public class StockOutOrder{
                                     System.out.print("Selected action: ");
                                     opt = scanner.nextInt();
                                     scanner.nextLine();
-                                    switch(opt) {
+                                    switch (opt) {
                                         case 1: 
                                             StockOutOrder.stockOutOrderMenu();
                                             loop = false;
@@ -889,7 +981,7 @@ public class StockOutOrder{
                                         case 2:
                                             System.exit(0);
                                         default:
-                                            System.out.println("Invalid action selected\n");
+                                            System.out.println("Invalid action selected");
                                     }
                                 } catch (Exception e) {
                                     System.out.println("Incorrect input (Please enter NUMBER only)\n");
@@ -897,12 +989,9 @@ public class StockOutOrder{
                                 }
                             }
                         }
-                    break; // Exit loop if order found
-                    } else {
-                        System.out.println("No Stock Out Orders record....\n");
                     }
                 } catch (Exception e) {
-                    System.out.println("Invalid action selected\n");
+                    System.out.println("Invalid action selected");
                     scanner.nextLine();
                 }
             }
@@ -911,7 +1000,6 @@ public class StockOutOrder{
             // Handle actions for the selected order
             boolean error = true;
             while (error) {
-                
                 System.out.print("Selected action: ");
                 int opt = 0;
                 try {
@@ -921,10 +1009,59 @@ public class StockOutOrder{
                         case 1:
                             StockOutOrder modifyAcceptStatus = new StockOutOrder();
                             modifyAcceptStatus.modifyStockOutOrderStatus(currentOrderId, "Accepted");
+                            
+                            List<String[]> orderItemList = new ArrayList<>();
+                            // Process the order lines to extract ordered items
+                            try (Scanner fileScanner = new Scanner(file)) {
+                                while (fileScanner.hasNextLine()) {
+                                    String line = fileScanner.nextLine();
+                                    String[] orderDetails = line.split("\\|");
+
+                                    if (orderDetails[0].equals(currentOrderId)) {
+                                        // Skip customer details line
+                                        if (fileScanner.hasNextLine()) fileScanner.nextLine();
+                                        
+                                        // Process item line (third row)
+                                        if (fileScanner.hasNextLine()) {
+                                            String itemLine = fileScanner.nextLine();
+                                            String[] items = itemLine.split("\\|");
+                                            for (int i = 0; i < items.length; i += 2) {
+                                                orderItemList.add(new String[]{items[i + 1].trim(), items[i].trim()}); // itemId, quantity
+                                            }
+                                        }
+                                        break; // Exit once the current order is processed
+                                    }
+                                }
+                            } catch (FileNotFoundException e) {
+                                System.out.println("File not found: " + file.getName());
+                                return;
+                            }
+                            
+                            List<Item> itemList = Order.readItemFromFile("itemInfo.txt");
+                            double totalOrderValue = 0.0;
+                            // Process each ordered item to calculate values
+                            for (String[] orderItem : orderItemList) {
+                                String itemId = orderItem[0];
+                                int orderedQty = Integer.parseInt(orderItem[1]);
+
+                                // Find the matching item in the item list
+                                for (Item item : itemList) {
+                                    if (item.getItemId().equals(itemId)) {
+                                        double orderValue = orderedQty * item.getUnitPrice();
+                                        totalOrderValue += orderValue; // Sum total order value
+                                        break;
+                                    }
+                                }
+                            }
+                            System.out.printf("\nCustomer paid RM %.2f\n", totalOrderValue);
+                            Transaction performTransaction = new Transaction();
+                            performTransaction.makeTransaction(currentOrderId, "Reduce Item Quantity", totalOrderValue);
+                            error = false;
                             break;
                         case 2:
                             StockOutOrder modifyRejectStatus = new StockOutOrder();
                             modifyRejectStatus.modifyStockOutOrderStatus(currentOrderId, "Rejected");
+                            error = false;
                             break;
                         case 3:
                             StockOutOrder.stockOutOrderMenu();
@@ -940,12 +1077,36 @@ public class StockOutOrder{
         } else {
             System.out.println("Failed to display Stock Out Orders.");
         }
-        scanner.nextLine();
+
+        int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("\nPlease select your action\n1.Back to Stock Out Order Menu\n2.Exit");
+            try {
+                System.out.print("Selected action: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch (opt) {
+                    case 1:
+                        StockOutOrder.stockOutOrderMenu();
+                        loop = false;
+                        break;
+                    case 2:
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid action selected\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                scanner.nextLine();
+            }
+        }
         scanner.close();
     }
 
     //-----------------------------------------------------------------------------------Change order status in text file
     public void modifyStockOutOrderStatus(String orderId, String newStatus) {
+        String staffId = fastFoodInventory.order.getStaffId();
         File orderFile = new File("stockOutOrderInfo.txt");
         List<String> stockOutOrderFileContent = new ArrayList<>();
         boolean orderFound = false;
@@ -966,6 +1127,7 @@ public class StockOutOrder{
                         orderFound = true;
                         // Modify the status in the order line (first line)
                         orderDetails[1] = newStatus;
+                        orderDetails[6] = staffId;
 
                         // Modify delivery method and dispatched date based on status
                         if (newStatus.equals("Accepted")) {
@@ -1023,4 +1185,136 @@ public class StockOutOrder{
         }
     }
 
+    //-----------------------------------------------------------------------------------Generate report
+    public void generateReport() {
+        Alignment alignmentLine = new Alignment();
+        int totalOrders = 0;
+        int acceptedOrders = 0;
+        int rejectedOrders = 0;
+        int unmanagedOrders = 0;
+        int totalItemsOrdered = 0; // This will track the total quantity of all items ordered
+        double totalOrderValue = 0.0;
+    
+        File orderFile = new File("stockOutOrderInfo.txt");
+        List<String[]> orderItemList = new ArrayList<>();
+    
+        try (Scanner scanner = new Scanner(orderFile)) {
+            while (scanner.hasNextLine()) {
+                String orderLine = scanner.nextLine();
+                if (orderLine.startsWith("SO")) {
+                    totalOrders++;
+                    String[] orderDetails = orderLine.split("\\|");
+                    String approvalStatus = orderDetails[1];
+    
+                    if ("Accepted".equals(approvalStatus)) {
+                        acceptedOrders++;
+                    } else if ("Rejected".equals(approvalStatus)) {
+                        rejectedOrders++;
+                    } else {
+                        unmanagedOrders++;
+                    }
+    
+                    // Skip customer details line
+                    if (scanner.hasNextLine()) scanner.nextLine();
+    
+                    // Process item line (third row)
+                    if (scanner.hasNextLine()) {
+                        String itemLine = scanner.nextLine();
+                        String[] items = itemLine.split("\\|");
+                        for (int i = 0; i < items.length; i += 2) {
+                            try {
+                                int quantity = Integer.parseInt(items[i].trim());
+                                String itemId = items[i + 1].trim();
+                                totalItemsOrdered += quantity; // This tracks total quantity of items
+                                orderItemList.add(new String[]{itemId, String.valueOf(quantity)});
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid quantity format in order: " + orderDetails[0]);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot locate file: stockOutOrderInfo.txt");
+        }
+    
+        // Create a combined list of unique items with accumulated quantities and values
+        List<String[]> combinedItemList = new ArrayList<>();
+        
+        for (String[] orderItem : orderItemList) {
+            String itemId = orderItem[0];
+            int orderedQty = Integer.parseInt(orderItem[1]);
+            boolean found = false;
+    
+            // Check if the item is already in the combined list
+            for (String[] combinedItem : combinedItemList) {
+                if (combinedItem[0].equals(itemId)) {
+                    // Accumulate quantity
+                    combinedItem[1] = String.valueOf(Integer.parseInt(combinedItem[1]) + orderedQty);
+                    found = true;
+                    break;
+                }
+            }
+    
+            // If item is not in the combined list, add it
+            if (!found) {
+                combinedItemList.add(new String[]{itemId, String.valueOf(orderedQty)});
+            }
+        }
+    
+        // Print summary
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(56);
+        System.out.println("+");
+        System.out.printf("| %-54s |\n", "Stock Out Report");
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(56);
+        System.out.println("+");
+        System.out.printf("| Total Orders        : %-32s |\n", totalOrders);
+        System.out.printf("| Accepted Orders     : %-32s |\n", acceptedOrders);
+        System.out.printf("| Rejected Orders     : %-32d |\n", rejectedOrders);
+        System.out.printf("| Unmanaged Orders    : %-32d |\n", unmanagedOrders);
+        System.out.printf("| Items Ordered       : %-32d |\n", combinedItemList.size());  // This prints the count of distinct items ordered
+        System.out.printf("| Total Item Quantity : %-32d |\n", totalItemsOrdered); // This prints the total quantity ordered
+    
+        // Load item data from itemInfo.txt
+        List<Item> itemList = Order.readItemFromFile("itemInfo.txt");
+    
+        // Print table header
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(56);
+        System.out.println("+");
+        System.out.println("| Item Name          | Order Quantity | Order Value (RM) |");
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(56);
+        System.out.println("+");
+    
+        // Process each combined item and calculate values
+        for (String[] combinedItem : combinedItemList) {
+            String itemId = combinedItem[0];
+            int combinedQty = Integer.parseInt(combinedItem[1]);
+    
+            // Find the matching item in the item list
+            for (Item item : itemList) {
+                if (item.getItemId().equals(itemId)) {
+                    double orderValue = combinedQty * item.getUnitPrice();
+                    totalOrderValue += orderValue;
+    
+                    System.out.printf("| %-18s | %-14d | %-16.2f |\n",
+                        item.getItemName(), combinedQty, orderValue);
+                    break;
+                }
+            }
+        }
+    
+        // Print total order value
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(56);
+        System.out.println("+");
+        System.out.printf("| %-35s | %-16.2f |\n", "TOTAL VALUE", totalOrderValue);
+        System.out.print("+");
+        alignmentLine.printLineNoNewLine(56);
+        System.out.println("+");
+    }
+    
 }

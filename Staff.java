@@ -68,8 +68,10 @@ public class Staff extends Person{
         System.out.println(String.format("%-24s",String.format("%-10s", "|Job Role ")+ ": " + getJobRole()) + "|");
         line.printLine(25);
 
+        scanner.nextLine();
+        Alignment.clearScreen();
         storeStaffData();
-        fastFoodInventory.main(null);
+        login(fastFoodInventory.order);
     }
 
     public void storeStaffData(){    

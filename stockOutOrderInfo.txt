@@ -1,9 +1,6 @@
-SO0001|Accepted|20 Sep 2024|11:24 PM|Truck|Stock Out Order|-
+SO0001|Accepted|20 Sep 2024|11:24 PM|Truck|Stock Out Order|S001
 C0005|James Lee|12 Mount Fo|26 Sep 2024
 23|SD001|40|MT001|20|MT002
 SO0002|Rejected|20 Sep 2024|11:58 PM|-|Stock Out Order|-
-C0002|Lily Green|456 Elm St|-
+C0002|Lily Green|456 Elm St|30 Sep 2024
 20|SD001|30|MT001
-SO0003|Rejected|21 Sep 2024|12:08 AM|-|Stock Out Order|-
-C0004|David Lee|124 Main St|24 Sep 2024
-30|SD001
