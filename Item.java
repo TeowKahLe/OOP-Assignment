@@ -2,11 +2,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class Item {
 	private String itemId;
@@ -160,7 +157,7 @@ public class Item {
     
     //-----------------------------------------------------------------------------------Add Item
     public void addItem() {
-    clearScreen();
+    Alignment.clearScreen();
     Scanner scanner = new Scanner(System.in);
     Boolean removeScanner = false;
     Alignment line = new Alignment();
@@ -241,73 +238,128 @@ public class Item {
 
     // Store the details to itemInfo.txt (ensure the storeItemToFile method includes both Item and Inventory details)
     newItem.storeItemToFile(); 
-
+    int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("\nPlease select your action\n1.Back to add item menu\n2.Back to item management menu\n3.Exit");
+            try {
+                System.out.print("Selected action: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch (opt) {
+                    case 1:
+                        addItem();
+                        loop = false;
+                        break;
+                    case 2:
+                        Inventory.inventoryManagement();
+                        break;
+                    case 3:
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Invalid action selected\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                scanner.nextLine();
+            }
+        }
     if(removeScanner){
         scanner.close();
     }
 }
 
-    public void deleteItem(String itemId){
+    public void deleteItem(){
+        Scanner scanner = new Scanner(System.in);
+        Alignment Line = new Alignment();
         File inputFile = new File("itemInfo.txt");
         File tempFile = new File("deletedItemId.txt");
-        Boolean ignoreScanner = true;
+        boolean ignoreScanner = true;
+        Boolean checkItem = false;
+        List<Item> itemList = Order.readItemFromFile("itemInfo.txt");
 
-        try {
-            Scanner fileScanner = new Scanner(inputFile);
-            FileWriter fileWriter = new FileWriter(tempFile, true);
-
-            System.out.println("Enter the item ID you wish to delete: ");
-            Scanner scanner = new Scanner(System.in);
-            String newId = scanner.nextLine();
-
-            while (fileScanner.hasNextLine()) { 
-                String line = fileScanner.nextLine();
-                String[] itemDetail = line.split("|");
-
-                if(itemDetail[0].equals(newId)){
-                    fileWriter.write(line + "\n");
+        String itemIdToDelete = null;
+        while(!checkItem){
+            try {
+                System.out.println("Delete Item\n");
+                Line.printLine("Delete Item\n".length());
+                System.out.print("\nEnter item id you wish to delete: ");
+                String newId = scanner.nextLine();
+                for(Item item : itemList){
+                if (item.getItemId().equals(newId)) {
+                itemIdToDelete = newId;
+                checkItem = true;
+                break;
                 }
             }
-            fileScanner.close();
-            fileWriter.close();
+            } catch (Exception e) {
+                System.out.println("Item ID doesnt exists, please reenter a valid item ID");
+            }
+            if (!checkItem) {
+                System.out.println("Item ID doesnt exists, please reenter a valid item ID");
+            }
+        }
+            if(itemIdToDelete != null){
+                for(int i = 0 ; i < itemList.size() ; i++){
+                    if(itemList.get(i).getItemId().equals(itemIdToDelete)){
+                        itemList.remove(i);
+                        break;
+                    }
+                }
+            }
+            saveItemToFile(itemList, tempFile.getName());
+
+            if(inputFile.delete()){
+                if(tempFile.renameTo(inputFile)){
+                    System.out.println("Item ID " + itemIdToDelete + " is being deleted successfully");
+                }else{
+                    System.out.println("Error renaming temp file");
+                }
+            }else{
+                System.out.println("Item ID " + itemIdToDelete + "does not exists");
+            }
+            int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("\nPlease select your action\n1.Back to delete item menu\n2.Back to item management menu\n3.Exit");
+            try {
+                System.out.print("Selected action: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch (opt) {
+                    case 1:
+                        deleteItem();
+                        loop = false;
+                        break;
+                    case 2:
+                        Inventory.inventoryManagement();
+                        break;
+                    case 3:
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Invalid action selected\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                scanner.nextLine();
+            }
+        }
 
             if(ignoreScanner == true){
                 scanner.close();
             }
-
-            if(inputFile.delete()){
-                tempFile.renameTo(inputFile);
-            }else{
-                System.out.println("Cannot delete the origina file");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        
-    }
-    
-    public ArrayList<Item> readItemsFromFile(String filePath){
-        ArrayList<Item> items = new ArrayList<>();
-        try {
-            List<String> line1 = Files.readAllLines(Paths.get(filePath));
-
-            for(String line : line1){
-                String[] itemInfo = line.split("|");
-                Item item = new Item(itemId, itemName, itemCategory, itemDesc, unitCost, unitPrice, inventory);
-                items.add(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return items;
-    }
-
-    public void saveItemToFile(ArrayList<Item> itemList, String filePath){
+            
+    public void saveItemToFile(List<Item> itemList, String filePath){
         FileWriter writer = null;
+        
         try {
             writer = new FileWriter(filePath);
             for(Item item : itemList){
-                writer.write(item.toString() + "|");
+                Inventory inventory = item.getInventory();
+                writer.write(item.getItemId() + "|" + item.getItemName() + "|" + item.getItemCategory() + "|" + item.getItemDesc() + "|" + item.getUnitCost() + "|" + item.getUnitPrice() + "|" + inventory.getStockQty() + "|" + (inventory.getStockQty()*item.getUnitCost()) + "|" + (inventory.getStockQty()*item.getUnitPrice()) + "|" + inventory.getMinStockQty() + "|" + inventory.getMaxStockQty() + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -322,43 +374,65 @@ public class Item {
         }
     }
 
-    public void modifyItem(String itemId, int stockQty, int minStockQty, int maxStockQty){
+    public void modifyItem(){
         Scanner scanner = new Scanner(System.in);
-        Boolean ignoreScanner = true;
+        boolean ignoreScanner = true;
         Alignment Line = new Alignment();
-        ArrayList<Item> itemList = readItemsFromFile("itemInfo.txt");
-
-        System.out.println("Enter item id: ");
-        String newId = scanner.nextLine();
-
+        boolean checkItem = false;
         Item itemModify = null;
-        for(Item item : itemList){
-            if (item.getItemId().equals(newId)) {
+        List<Item> itemList = Order.readItemFromFile("itemInfo.txt");
+
+        for(Item item: itemList){
+            System.out.print(item.getItemId() + "" + "|");
+        }
+
+        while(!checkItem){
+            try {
+                System.out.println("Modify Item");
+                Line.printLine("Modify item".length());
+                System.out.println("\nEnter item id you wish to modify: ");
+                String newId = scanner.nextLine();
+                for(Item item : itemList){
+                if (item.getItemId().equals(newId)) {
                 itemModify = item;
+                checkItem = true;
+                break;
+                }
+            }
+            } catch (Exception e) {
+                System.out.println("Enter the correct Item ID");
+            }
+            if (!checkItem) {
+                System.out.println("Enter the correct Item ID");
             }
         }
 
         if(itemModify != null){
-            System.out.println("Modify item detail\n");
-            Line.printLine("Modify item detail\n".length());
+            System.out.println("Modify item detail");
+            Line.printLine("Modify item detail".length());
 	        System.out.println("1. Stock Quantity\n2. Minimum Stock Quantity\n3. Maximum Stock Quantity\n");
+            System.out.println("Selected action: ");
             int opt = scanner.nextInt();
+
             switch(opt){
                 case 1:
                 System.out.println("Enter new Stock Quantity\n");
                 int newStkQty = scanner.nextInt();
+                scanner.nextLine();
                 itemModify.inventory.setStockQty(newStkQty);
                 break;
 
                 case 2:
                 System.out.println("Enter new Minimum Stock Quantity\n");
                 int newMinStkQty = scanner.nextInt();
+                scanner.nextLine();
                 itemModify.inventory.setMinStockQty(newMinStkQty);
                 break;
 
                 case 3:
                 System.out.println("Enter new Maximum Stock Quantity\n");
                 int newMaxStkQty = scanner.nextInt();
+                scanner.nextLine();
                 itemModify.inventory.setMaxStockQty(newMaxStkQty);
                 break;
 
@@ -370,13 +444,40 @@ public class Item {
             System.out.println("Item ID" + itemId + "does not exists");
         }
 
+        int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("\nPlease select your action\n1.Back to item modify menu\n2.Back to item management menu\n3.Exit");
+            try {
+                System.out.print("Selected action: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch (opt) {
+                    case 1:
+                        modifyItem();
+                        loop = false;
+                        break;
+                    case 2:
+                        Inventory.inventoryManagement();
+                        break;
+                    case 3:
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Invalid action selected\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                scanner.nextLine();
+            }
+        }
+
         if(ignoreScanner == true){
             scanner.close();
         }
  	
     }
 
-    //-----------------------------------------------------------------------------------Search Item (VeryVeryVery BIGGGG Problem later fix)
     public boolean searchItem(String itemId) {
         Scanner scanner = null;
         Alignment line = new Alignment();
@@ -422,14 +523,14 @@ public class Item {
         line.printLine("Search Item".length());
 
         // Display all item IDs with names first
-        line.printLine(50);
+        
         System.out.println("ID    | NAME");
+        line.printLine("ID    | NAME".length());
         List<Item> itemList = Order.readItemFromFile("itemInfo.txt");  // Assuming this method loads items from file
-        System.out.println("\nAvailable Items:");
         for (Item i : itemList) {
             System.out.println(i.getItemId() + " | " + i.getItemName());
         }
-        line.printLine(50);
+        line.printLine("ID    | NAME".length());
 
     	do { 
         	System.out.print("Enter Item ID: ");
@@ -444,10 +545,6 @@ public class Item {
         	}
     	} while (!found);  // Loop until item is found
     
-        if(!ignoreScanner){
-            scanner.close();
-        }	
-
         int opt = 0;
         boolean loop = true;
         while (loop) {
@@ -473,12 +570,17 @@ public class Item {
                 System.out.println("Incorrect input (Please enter NUMBER only)\n");
                 scanner.nextLine();
             }
-        }           
+        }   
+        
+        if(!ignoreScanner){
+            scanner.close();
+        }
 	}
 
     //-----------------------------------------------------------------------------------Display All Item
     public static void displayAllItem(){
-        clearScreen();
+        Alignment.clearScreen();
+        Boolean ignoreScanner = true;
         Scanner scanner = null;
         Alignment line = new Alignment();
         int num = 0;
@@ -501,8 +603,34 @@ public class Item {
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot locate item.txt");
-        } finally {
-            if (scanner != null) {
+        } 
+
+        scanner = new Scanner(System.in);
+        int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("\nPlease select your action\n1.Back to item management menu\n2.Exit\n");
+            try {
+                System.out.print("Selected action: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch (opt) {
+                    case 1:
+                        Inventory.inventoryManagement();
+                        loop = false;
+                        break;
+                    case 2:
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Invalid action selected\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                scanner.nextLine();
+            }
+
+            if(!ignoreScanner){
                 scanner.close();
             }
         }
@@ -522,8 +650,8 @@ public class Item {
                          String.format("%.2f", getUnitCost()) + "|" +
                          String.format("%.2f", getUnitPrice()) + "|" +
                          String.format("%d", inv.getStockQty()) + "|" +
-                         String.format("%.2f", inv.getStockCost()) + "|" +
-                         String.format("%.2f", inv.getStockValue()) + "|" +
+                         String.format("%.2f", inv.getStockQty()*getUnitCost()) + "|" +
+                         String.format("%.2f", inv.getStockQty()*getUnitPrice()) + "|" +
                          String.format("%d", inv.getMinStockQty()) + "|" +
                          String.format("%d", inv.getMaxStockQty()) + "\n");
         System.out.println("Item stored successfully!");
@@ -541,8 +669,4 @@ public class Item {
         return itemId + "\t" + String.format("%-20s",itemName) + "\t" + String.format("%-10s", itemCategory) + "\t" + String.format("%-20s", itemDesc) + "\tRM" + String.format("%5.2f", unitCost) + "\t\tRM" + String.format("%5.2f", unitPrice) + "\n";
     } */
     //-----------------------------------------------------------------------------------Cls
-    public static void clearScreen() {
-   		System.out.print("\033[H\033[2J");
-  	 	System.out.flush();
-	}
 }
