@@ -162,7 +162,7 @@ public class Item {
     public void addItem() {
     clearScreen();
     Scanner scanner = new Scanner(System.in);
-    Boolean removeScanner = true;
+    Boolean removeScanner = false;
     Alignment line = new Alignment();
     System.out.println("Add Item");
     line.printLine(45);
@@ -373,6 +373,7 @@ public class Item {
         if(ignoreScanner == true){
             scanner.close();
         }
+ 	
     }
 
     //-----------------------------------------------------------------------------------Search Item (VeryVeryVery BIGGGG Problem later fix)
@@ -416,15 +417,26 @@ public class Item {
     	Alignment line = new Alignment();
     	boolean found;
     	Item item = new Item(); 
+        Boolean ignoreScanner = true;
+        System.out.println("Search Item");
+        line.printLine("Search Item".length());
+
+        // Display all item IDs with names first
+        line.printLine(50);
+        System.out.println("ID    | NAME");
+        List<Item> itemList = Order.readItemFromFile("itemInfo.txt");  // Assuming this method loads items from file
+        System.out.println("\nAvailable Items:");
+        for (Item i : itemList) {
+            System.out.println(i.getItemId() + " | " + i.getItemName());
+        }
+        line.printLine(50);
 
     	do { 
-        	System.out.println("Search Item");
-        	line.printLine("Search Item".length());
         	System.out.print("Enter Item ID: ");
         	String itemId = scanner.nextLine();
-        
+            System.out.println("");
         	found = item.searchItem(itemId);  // This should return true if item is found
-        
+            
         	if (found) {
             	System.out.println("Item found");
         	} else {
@@ -432,7 +444,36 @@ public class Item {
         	}
     	} while (!found);  // Loop until item is found
     
-    	scanner.close();
+        if(!ignoreScanner){
+            scanner.close();
+        }	
+
+        int opt = 0;
+        boolean loop = true;
+        while (loop) {
+            System.out.println("Search again or back to itemManagement or Exit?(1 = Search, 2 = itemManagement, 3 = Exit)");
+            try {
+                System.out.print("Selected action: ");
+                opt = scanner.nextInt();
+                scanner.nextLine();
+                switch (opt) {
+                    case 1:
+                        Item.searchItem();
+                        loop = false;
+                        break;
+                    case 2:
+                        Inventory.inventoryManagement();
+                        break;
+                    case 3:
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid action selected\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Incorrect input (Please enter NUMBER only)\n");
+                scanner.nextLine();
+            }
+        }           
 	}
 
     //-----------------------------------------------------------------------------------Display All Item

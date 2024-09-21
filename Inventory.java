@@ -127,25 +127,7 @@ public class Inventory{
     					break;
 					case 4:
 						Alignment.clearScreen();
-                    	//searchItem();
-                    	System.out.println("Search again or back to itemManagement or Exit?(1 = Search, 2 = itemManagement, 3 = Exit)");
-                    	int searchOpt = scanner.nextInt();
-						scanner.nextLine(); // Consume the newline character
-
-                    	switch (searchOpt) {
-                        	case 1:
-                            	//searchItem();
-                            	break;
-                        	case 2:
-                            	// Return to item management
-                            	break;
-                        	case 3:
-                            	System.exit(0);
-                            	break;
-                        	default:
-                            	System.out.println("Invalid option");
-                            	break;
-                    	}
+                    	Item.searchItem();
                     	break;
 					case 5:
 						Item.displayAllItem();
