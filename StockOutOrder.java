@@ -840,31 +840,56 @@ public class StockOutOrder extends Order{
         System.out.println("+");
     
         File orderFile = new File("stockOutOrderInfo.txt");
-    
+
         try (Scanner fileScanner = new Scanner(orderFile)) {
             while (fileScanner.hasNextLine()) {
                 String orderDetailsLine = fileScanner.nextLine(); // Order details
+                
+                // Check if there's a next line for customer details
+                if (!fileScanner.hasNextLine()) {
+                    break; // Exit if there’s no corresponding customer line
+                }
+                
                 String customerDetailsLine = fileScanner.nextLine(); // Customer details
-    
+
+                // Debug output
+                //System.out.println("Reading Order: " + orderDetailsLine);
+                //System.out.println("Reading Customer: " + customerDetailsLine);
+
                 String[] orderDetails = orderDetailsLine.split("\\|");
-                String[] customerDetails = customerDetailsLine.split("\\|");
-    
+                
+                // Only process orders with expected format
+                if (orderDetails.length < 6) {
+                    continue; // Skip this malformed order
+                }
+
                 // Only process Accepted orders
                 if (orderDetails[1].equals("Accepted")) {
                     String orderId = orderDetails[0]; // Order ID
                     String deliveryMethod = orderDetails[4]; // Delivery method
+
+                    String[] customerDetails = customerDetailsLine.split("\\|");
+                    if (customerDetails.length < 4) {
+                        continue; // Skip this malformed customer details
+                    }
+                    
                     String customerId = customerDetails[0]; // Customer ID
                     String customerName = customerDetails[1]; // Customer name
                     String customerAddress = customerDetails[2]; // Customer address
-                    String dateDispatched = customerDetails[customerDetails.length - 1]; // Date dispatched (last value in customer details)
-    
+                    String dateDispatched = customerDetails.length > 3 ? customerDetails[3] : "-"; // Date dispatched
+
                     // Display the accepted order details
                     System.out.printf("| %-10s | %-10s | %-11s | %-15s | %-20s | %-15s |\n",
                             orderId, deliveryMethod, customerId, customerName, customerAddress, dateDispatched);
+                } else {
+                    // Read and discard customer details for rejected orders
+                    fileScanner.nextLine();
                 }
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
         }
     
         System.out.print("+");
