@@ -119,17 +119,20 @@ public class Inventory{
                     break;
     				case 2:
 						Alignment.clearScreen();
-						//modify
+						Item item = new Item();
+						item.modifyItem();
     					break;
 					case 3:
 						Alignment.clearScreen();
-						//delete
+						Item item1 = new Item();
+						item1.deleteItem();;
     					break;
 					case 4:
 						Alignment.clearScreen();
                     	Item.searchItem();
                     	break;
 					case 5:
+                        Alignment.clearScreen();
 						Item.displayAllItem();
 						break;
 					case 6:
