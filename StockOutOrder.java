@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class StockOutOrder{
+public class StockOutOrder extends Order{
     private String customerId;
     private String customerName;
     private String customerAddress;
