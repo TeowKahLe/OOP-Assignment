@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class StockOutOrder{
+public class StockOutOrder extends Order{
     private String customerId;
     private String customerName;
     private String customerAddress;
@@ -21,6 +21,7 @@ public class StockOutOrder{
     }
 
     public StockOutOrder(String customerId, String customerName, String customerAddress) {
+        super();
         this.customerId = customerId;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
@@ -251,7 +252,6 @@ public class StockOutOrder{
         order.setStaffId("-");
         order.setItemList(orderedItems);
         order.setItemQty(inputItemQty);
-
         // Customer list
         String[][] custList = {
             {"C0001", "Emily Brown", "101 Pine Rd"},
@@ -260,7 +260,6 @@ public class StockOutOrder{
             {"C0004", "David Lee", "124 Main St"},
             {"C0005", "James Lee", "12 Mount Fo"}
         };
-
         // Randomly select a customer
         Random random = new Random();
         int customerIndex = random.nextInt(custList.length); // Random index from 0 to custList.length - 1
@@ -269,7 +268,6 @@ public class StockOutOrder{
             custList[customerIndex][1],//customer name
             custList[customerIndex][2]//customer address
         );
-        
         // Store order to file
         storeStockOutOrderToFile(order, stockOutOrderInput);
 
@@ -1007,8 +1005,7 @@ public class StockOutOrder{
                     scanner.nextLine();
                     switch (opt) {
                         case 1:
-                            StockOutOrder modifyAcceptStatus = new StockOutOrder();
-                            modifyAcceptStatus.modifyStockOutOrderStatus(currentOrderId, "Accepted");
+                            
                             
                             List<String[]> orderItemList = new ArrayList<>();
                             // Process the order lines to extract ordered items
@@ -1038,13 +1035,13 @@ public class StockOutOrder{
                             }
                             
                             List<Item> itemList = Order.readItemFromFile("itemInfo.txt");
+                            List<String> orderItemDetail = new ArrayList<>();
                             double totalOrderValue = 0.0;
                             // Process each ordered item to calculate values
                             for (String[] orderItem : orderItemList) {
                                 String itemId = orderItem[0];
                                 int orderedQty = Integer.parseInt(orderItem[1]);
-
-                                // Find the matching item in the item list
+                                orderItemDetail.add(itemId + "\t" + "-" + String.valueOf(orderedQty));
                                 for (Item item : itemList) {
                                     if (item.getItemId().equals(itemId)) {
                                         double orderValue = orderedQty * item.getUnitPrice();
@@ -1053,9 +1050,18 @@ public class StockOutOrder{
                                     }
                                 }
                             }
-                            System.out.printf("\nCustomer paid RM %.2f\n", totalOrderValue);
-                            Transaction performTransaction = new Transaction();
-                            performTransaction.makeTransaction(currentOrderId, "Reduce Item Quantity", totalOrderValue);
+                            Order order = new Order();
+                            if(order.updateItemQty(orderItemDetail)){
+                                StockOutOrder modifyAcceptStatus = new StockOutOrder();
+                                modifyAcceptStatus.modifyStockOutOrderStatus(currentOrderId, "Accepted");
+                                System.out.printf("\nCustomer paid RM %.2f\n", totalOrderValue);
+                                Transaction performTransaction = new Transaction();
+                                performTransaction.makeTransaction(currentOrderId, "Reduce Item Quantity", totalOrderValue);
+                            }else{
+                                StockOutOrder modifyRejectStatus = new StockOutOrder();
+                                modifyRejectStatus.modifyStockOutOrderStatus(currentOrderId, "Rejected");
+                            }    
+                            
                             error = false;
                             break;
                         case 2:

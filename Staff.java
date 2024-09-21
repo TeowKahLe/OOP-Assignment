@@ -68,6 +68,7 @@ public class Staff extends Person{
         System.out.println(String.format("%-24s",String.format("%-10s", "|Job Role ")+ ": " + getJobRole()) + "|");
         line.printLine(25);
 
+        System.out.println("Press enter key to continue...");
         scanner.nextLine();
         Alignment.clearScreen();
         storeStaffData();
