@@ -865,7 +865,6 @@ public void filterSupplier(String selectedItemName,String[] filteredSupplID){
                                 System.out.println("Modified order list");
                                 line.printLine("Modified order list".length());
                                 displayOrderListFromTemp(tempOrderDetail);
-                                storeStockInOrderInfo(tempOrderDetail);
                             }
                         }while(sameQty);  
                     break;
