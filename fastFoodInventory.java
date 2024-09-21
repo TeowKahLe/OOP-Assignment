@@ -66,8 +66,9 @@ public class fastFoodInventory {
 		System.out.println("2. Order Management");
 		System.out.println("3. Transaction");
    	 	System.out.println("4. Report");
-   		System.out.println("5. Return to Main Menu");
-		System.out.println("6. Exit");
+		System.out.println("5. Supplier Management");
+   		System.out.println("6. Return to Main Menu");
+		System.out.println("7. Exit");
 
 		while(error){
 			try{
@@ -96,10 +97,13 @@ public class fastFoodInventory {
 						returnMenu();
     					break;
 					case 5:
+						supplierManagement();
+						break;
+					case 6:
 						Alignment.clearScreen();
 						main(new String[]{});
 						break;
-					case 6:
+					case 7:
 						System.exit(0);
 						break;
     				default:
@@ -166,6 +170,68 @@ public class fastFoodInventory {
 			}	
 		}
 		scanner.close();
+	}
+
+	//------------------------------------------------------------------------ Supplier Management
+	public static void supplierManagement(){
+		Alignment.clearScreen();
+		Alignment line = new Alignment();
+		Scanner scanner = new Scanner(System.in);
+		boolean error = true;
+		Supplier supplier = new Supplier();
+	
+		line.printEqualLine(" SUPPLIER MANAGEMENT ".length());
+		System.out.println(" SUPPLIER MANAGEMENT ");
+		line.printEqualLine(" SUPPLIER MANAGEMENT ".length());
+		System.out.println("Please select your action");
+		System.out.println("1. Add Supplier");
+		System.out.println("2. Delete Supplier");
+		System.out.println("3. Modify Supplier");
+		System.out.println("4. Return to Menu");
+		System.out.println("5. Exit");
+	
+		while(error){
+			try{
+				System.out.print("Selected action: ");
+				int option = scanner.nextInt();
+				scanner.nextLine();
+				switch(option){
+					case 1:
+						supplier.register();
+						System.out.println("Press enter to continue...");
+	                    System.in.read();  // Waits for a key press
+						supplierManagement();
+						break;
+					case 2:
+						supplier.deleteSupplier();
+						System.out.println("Press enter to continue...");
+	                    System.in.read();  // Waits for a key press
+						supplierManagement();
+						break;
+					case 3:
+						supplier.modifySupplier();
+						System.out.println("Press enter to continue...");
+	                    System.in.read();  // Waits for a key press
+						supplierManagement();
+						break;
+					case 4:
+						Alignment.clearScreen();
+						fastFoodInventory.menu();
+						break;
+					case 5:
+						System.exit(0);
+						break;
+					default:
+						System.out.println("Invalid action selected");
+						break;	
+				}
+			}catch (Exception e){
+				System.out.println("Incorrect input(Please enter NUMBER only)");
+				scanner.nextLine();
+			}	
+		}
+		scanner.close();
+
 	}
 
 	public static void returnMenu(){

@@ -1,7 +1,7 @@
 SO0001|Rejected|20 Sep 2024|11:24 PM|-|Stock Out Order|S001
 C0005|James Lee|12 Mount Fo|26 Sep 2024
 23|SD001|40|MT001|20|MT002
-SO0002|Rejected|20 Sep 2024|11:58 PM|-|Stock Out Order|-
+SO0002|Rejected|20 Sep 2024|11:58 PM|-|Stock Out Order|S001
 C0002|Lily Green|456 Elm St|30 Sep 2024
 20|SD001|30|MT001
 SO0003|Rejected|22 Sep 2024|02:07 AM|-|Stock Out Order|S001

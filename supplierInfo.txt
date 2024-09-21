@@ -23,3 +23,8 @@ Item[1]: BS001	Coke	Beverages	Good	1.0	3.0
 U010	Brooke	012-12345678	!@gmail.com	123
 Item[1]: MT003	Chicken	Meat	Good	10.0	1.0
 Item[2]: SD001	Prawn	Seafood	Tasty	10.0	12.0
+U011	Lincoln	012-12345678	!@gamil.com	jalan hijau
+Item[1]: SD002	Dolly fish	Seafood	Tasty	10.0	12.0
+Item[2]: MT003	Chicken	Meat	Good	10.0	1.0
+U014	kah le	012-1234567	kah@gmail.com	jalan umt
+Item[1]: SD002	Dolly fish	Seafood	Tasty	10.0	12.0
