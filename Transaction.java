@@ -115,9 +115,6 @@ public class Transaction{
     public boolean makeTransaction(String orderID,String transactionType,double amount){
         String transFilePath = "Transaction.txt";
 
-        
-        /*writer.write(generateTransID(transFilePath) + "\t" + orderID + "\t" + dateFormatter.format(transDate) + "\t" + timeFormatter.format(transTime) + "\t" + transactionType + "\tRM" + amount + "\n");*/
-
         //find current balance
         try (Scanner scanner = new Scanner(new File(transFilePath))){
             if(scanner.hasNextLine()){

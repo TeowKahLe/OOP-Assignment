@@ -99,9 +99,11 @@ public void stockInOrderMenu(String orderStaffID){
                    break;
                 case 4:
                     //update received
+                    displayAllStockInOrder();
                     receiveOrder();
                     break;
                 case 5:
+                displayAllStockInOrder();
                     found = false;
                         while(!found){
                             found = searchOrder();
@@ -1007,6 +1009,7 @@ public void cancelPurchase(){
        String confirm = "";
 
        do{
+        scanner.nextLine();
         System.out.print("Confirm to delete(Y - Yes|N - No): ");
         confirm = scanner.nextLine();
 
@@ -1797,10 +1800,10 @@ public void modifyPurchase(){
                     System.out.printf("|%-15s|\t%-30s|\t%-30s|\t%-20s|\t%-20s|\t%-15s|\n",elementContent[0],elementContent[1],estimateReceiveDate,elementContent[4],elementContent[5],status);
                     line.printLine(152);
                     
-                    System.out.println("Press enter to continue...");
-                    System.in.read();  // Waits for a key press
                 }
             }
+            System.out.println("Press enter to continue...");
+            System.in.read();  // Waits for a key press
         } catch (Exception e) {
             System.out.println(stockInFilePath + " unable to open.");
         }
@@ -1842,12 +1845,18 @@ public void modifyPurchase(){
            String confirm = "";
     
            do{
+            scanner.nextLine();
             System.out.print("Confirm received(Y - Yes|N - No): ");
             confirm = scanner.nextLine();
     
             if(confirm.equalsIgnoreCase("Y")){
+                List<String> orderItemDetail = new ArrayList<>(); 
+                extractItemFromOrder(orderItemDetail,receivedOrderID);
+                super.updateItemQty(orderItemDetail);
                 storeReceivedOrder(stockInFilePath, receivedOrderID);
                 System.out.println("Record updated");
+                System.out.println("Press enter key to continue...");
+                scanner.nextLine();
             }else if(confirm.equalsIgnoreCase("N")){
                 System.out.println("Action terminated.");
             }else{
@@ -1960,5 +1969,42 @@ public void modifyPurchase(){
             System.out.println(stockInFilePath + " unable to open.");
         }
 
-    } 
+    }
+    
+    //extract Item from order
+    public void extractItemFromOrder(List<String> orderItemDetail,String receivedOrderID){
+        String stockInFilePath = "stockInOrder.txt";
+        List<String> receivedOrderInfo = new ArrayList<>();
+        boolean found = false;
+
+        try (Scanner scanner = new Scanner(new File(stockInFilePath))){
+            while (scanner.hasNextLine()) {
+                String lineContent = scanner.nextLine();
+                if(lineContent.startsWith("SI")){
+                    String[] elementContent = lineContent.split("\\t");
+                    //elementContent[0] is order ID
+                    if(elementContent[0].equals(receivedOrderID)){
+                        found = true;
+                    }else{
+                        found = false;
+                    }
+                }
+
+                if(found){
+                    receivedOrderInfo.add(lineContent);
+                }
+            }
+
+            //ignore [0] bcz it is order info after 0 is item info
+            for (int noLine = 1; noLine < receivedOrderInfo.size(); noLine++) {
+                String[] elementInfo = receivedOrderInfo.get(noLine).split("\\t");
+                //[1] itemID [3]qty
+                orderItemDetail.add(elementInfo[1]+"\t"+elementInfo[3]);
+            }
+        } catch (IOException e) {
+                System.out.println(stockInFilePath + " unable to open.");
+        }
+
+    }
+
 }
