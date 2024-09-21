@@ -168,37 +168,6 @@ public class Order{
         return items; // Return the list of Item objects
     }
     
-    //-----------------------------------------------------------------------------------Display All Order
-    public static void displayAllOrder() {
-        //display stock in order
-        StockOutOrder.displayStockOutOrder();
-
-        Scanner scanner = new Scanner(System.in);
-        int opt = 0;
-        boolean loop = true;
-        while (loop) {
-            System.out.println("\nPlease select your action\n1.Back to Order Management\n2.Exit");
-            try {
-                System.out.print("--> ");
-                opt = scanner.nextInt();
-                scanner.nextLine();
-                switch(opt) {
-                    case 1: 
-                        fastFoodInventory.orderManagement();
-                        loop = false;
-                        break;
-                    case 2:
-                        System.exit(0);
-                    default:
-                        System.out.println("Invalid option");
-                }
-            } catch (Exception e) {
-                System.out.println("Incorrect input (Please enter NUMBER only)");
-                scanner.nextLine();
-            }
-        }
-        scanner.close();
-    }
 
     //-----------------------------------------------------------------------------------Store Item To Array
     public static List<Item> storeItemtoArr(){
