@@ -3,7 +3,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Item {
 	private String itemId;
@@ -284,7 +287,19 @@ public class Item {
     }
     
     public ArrayList<Item> readItemsFromFile(String filePath){
-        return new ArrayList<>();
+        ArrayList<Item> items = new ArrayList<>();
+        try {
+            List<String> line1 = Files.readAllLines(Paths.get(filePath));
+
+            for(String line : line1){
+                String[] itemInfo = line.split("|");
+                Item item = new Item(itemId, itemName, itemCategory, itemDesc, unitCost, unitPrice, inventory);
+                items.add(item);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return items;
     }
 
     public void saveItemToFile(ArrayList<Item> itemList, String filePath){
