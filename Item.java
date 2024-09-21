@@ -385,7 +385,7 @@ public class Item {
         for(Item item: itemList){
             System.out.print(item.getItemId() + "" + "|");
         }
-
+        System.out.println("\n");
         while(!checkItem){
             try {
                 System.out.println("Modify Item");
