@@ -202,7 +202,6 @@ public class Supplier extends Person {
             }
 
         }
-        fastFoodInventory.main(null);
     }
 
     public void findDeleteRecord(String startDeleteID,String supplierFilePath){
@@ -351,7 +350,6 @@ public class Supplier extends Person {
                 System.out.println(supplierFilePath + " unable to open");
             }
         }
-        fastFoodInventory.main(null);
     }
 
     public void replaceNewData(String[] supplierInfo,String[][] supplyItemInfo,String tempID,int opt,String newName){
