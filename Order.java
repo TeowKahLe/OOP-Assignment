@@ -19,7 +19,7 @@ public class Order{
     private String deliveryMethod;
     private String orderType;
     private String staffId;
-    private static List<Item> itemList;
+    private List<Item> itemList;
     private int[] itemQty;
 
     Transaction transaction = new Transaction();
@@ -42,7 +42,7 @@ public class Order{
         this.deliveryMethod = deliveryMethod;
         this.orderType = orderType;
         this.staffId = staffId;
-        Order.itemList = itemList;
+        this.itemList = itemList;
         this.itemQty = itemQty;
     }
 
@@ -123,7 +123,7 @@ public class Order{
     }
 
     public void setItemList(List<Item> itemList) {
-        Order.itemList = itemList;
+        this.itemList = itemList;
     }
 
     public void setItemQty(int[] itemQty) {
@@ -172,7 +172,7 @@ public class Order{
     
 
     //-----------------------------------------------------------------------------------Store Item To Array
-    public static List<Item> storeItemtoArr(){
+    public List<Item> storeItemtoArr(){
         String itemFilePath = "itemInfo.txt";
         String []tokenContents;
 
