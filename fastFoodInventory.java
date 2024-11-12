@@ -46,7 +46,7 @@ public class fastFoodInventory {
 			error = false;
     		}catch (Exception e){
 				scanner.nextLine(); //clear input buffer allow go into try block and prevent infinitely loop
-    			System.out.println("Incorrect input(Please entry NUMBER only)");
+    			System.out.println("Incorrect input(Please entry NUMBER only!)");
     		}	
 	  }
 	  scanner.close();
